@@ -1,0 +1,123 @@
+/* 基础样式重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* 顶部品牌标识 */
+.header {
+    background-color: #1fa72f;
+    padding: 1.5rem 0;
+    text-align: center;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* 主内容区 */
+.container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 5vw;
+    margin-top: -2rem;
+}
+
+/* 登录表单 */
+.login-form {
+    background-color: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 5px 15px rgba(46, 204, 113, 0.1);
+}
+
+.form-title {
+    color: #333;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+.input-label {
+    display: block;
+    color: #555;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.input-field {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: border 0.3s;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: #1fa72f;
+}
+
+/* 登录按钮 */
+.login-btn {
+    width: 100%;
+    background-color: #1fa72f;
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 0.5rem;
+}
+
+.login-btn:hover {
+    background-color: #27ae60;
+}
+
+/* 注册链接 */
+.register-link {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.register-btn {
+    color: #22c666;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.register-btn:hover {
+    text-decoration: underline;
+}
+
+/* 底部信息 */
+.footer {
+    text-align: center;
+    padding: 1.5rem;
+    color: #888;
+    font-size: 0.8rem;
+}

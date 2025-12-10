@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的账单 - 金融借贷平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .bills-container {
+            max-width: 95%;
+            margin: 0 auto;
+            padding-bottom: 70px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 20px 0 15px;
+            color: #333;
+        }
+        .bill-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .bill-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .bill-date {
+            font-size: 14px;
+            color: #666;
+        }
+        .bill-status {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            background: #e6eeff;
+            color: #0f4c81;
+        }
+        .bill-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .bill-info {
+            flex: 1;
+        }
+        .bill-amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .bill-detail {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .bill-action {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #0f4c81, #1a3a5f);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .bill-tabs {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 15px;
+        }
+        .bill-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .bill-tab.active {
+            background: linear-gradient(135deg, #0f4c81, #1a3a5f);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- 欢迎头部 -->
+    <div class="welcome-header">
+        <div class="welcome-text">我的账单</div>
+        <div class="welcome-subtext">查看和管理您的所有账单</div>
+    </div>
+
+    <div class="bills-container">
+        <!-- 账单标签页 -->
+        <div class="bill-tabs">
+            <div class="bill-tab active">待还款</div>
+            <div class="bill-tab">已还款</div>
+            <div class="bill-tab">逾期</div>
+        </div>
+
+        <!-- 待还总览 -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                <div>
+                    <div style="font-size: 14px; color: #666;">待还总额</div>
+                    <div style="font-size: 24px; font-weight: bold; color: #e74c3c;">5,680.00<span style="font-size: 14px;">元</span></div>
+                </div>
+                <div>
+                    <div style="font-size: 14px; color: #666;">待还期数</div>
+                    <div style="font-size: 24px; font-weight: bold; color: #333;">2</div>
+                </div>
+            </div>
+            <button class="btn" style="width: 100%;">一键还款</button>
+        </div>
+
+        <!-- 账单列表 -->
+        <div class="section-title">最近账单</div>
+
+        <!-- 账单1 -->
+        <div class="bill-card">
+            <div class="bill-header">
+                <span class="bill-date">2024-01-20</span>
+                <span class="bill-status">待还款</span>
+            </div>
+            <div class="bill-content">
+                <div class="bill-info">
+                    <div class="bill-amount">¥3,680.00</div>
+                    <div class="bill-detail">消费贷款 #887654</div>
+                    <div class="bill-detail">还款日期：2024-01-25</div>
+                </div>
+                <button class="bill-action">立即还款</button>
+            </div>
+        </div>
+
+        <!-- 账单2 -->
+        <div class="bill-card">
+            <div class="bill-header">
+                <span class="bill-date">2024-01-15</span>
+                <span class="bill-status">待还款</span>
+            </div>
+            <div class="bill-content">
+                <div class="bill-info">
+                    <div class="bill-amount">¥2,000.00</div>
+                    <div class="bill-detail">现金借款 #776543</div>
+                    <div class="bill-detail">还款日期：2024-01-30</div>
+                </div>
+                <button class="bill-action">立即还款</button>
+            </div>
+        </div>
+
+        <!-- 账单3 -->
+        <div class="bill-card">
+            <div class="bill-header">
+                <span class="bill-date">2024-01-10</span>
+                <span class="bill-status" style="background: #d4edda; color: #155724;">已还款</span>
+            </div>
+            <div class="bill-content">
+                <div class="bill-info">
+                    <div class="bill-amount" style="color: #27ae60;">¥1,500.00</div>
+                    <div class="bill-detail">消费贷款 #665432</div>
+                    <div class="bill-detail">还款日期：2024-01-10</div>
+                </div>
+                <button class="bill-action" style="background: #6c757d;">查看详情</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </a>
+        <a href="loan.html" class="nav-item">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>贷款</span>
+        </a>
+        <a href="message.html" class="nav-item">
+            <i class="fas fa-bell"></i>
+            <span>消息</span>
+        </a>
+        <a href="mine.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </a>
+    </div>
+
+    <script>
+        // 为标签页添加点击事件
+        document.querySelectorAll('.bill-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // 移除所有活跃状态
+                document.querySelectorAll('.bill-tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                // 添加当前活跃状态
+                this.classList.add('active');
+                
+                // 这里可以添加切换账单列表的逻辑
+                const tabText = this.textContent;
+                console.log(`切换到${tabText}标签`);
+            });
+        });
+        
+        // 为底部导航栏添加点击事件
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                // 移除所有活跃状态
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                // 添加当前活跃状态
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

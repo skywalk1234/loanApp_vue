@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>消息 - 金融借贷平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="./js/webSocket.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            padding-bottom: 70px;
+        }
+
+        .welcome-header {
+            background-color: #1976D2;
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+        }
+
+        .welcome-text {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .welcome-subtext {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .msg-category {
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 10px 15px;
+            background-color: white;
+            border-bottom: 1px solid #eee;
+        }
+
+        .category-item {
+            padding: 5px 15px;
+            margin-right: 10px;
+            border-radius: 15px;
+            font-size: 14px;
+            background-color: #f5f5f5;
+            color: #666;
+        }
+
+        .category-item.active {
+            background-color: #1976D2;
+            color: white;
+        }
+
+        .msg-container {
+            margin: 15px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 10px;
+            margin-bottom: 80px;
+        }
+
+        .msg-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .msg-item {
+            padding: 15px;
+            border-radius: 8px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .msg-item:active {
+            transform: scale(0.98);
+        }
+
+        .msg-time {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .msg-content {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .msg-detail {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            background-color: white;
+            padding: 10px 0;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .nav-item.active {
+            color: #1976D2;
+        }
+
+        /* 新消息提示动画 */
+        .new-message-indicator {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 12px;
+            height: 12px;
+            background-color: #ff4757;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+<!-- 欢迎头部 -->
+<div class="welcome-header">
+    <div class="welcome-text">消息中心</div>
+    <div class="welcome-subtext">最新消息推送</div>
+    <div id="currentTime" style="font-size: 14px; margin-top: 10px;"></div>
+</div>
+
+<!-- 消息分类 -->
+<div class="msg-category">
+    <div class="category-item active">全部消息</div>
+    <div class="category-item">系统通知</div>
+    <div class="category-item">交易提醒</div>
+    <div class="category-item">营销活动</div>
+    <div class="category-item">客服消息</div>
+</div>
+
+<!-- 消息容器 -->
+<div class="msg-container">
+    <div class="msg-list" id="messageList">
+        <!-- 初始消息将通过JavaScript动态添加 -->
+    </div>
+</div>
+
+<!-- 底部导航栏 -->
+<div class="nav">
+    <a href="index.html" class="nav-item">
+        <i class="fas fa-home"></i>
+        <span>首页</span>
+    </a>
+    <a href="loan.html" class="nav-item">
+        <i class="fas fa-money-bill-wave"></i>
+        <span>贷款</span>
+    </a>
+    <a href="message.html" class="nav-item active">
+        <i class="fas fa-bell"></i>
+        <span>消息</span>
+    </a>
+    <a href="mine.html" class="nav-item">
+        <i class="fas fa-user"></i>
+        <span>我的</span>
+    </a>
+</div>
+
+<script>
+    // 时间自动更新
+    function updateTime() {
+        const now = new Date();
+        let hours = now.getHours();
+        let minutes = now.getMinutes();
+        hours = hours < 10 ? '0' + hours : hours;
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        const timeString = hours + ':' + minutes;
+        document.getElementById('currentTime').textContent = timeString;
+    }
+
+    // 初始化时间并设置定时器
+    updateTime();
+    setInterval(updateTime, 60000);
+
+    // 消息类型映射 - 将后端type映射到前端消息类型
+    const messageTypeMapping = {
+        1: { title: "还款提醒", bgColor: "#F3E5F5" },
+        2: { title: "审核结果", bgColor: "#FFF3E0" },
+        3: { title: "系统通知", bgColor: "#E0F7FA" },
+        4: { title: "交易提醒", bgColor: "#E3F2FD" },
+        5: { title: "营销活动", bgColor: "#E8F5E9" },
+        // 添加更多类型映射...
+    };
+
+    // 默认消息类型
+    const defaultMessageType = { title: "系统通知", bgColor: "#E0F7FA" };
+
+    // 初始消息数据
+    const messageData = null;
+
+    // 获取消息列表容器
+    const messageList = document.getElementById('messageList');
+
+    // 渲染初始消息
+    // function renderMessages() {
+    //     messageData.forEach(msg => {
+    //         addMessageElement(msg.time, msg.title, msg.content, msg.bgColor);
+    //     });
+    // }
+
+    // 添加消息元素到DOM
+    function addMessageElement(time, title, content, bgColor, isNew = false) {
+        console.log("将生成好的消息添加到消息栏");
+        const msgItem = document.createElement('div');
+        msgItem.className = 'msg-item';
+        msgItem.style.background = bgColor;
+        msgItem.innerHTML = `
+            <div class="msg-time">${time}</div>
+            <div class="msg-content">${title}</div>
+            <div class="msg-detail">${content}</div>
+        `;
+
+        // 如果是新消息，添加新消息指示器
+        if (isNew) {
+            const newIndicator = document.createElement('div');
+            newIndicator.className = 'new-message-indicator';
+            msgItem.style.position = 'relative';
+            msgItem.appendChild(newIndicator);
+
+            // 3秒后移除新消息指示器
+            setTimeout(() => {
+                if (newIndicator.parentNode) {
+                    newIndicator.remove();
+                }
+            }, 3000);
+        }
+
+        // 添加点击事件
+        msgItem.addEventListener('click', function() {
+            alert(`消息详情\n\n${title}\n${content}`);
+        });
+
+        // 将新消息插入到列表顶部
+        messageList.insertBefore(msgItem, messageList.firstChild);
+    }
+
+    // 处理WebSocket接收到的消息
+    function handleWebSocketMessage(data) {
+        console.log("收到WebSocket消息:", data);
+
+        // 检查错误码
+        if (data.errorcode !== 200) {
+            console.error("WebSocket消息错误:", data);
+            return;
+        }
+
+        // 处理消息列表
+        if (data.message_list && Array.isArray(data.message_list)) {
+            data.message_list.forEach(message => {
+                // 获取当前时间
+                const now = new Date();
+                const hours = now.getHours();
+                const minutes = now.getMinutes();
+                const formattedTime = `${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}`;
+
+                // 根据type获取消息类型信息
+                const messageType = messageTypeMapping[message.type] || defaultMessageType;
+
+                // 添加消息到列表
+                addMessageElement(
+                    formattedTime,
+                    messageType.title,
+                    message.content,
+                    messageType.bgColor,
+                    true  // 标记为新消息
+                );
+            });
+        }
+    }
+
+    // 为消息分类添加点击事件
+    document.querySelectorAll('.category-item').forEach(item => {
+        item.addEventListener('click', function() {
+            // 移除所有活跃状态
+            document.querySelectorAll('.category-item').forEach(cat => {
+                cat.classList.remove('active');
+            });
+            // 添加当前活跃状态
+            this.classList.add('active');
+            // 这里可以添加根据分类筛选消息的逻辑
+            const category = this.textContent;
+            console.log(`切换到${category}`);
+        });
+    });
+
+    // 为导航项添加点击事件
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            // 移除所有活跃状态
+            document.querySelectorAll('.nav-item').forEach(nav => {
+                nav.classList.remove('active');
+            });
+            // 添加当前活跃状态
+            this.classList.add('active');
+        });
+    });
+
+    // 初始化渲染消息
+    // renderMessages();
+
+    // WebSocket消息处理
+    // 假设webSocket.js已经创建了全局的WebSocket连接
+    // 我们需要监听WebSocket的消息事件
+    document.addEventListener('DOMContentLoaded', function() {
+        // 检查是否存在全局WebSocket对象
+
+        const wsService = new WebSocketService({
+            url: 'ws://localhost:8080/ws/n12pgdie1s',
+            reconnect: true,
+            heartbeatInterval: 25000
+        });
+
+// 监听事件
+//         wsService.on('connected', () => {
+//             console.log('连接成功');
+//             // 发送认证信息
+//             wsService.send('auth', { token: 'your-token' });
+//         });
+
+        wsService.on('message', (data) => {
+            console.log('收到消息:', data);
+
+            handleWebSocketMessage(data);
+        });
+
+//
+        try {
+            wsService.connect();
+        } catch (error) {
+            console.error("WebSocket连接失败:", error);
+        }
+
+
+        // if (typeof window.webSocket !== 'undefined') {
+        //     // 添加消息监听器
+        //     window.webSocket.onmessage = function(event) {
+        //         try {
+        //             const data = JSON.parse(event.data);
+        //             handleWebSocketMessage(data);
+        //         } catch (error) {
+        //             console.error("解析WebSocket消息失败:", error);
+        //         }
+        //     };
+        //
+        //     console.log("WebSocket消息监听器已设置");
+        // } else {
+        //     console.warn("未找到全局WebSocket对象，将使用模拟数据");
+
+            // 模拟WebSocket消息（用于测试）
+            // setTimeout(() => {
+            //     const mockWebSocketData = {
+            //         errorcode: 200,
+            //         message_list: [
+            //             {
+            //                 type: 1,
+            //                 content: "赶快还钱，再不还钱就别想借了"
+            //             },
+            //             {
+            //                 type: 2,
+            //                 content: "您的贷款申请审核成功，去我的账单查看吧"
+            //             }
+            //         ]
+            //     };
+            //     handleWebSocketMessage(mockWebSocketData);
+            // }, 2000);
+        // }
+    });
+</script>
+</body>
+</html>

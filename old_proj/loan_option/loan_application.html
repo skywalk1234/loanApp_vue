@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贷款申请 - 金融借贷平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="../js/messageUtils.js"></script>
+    <script src="../js/refreshToken.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f9;
+            color: #333;
+            padding-bottom: 70px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0f4c81, #1a3a5f);
+            color: white;
+            padding: 20px 15px;
+            position: relative;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 15px;
+            top: 20px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .container {
+            padding: 15px;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #0f4c81;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-title i {
+            margin-right: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            border-color: #0f4c81;
+            outline: none;
+        }
+
+        .amount-input-container {
+            position: relative;
+        }
+
+        .amount-input {
+            padding-left: 40px;
+        }
+
+        .amount-symbol {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: #333;
+        }
+
+        .term-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .term-option {
+            flex: 1;
+            min-width: 80px;
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .term-option.active {
+            background-color: #0f4c81;
+            color: white;
+            border-color: #0f4c81;
+        }
+
+        .bank-select-container {
+            position: relative;
+        }
+
+        .bank-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 15px;
+        }
+
+        .repayment-card {
+            background: linear-gradient(135deg, rgba(15, 76, 129, 0.1), rgba(26, 58, 95, 0.1));
+            border: 1px solid rgba(15, 76, 129, 0.2);
+        }
+
+        .repayment-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .repayment-item:last-child {
+            border-bottom: none;
+        }
+
+        .repayment-label {
+            color: #666;
+        }
+
+        .repayment-value {
+            font-weight: bold;
+            color: #0f4c81;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #0f4c81, #1a3a5f);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #0f4c81;
+            border: 1px solid #0f4c81;
+        }
+
+        .nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #666;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .nav-item.active {
+            color: #0f4c81;
+        }
+
+        .product-info {
+            background-color: #f0f8ff;
+            border-left: 4px solid #0f4c81;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .product-info h4 {
+            color: #0f4c81;
+            margin-bottom: 5px;
+            font-size: 15px;
+        }
+
+        .product-info p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .fees-info {
+            background-color: #fff8e1;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .fees-info-title {
+            font-weight: bold;
+            color: #ff9800;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .fee-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 152, 0, 0.1);
+        }
+
+        .fee-item:last-child {
+            border-bottom: none;
+        }
+
+        .fee-name {
+            color: #666;
+        }
+
+        .fee-value {
+            color: #ff9800;
+            font-weight: 500;
+        }
+
+        .warning-info {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #856404;
+        }
+
+        @media (max-width: 360px) {
+            .term-option {
+                min-width: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 头部 -->
+<div class="header">
+    <div class="back-btn" onclick="window.history.back()">
+        <i class="fas fa-arrow-left"></i>
+    </div>
+    <div class="header-title">贷款申请</div>
+    <div class="header-subtitle" id="productSubtitle">快速审批，灵活选择</div>
+</div>
+
+<!-- 主要内容 -->
+<div class="container">
+    <!-- 产品信息卡片 -->
+    <div class="form-card">
+        <div class="form-title">
+            <i class="fas fa-info-circle"></i>产品详情
+        </div>
+
+        <div class="product-info" id="productDescription">
+            <h4>贷款产品说明</h4>
+            <p id="productInfoText">本产品提供灵活的贷款额度和期限选择，支持多种还款方式，满足您的不同需求。</p>
+        </div>
+
+        <div class="repayment-item">
+            <span class="repayment-label">产品名称</span>
+            <span class="repayment-value" id="productName">加载中...</span>
+        </div>
+
+        <div class="repayment-item">
+            <span class="repayment-label">年化利率</span>
+            <span class="repayment-value" id="productInterest">加载中...</span>
+        </div>
+
+        <div class="repayment-item">
+            <span class="repayment-label">贷款额度范围</span>
+            <span class="repayment-value" id="productAmountRange">加载中...</span>
+        </div>
+
+        <div class="repayment-item">
+            <span class="repayment-label">贷款期限范围</span>
+            <span class="repayment-value" id="productPeriodRange">加载中...</span>
+        </div>
+
+        <div class="repayment-item">
+            <span class="repayment-label">还款方式</span>
+            <span class="repayment-value" id="productRepayType">加载中...</span>
+        </div>
+
+        <div class="repayment-item">
+            <span class="repayment-label">宽限期</span>
+            <span class="repayment-value" id="productGracePeriod">加载中...</span>
+        </div>
+
+        <div class="repayment-item">
+            <span class="repayment-label">逾期利率</span>
+            <span class="repayment-value" id="productPenalty">加载中...</span>
+        </div>
+
+        <div class="fees-info">
+            <div class="fees-info-title">费用说明</div>
+            <div class="fee-item">
+                <span class="fee-name">服务费</span>
+                <span class="fee-value" id="feeName">加载中...</span>
+            </div>
+            <div class="fee-item">
+                <span class="fee-name">费率</span>
+                <span class="fee-value" id="feeRate">加载中...</span>
+            </div>
+            <div class="fee-item">
+                <span class="fee-name">固定费用</span>
+                <span class="fee-value" id="feeFix">加载中...</span>
+            </div>
+        </div>
+
+        <div class="warning-info">
+            <i class="fas fa-exclamation-triangle" style="margin-right: 5px;"></i>
+            请根据自身还款能力选择合适的贷款金额和期限，按时还款有助于维护良好信用记录。
+        </div>
+    </div>
+
+    <!-- 贷款信息表单 -->
+    <div class="form-card">
+        <div class="form-title">
+            <i class="fas fa-money-bill-wave"></i>贷款信息
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">贷款金额（元）</label>
+            <div class="amount-input-container">
+                <span class="amount-symbol">¥</span>
+                <input type="number" id="loanAmount" class="form-input amount-input" placeholder="请输入借款金额" min="1000" max="500000" step="1000">
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                <span style="font-size: 12px; color: #999;" id="minAmountHint">最低1000元</span>
+                <span style="font-size: 12px; color: #999;" id="maxAmountHint">最高500,000元</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">贷款期限</label>
+            <div class="term-options" id="termOptionsContainer">
+                <!-- 动态生成期限选项 -->
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">年化利率</label>
+            <input type="text" id="interestRate" class="form-input" value="加载中..." readonly>
+        </div>
+    </div>
+
+    <!-- 收款信息表单 -->
+    <div class="form-card">
+        <div class="form-title">
+            <i class="fas fa-credit-card"></i>收款信息
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">开户银行</label>
+            <select id="bankSelect" class="form-input bank-select">
+                <option value="">请选择银行</option>
+                <option value="icbc">中国工商银行</option>
+                <option value="abc">中国农业银行</option>
+                <option value="boc">中国银行</option>
+                <option value="ccb">中国建设银行</option>
+                <option value="cmb">招商银行</option>
+                <option value="comm">交通银行</option>
+                <option value="psbc">中国邮政储蓄银行</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">银行卡号</label>
+            <input type="text" id="bankCardNumber" class="form-input" placeholder="请输入银行卡号" maxlength="19">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">持卡人姓名</label>
+            <input type="text" id="cardHolderName" class="form-input" value="" readonly>
+        </div>
+    </div>
+
+    <!-- 还款计划 -->
+    <div class="form-card repayment-card">
+        <div class="form-title">
+            <i class="fas fa-calculator"></i>还款计划
+        </div>
+
+        <div class="repayment-item">
+            <span class="repayment-label">贷款金额</span>
+            <span class="repayment-value" id="repaymentAmount">0元</span>
+        </div>
+
+        <div class="repayment-item">
+            <span class="repayment-label">贷款期限</span>
+            <span class="repayment-value" id="repaymentTerm">0个月</span>
+        </div>
+
+        <div class="repayment-item">
+            <span class="repayment-label">月利率</span>
+            <span class="repayment-value" id="monthlyRate">0%</span>
+        </div>
+
+        <div class="repayment-item">
+            <span class="repayment-label">每月还款额</span>
+            <span class="repayment-value" id="monthlyPayment">0元</span>
+        </div>
+
+        <div class="repayment-item">
+            <span class="repayment-label">总利息</span>
+            <span class="repayment-value" id="totalInterest">0元</span>
+        </div>
+
+        <div class="repayment-item">
+            <span class="repayment-label">总还款额</span>
+            <span class="repayment-value" id="totalRepayment">0元</span>
+        </div>
+    </div>
+
+    <!-- 协议确认 -->
+    <div class="form-card">
+        <div class="form-group" style="display: flex; align-items: flex-start;">
+            <input type="checkbox" id="agreeCheck" style="margin-right: 10px; margin-top: 3px;">
+            <label for="agreeCheck" style="font-size: 14px; color: #666;">
+                我已阅读并同意
+                <a href="#" style="color: #0f4c81;">《借款协议》</a>、
+                <a href="#" style="color: #0f4c81;">《个人信息授权书》</a>
+                及其他相关协议
+            </label>
+        </div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <button class="btn" id="submitBtn">立即申请</button>
+    <button class="btn btn-secondary" onclick="window.location.href='../loan.html'">返回</button>
+</div>
+
+<!-- 底部导航 -->
+<div class="nav">
+    <a href="../index.html" class="nav-item">
+        <i class="fas fa-home"></i>
+        <span>首页</span>
+    </a>
+    <a href="../loan.html" class="nav-item active">
+        <i class="fas fa-money-bill-wave"></i>
+        <span>贷款</span>
+    </a>
+    <a href="../message.html" class="nav-item">
+        <i class="fas fa-bell"></i>
+        <span>消息</span>
+    </a>
+    <a href="../mine.html" class="nav-item">
+        <i class="fas fa-user"></i>
+        <span>我的</span>
+    </a>
+</div>
+
+<script>
+    // 贷款产品数据
+    let loanProductData = {};
+
+    // 初始化页面
+    document.addEventListener('DOMContentLoaded', function() {
+        // 从URL获取产品数据
+        const urlParams = new URLSearchParams(window.location.search);
+        const productDataParam = urlParams.get('productData');
+
+        // 从localStorage获取用户信息
+        const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+
+        // 设置持卡人姓名（使用username）
+        const cardHolderInput = document.getElementById('cardHolderName');
+        if (cardHolderInput && userInfo.username) {
+            cardHolderInput.value = userInfo.username;
+        }
+
+        // 获取产品信息
+        if (productDataParam) {
+            try {
+                loanProductData = JSON.parse(decodeURIComponent(productDataParam));
+                loanProductData.id=Number(loanProductData.id);
+                console.log('从URL获取的产品数据:', loanProductData);
+                updateProductInfo();
+            } catch (error) {
+                console.error('解析产品数据失败:', error);
+                setDefaultProductData();
+                updateProductInfo();
+            }
+        } else {
+            // 如果没有产品数据，使用默认数据
+            console.log('未找到产品数据，使用默认数据');
+            setDefaultProductData();
+            updateProductInfo();
+        }
+
+        // 设置贷款金额事件监听
+        const amountInput = document.getElementById('loanAmount');
+        amountInput.addEventListener('input', updateRepaymentPlan);
+        amountInput.addEventListener('blur', function() {
+            const value = parseFloat(this.value) || 0;
+            const minAmount = parseFloat(loanProductData.min_principle) || 1000;
+            const maxAmount = parseFloat(loanProductData.max_principle) || 500000;
+
+            if (value < minAmount) this.value = minAmount;
+            if (value > maxAmount) this.value = maxAmount;
+            updateRepaymentPlan();
+        });
+
+        // 银行卡号格式化
+        const bankCardInput = document.getElementById('bankCardNumber');
+        bankCardInput.addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '')
+                .replace(/(\d{4})(?=\d)/g, '$1 ');
+        });
+
+        // 提交按钮事件
+        document.getElementById('submitBtn').addEventListener('click', submitApplication);
+    });
+
+    // 设置默认产品数据
+    function setDefaultProductData() {
+        loanProductData = {
+            "name": "默认贷款产品",
+            "interest": "7.2%",
+            "min_principle": "1000",
+            "max_principle": "500000",
+            "min_periods": 3,
+            "max_periods": 36,
+            "repay_type": "等额本息",
+            "grace_term": 15,
+            "penalty": "0.05%",
+            "fees": [
+                {
+                    "name": "服务费",
+                    "rate": "1%",
+                    "fix": "0元"
+                }
+            ],
+            "info": "灵活的贷款产品，满足您的资金需求"
+        };
+    }
+
+    // 更新产品信息显示
+    function updateProductInfo() {
+        const data = loanProductData;
+
+        // 显示产品基本信息
+        document.getElementById('productName').textContent = data.name || '未知产品';
+        document.getElementById('productInterest').textContent = data.interest || '未知利率';
+
+        // 显示贷款额度范围
+        const minAmount = parseFloat(data.min_principle) || 1000;
+        const maxAmount = parseFloat(data.max_principle) || 500000;
+        document.getElementById('productAmountRange').textContent = `${formatAmount(minAmount)}-${formatAmount(maxAmount)}`;
+
+        // 更新表单中的金额范围
+        document.getElementById('loanAmount').min = minAmount;
+        document.getElementById('loanAmount').max = maxAmount;
+        document.getElementById('minAmountHint').textContent = `最低${formatAmount(minAmount)}`;
+        document.getElementById('maxAmountHint').textContent = `最高${formatAmount(maxAmount)}`;
+
+        // 显示贷款期限范围
+        const minPeriods = data.min_periods || 3;
+        const maxPeriods = data.max_periods || 36;
+        document.getElementById('productPeriodRange').textContent = `${minPeriods}-${maxPeriods}个月`;
+
+        // 生成期限选项
+        generateTermOptions(minPeriods, maxPeriods);
+
+        document.getElementById('productRepayType').textContent = data.repay_type || '未知还款方式';
+        document.getElementById('productGracePeriod').textContent = `${data.grace_term || 15}天`;
+        document.getElementById('productPenalty').textContent = data.penalty || '未知逾期利率';
+
+        // 更新产品描述
+        document.getElementById('productInfoText').textContent = data.info || '本产品提供灵活的贷款额度和期限选择，支持多种还款方式，满足您的不同需求。';
+
+        // 更新费用信息
+        if (data.fees && data.fees.length > 0) {
+            const feeItem = data.fees[0];
+            document.getElementById('feeName').textContent = feeItem.name || '未知';
+            document.getElementById('feeRate').textContent = feeItem.rate || '未知';
+            document.getElementById('feeFix').textContent = feeItem.fix || '未知';
+        }
+
+        // 设置利率显示
+        document.getElementById('interestRate').value = data.interest || '7.2%';
+
+        // 初始计算还款计划
+        updateRepaymentPlan();
+    }
+
+    // 生成期限选项
+    function generateTermOptions(minPeriods, maxPeriods) {
+        const container = document.getElementById('termOptionsContainer');
+        container.innerHTML = '';
+
+        // 常见期限选项
+        const commonTerms = [3, 6, 12, 24, 36];
+
+        // 只添加在范围内的期限选项
+        commonTerms.forEach(term => {
+            if (term >= minPeriods && term <= maxPeriods) {
+                const option = document.createElement('div');
+                option.className = 'term-option';
+                if (term === 12) option.classList.add('active'); // 默认选中12个月
+                option.dataset.months = term;
+                option.textContent = `${term}个月`;
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.term-option').forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    updateRepaymentPlan();
+                });
+                container.appendChild(option);
+            }
+        });
+
+        // 如果没有合适的选项，添加最小和最大期限
+        if (container.children.length === 0) {
+            const minOption = document.createElement('div');
+            minOption.className = 'term-option active';
+            minOption.dataset.months = minPeriods;
+            minOption.textContent = `${minPeriods}个月`;
+            minOption.addEventListener('click', function() {
+                document.querySelectorAll('.term-option').forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                updateRepaymentPlan();
+            });
+            container.appendChild(minOption);
+        }
+    }
+
+    // 格式化金额显示
+    function formatAmount(amount) {
+        const num = parseFloat(amount);
+        if (num >= 10000) {
+            return (num / 10000).toFixed(1) + '万';
+        }
+        return num.toLocaleString() + '元';
+    }
+
+    // 更新还款计划
+    function updateRepaymentPlan() {
+        const amount = parseFloat(document.getElementById('loanAmount').value) || 0;
+        const activeTerm = document.querySelector('.term-option.active');
+        if (!activeTerm) return;
+
+        const term = parseInt(activeTerm.dataset.months);
+        const annualRate = 7.2; // 年利率7.2% (实际项目中应从产品数据获取)
+        const monthlyRate = annualRate / 12 / 100; // 月利率
+
+        // 等额本息计算公式
+        const monthlyPayment = amount * monthlyRate * Math.pow(1 + monthlyRate, term) /
+            (Math.pow(1 + monthlyRate, term) - 1);
+        const totalRepayment = monthlyPayment * term;
+        const totalInterest = totalRepayment - amount;
+
+        // 更新显示
+        document.getElementById('repaymentAmount').textContent = amount.toFixed(2) + '元';
+        document.getElementById('repaymentTerm').textContent = term + '个月';
+        document.getElementById('monthlyRate').textContent = (monthlyRate * 100).toFixed(4) + '%';
+        document.getElementById('monthlyPayment').textContent = monthlyPayment.toFixed(2) + '元';
+        document.getElementById('totalInterest').textContent = totalInterest.toFixed(2) + '元';
+        document.getElementById('totalRepayment').textContent = totalRepayment.toFixed(2) + '元';
+    }
+
+    // 提交申请
+    function submitApplication() {
+        const amount = parseFloat(document.getElementById('loanAmount').value) || 0;
+        const activeTerm = document.querySelector('.term-option.active');
+        if (!activeTerm) {
+            alert('请选择贷款期限');
+            return;
+        }
+
+        const term = parseInt(activeTerm.dataset.months);
+        const bank = document.getElementById('bankSelect').value;
+        const cardNumber = document.getElementById('bankCardNumber').value.replace(/\s/g, '');
+        const agreed = document.getElementById('agreeCheck').checked;
+
+        // 简单验证
+        const minAmount = parseFloat(loanProductData.min_principle) || 1000;
+        const maxAmount = parseFloat(loanProductData.max_principle) || 500000;
+
+        if (amount < minAmount || amount > maxAmount) {
+            alert(`请输入${formatAmount(minAmount)}-${formatAmount(maxAmount)}之间的贷款金额`);
+            return;
+        }
+
+        if (!bank) {
+            alert('请选择开户银行');
+            return;
+        }
+
+        if (cardNumber.length < 16) {
+            alert('请输入正确的银行卡号');
+            return;
+        }
+
+        if (!agreed) {
+            alert('请阅读并同意相关协议');
+            return;
+        }
+
+        // 构建提交数据
+        const formData = {
+            productId: Number(loanProductData.id),//|| "default_product_id",
+            amount: amount,
+            termCount: term,
+            bankCode: bank,
+            cardNumber: cardNumber,
+        };
+
+        // 获取认证数据
+        const authDataStr = localStorage.getItem('authData');
+        if (!authDataStr) {
+            alert('请先登录');
+            window.location.href = '../login_email.html';
+            return;
+        }
+
+        const authData = JSON.parse(authDataStr);
+
+        // 设置请求头
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", authData.accessToken);
+        myHeaders.append("Content-Type", "application/json");
+
+        // 请求选项
+        const requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            redirect: 'follow',
+            body: JSON.stringify(formData)
+        };
+
+        // 发送广播代码
+        function addNewMessage() {
+            const channel = new BroadcastChannel('loan_messages');
+            console.log("准备广播新增消息操作");
+            channel.postMessage({
+                type: 'newLoanApply'
+            });
+            setTimeout(() => {
+                channel.close();
+            }, 100);
+        }
+
+        // 发送请求
+        console.log('提交贷款申请数据:', formData);
+        fetch("http://115.190.40.44:45444/loan/loan", requestOptions)
+            .then(response => {
+                console.log('API响应状态:', response.status);
+                return response.text();
+            })
+            .then(result => {
+                console.log('API响应内容:', result);
+                try {
+                    const data = JSON.parse(result);
+                    if (data.success) {
+                        alert('申请提交成功！');
+                        addNewMessage();
+                        window.location.href = "../message.html";
+                    } else {
+                        alert('提交失败: ' + data.message);
+                    }
+                } catch (e) {
+                    console.error('JSON解析错误:', e);
+                    alert('提交成功！');
+                    addNewMessage();
+                    window.location.href = "../message.html";
+                }
+            })
+            .catch(error => {
+                console.log('请求错误:', error);
+                alert('网络错误，请稍后重试');
+            });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>帮助中心 - 金融借贷平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .help-container {
+            max-width: 95%;
+            margin: 0 auto;
+            padding-bottom: 70px;
+        }
+        .search-box {
+            background: white;
+            border-radius: 25px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .search-box i {
+            color: #999;
+            margin-right: 10px;
+        }
+        .search-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            outline: none;
+        }
+        .category-section {
+            margin-bottom: 30px;
+        }
+        .category-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+            padding-left: 10px;
+            border-left: 3px solid #0f4c81;
+        }
+        .faq-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+        .faq-item:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 15px;
+            color: #333;
+            cursor: pointer;
+        }
+        .faq-answer {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            display: none;
+        }
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+        .faq-item.active .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+        .contact-support {
+            background: linear-gradient(135deg, #0f4c81, #1a3a5f);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .contact-support i {
+            margin-right: 10px;
+        }
+        .hot-topics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .hot-topic-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            font-size: 14px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .hot-topic-item i {
+            color: #0f4c81;
+            margin-right: 10px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 欢迎头部 -->
+    <div class="welcome-header">
+        <div class="welcome-text">帮助中心</div>
+        <div class="welcome-subtext">常见问题解答</div>
+    </div>
+
+    <div class="help-container">
+        <!-- 搜索框 -->
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="搜索问题...">
+        </div>
+
+        <!-- 热门话题 -->
+        <div class="category-title">热门话题</div>
+        <div class="hot-topics">
+            <div class="hot-topic-item">
+                <i class="fas fa-credit-card"></i>
+                <span>如何申请贷款</span>
+            </div>
+            <div class="hot-topic-item">
+                <i class="fas fa-clock"></i>
+                <span>贷款审核时间</span>
+            </div>
+            <div class="hot-topic-item">
+                <i class="fas fa-exchange-alt"></i>
+                <span>如何还款</span>
+            </div>
+            <div class="hot-topic-item">
+                <i class="fas fa-shield-alt"></i>
+                <span>账户安全</span>
+            </div>
+        </div>
+
+        <!-- 贷款相关问题 -->
+        <div class="category-section">
+            <div class="category-title">贷款相关</div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>如何提高贷款额度？</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    提高贷款额度可以通过以下方式：1. 保持良好的信用记录；2. 完善个人资料和实名认证；3. 增加使用频率并按时还款；4. 提供更多的收入证明材料。系统会根据您的综合信用状况定期评估并调整额度。
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>贷款审核需要多长时间？</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    一般情况下，贷款申请提交后会在15分钟内完成初步审核。对于复杂情况，可能需要1-2个工作日进行人工审核。您可以在APP首页查看申请进度。
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>可以提前还款吗？有手续费吗？</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    可以提前还款，提前还款不会收取额外手续费，系统会按照实际使用天数计算利息。提前还款有助于提高您的信用评级，对未来贷款申请有利。
+                </div>
+            </div>
+        </div>
+
+        <!-- 账户相关问题 -->
+        <div class="category-section">
+            <div class="category-title">账户相关</div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>忘记密码怎么办？</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    如果您忘记了登录密码，可以通过以下步骤重置：1. 点击登录页面的"忘记密码"；2. 根据提示输入您的手机号或邮箱；3. 获取并输入验证码；4. 设置新密码。
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>如何修改绑定手机号？</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    修改绑定手机号需要验证您的身份：1. 进入"我的"-"设置"-"账户安全"；2. 选择"修改手机号"；3. 验证原手机号；4. 输入新手机号并完成验证。
+                </div>
+            </div>
+        </div>
+
+        <!-- 联系客服按钮 -->
+        <button class="contact-support">
+            <i class="fas fa-headset"></i>
+            <span>联系在线客服</span>
+        </button>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </a>
+        <a href="loan.html" class="nav-item">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>贷款</span>
+        </a>
+        <a href="message.html" class="nav-item">
+            <i class="fas fa-bell"></i>
+            <span>消息</span>
+        </a>
+        <a href="mine.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </a>
+    </div>
+
+    <script>
+        // FAQ点击展开/收起
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', function() {
+                const faqItem = this.parentElement;
+                faqItem.classList.toggle('active');
+            });
+        });
+        
+        // 联系客服按钮点击事件
+        document.querySelector('.contact-support').addEventListener('click', function() {
+            window.location.href = 'online_service.html';
+        });
+        
+        // 热门话题点击事件
+        document.querySelectorAll('.hot-topic-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const topicText = this.querySelector('span').textContent;
+                alert(`您点击了：${topicText}`);
+            });
+        });
+        
+        // 底部导航栏点击事件
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

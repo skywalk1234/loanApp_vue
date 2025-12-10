@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线客服 - 金融借贷平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .chat-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-header {
+            background: linear-gradient(135deg, #0f4c81, #1a3a5f);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+        }
+        .chat-header h2 {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        .chat-menu {
+            display: flex;
+            gap: 15px;
+        }
+        .chat-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .chat-message {
+            max-width: 75%;
+            padding: 12px 15px;
+            border-radius: 18px;
+            word-wrap: break-word;
+            line-height: 1.5;
+        }
+        .bot-message {
+            background: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+        .user-message {
+            background: linear-gradient(135deg, #0f4c81, #1a3a5f);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+        .message-time {
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .chat-input-area {
+            background: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-top: 1px solid #ddd;
+        }
+        .input-container {
+            flex: 1;
+            background: #f0f2f5;
+            border-radius: 20px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+        }
+        .input-container input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 16px;
+        }
+        .input-container i {
+            color: #999;
+            cursor: pointer;
+        }
+        .send-btn {
+            background: linear-gradient(135deg, #0f4c81, #1a3a5f);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .quick-reply {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 10px;
+        }
+        .quick-reply h4 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .quick-reply-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .reply-tag {
+            background: #f0f2f5;
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+        }
+        .bot-avatar {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .avatar-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6a9be9, #7aaaf5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <!-- 聊天头部 -->
+        <div class="chat-header">
+            <h2>智能客服</h2>
+            <div class="chat-menu">
+                <i class="fas fa-question-circle"></i>
+                <i class="fas fa-ellipsis-v"></i>
+            </div>
+        </div>
+
+        <!-- 聊天内容区域 -->
+        <div class="chat-content">
+            <div class="message-time">今天 14:30</div>
+            
+            <div class="bot-avatar">
+                <div class="avatar-circle">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="chat-message bot-message">
+                    您好！我是智能客服小助手，很高兴为您服务。请问有什么可以帮助您的吗？
+                    <div class="quick-reply">
+                        <h4>常用问题：</h4>
+                        <div class="quick-reply-tags">
+                            <div class="reply-tag">申请贷款</div>
+                            <div class="reply-tag">还款问题</div>
+                            <div class="reply-tag">账户安全</div>
+                            <div class="reply-tag">修改资料</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-message user-message">
+                我想了解如何提高贷款额度
+            </div>
+
+            <div class="bot-avatar">
+                <div class="avatar-circle">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="chat-message bot-message">
+                    提高贷款额度可以通过以下方式：<br>
+                    1. 保持良好的信用记录和按时还款<br>
+                    2. 完善个人资料和实名认证信息<br>
+                    3. 增加平台使用频率，建立长期信用关系<br>
+                    4. 提供更多的收入证明材料<br><br>
+                    系统会根据您的综合信用状况定期评估并调整额度。
+                </div>
+            </div>
+        </div>
+
+        <!-- 输入区域 -->
+        <div class="chat-input-area">
+            <div class="input-container">
+                <i class="fas fa-smile"></i>
+                <input type="text" placeholder="请输入您的问题..." id="chatInput">
+                <i class="fas fa-paperclip"></i>
+            </div>
+            <button class="send-btn" id="sendButton">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 模拟AI客服接口
+        function aiServiceRequest(message) {
+            // 这里是预留的AI接口调用位置
+            console.log('发送给AI的消息:', message);
+            
+            // 模拟AI回复
+            const responses = [
+                "感谢您的咨询。请问您需要了解哪方面的信息呢？",
+                "关于这个问题，我可以为您提供详细的解答。",
+                "您稍等，我正在查询相关信息...",
+                "根据您的问题，我建议您可以尝试以下方法解决。",
+                "很抱歉，这个问题我需要查询更多信息，请稍候。"
+            ];
+            
+            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+            return randomResponse;
+        }
+        
+        // 添加消息到聊天界面
+        function addMessage(content, isUser = false) {
+            const chatContent = document.querySelector('.chat-content');
+            const messageTime = new Date().toLocaleTimeString('zh-CN', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            if (isUser) {
+                // 用户消息
+                const userMessage = document.createElement('div');
+                userMessage.className = 'chat-message user-message';
+                userMessage.textContent = content;
+                chatContent.appendChild(userMessage);
+            } else {
+                // 机器人消息
+                const botMessageContainer = document.createElement('div');
+                botMessageContainer.className = 'bot-avatar';
+                botMessageContainer.innerHTML = `
+                    <div class="avatar-circle">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="chat-message bot-message">${content}</div>
+                `;
+                chatContent.appendChild(botMessageContainer);
+            }
+            
+            // 滚动到底部
+            chatContent.scrollTop = chatContent.scrollHeight;
+        }
+        
+        // 发送消息
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                // 添加用户消息
+                addMessage(message, true);
+                // 清空输入框
+                input.value = '';
+                
+                // 模拟AI回复延迟
+                setTimeout(() => {
+                    const aiResponse = aiServiceRequest(message);
+                    addMessage(aiResponse, false);
+                }, 1000);
+            }
+        }
+        
+        // 发送按钮点击事件
+        document.getElementById('sendButton').addEventListener('click', sendMessage);
+        
+        // 回车发送
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // 快捷回复标签点击事件
+        document.querySelectorAll('.reply-tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                const message = this.textContent;
+                document.getElementById('chatInput').value = message;
+                sendMessage();
+            });
+        });
+    </script>
+</body>
+</html>

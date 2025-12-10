@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页 - 金融借贷平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- PWA相关元标签 -->
+    <!-- <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4CAF50">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="金融借贷平台">
+    <link rel="apple-touch-icon" href="icons/icon-152x152.png"> -->
+</head>
+<body>
+    <!-- 继续改动欢迎的头部 -->
+    <div class="welcome-header">
+        <div class="welcome-text">欢迎使用金融借贷平台</div>
+        <div class="welcome-subtext">为您提供安全、快捷的借贷服务</div>
+        <div id="currentTime" style="font-size: 14px; margin-top: 10px;"></div>
+    </div>
+
+    <!-- 额度卡片 -->
+    <div class="credit-limit-card">
+        <div class="limit-label">您的最高可贷额度</div>
+        <div class="limit-amount">200,000<span style="font-size: 18px; margin-left: 5px;">元</span></div>
+        <button class="btn" style="margin-top: 10px; background: rgba(255,255,255,0.2); border: 1px solid white;" data-action="apply_amount">立即申请</button>
+    </div>
+
+    <!-- 功能特性网格 -->
+    <div class="feature-grid">
+        <div class="feature-item">
+            <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+            <div class="feature-name">极速放款</div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+            <div class="feature-name">安全保障</div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><i class="fas fa-user-shield"></i></div>
+            <div class="feature-name">安心贷</div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><i class="fas fa-credit-card"></i></div>
+            <div class="feature-name">信用卡</div>
+        </div>
+    </div>
+
+    <!-- 快捷服务卡片
+    <div class="service-cards">
+        <div class="service-card">
+            <h3>闪电贷</h3>
+            <p>最快30秒放款，额度高达20万</p>
+            <button class="btn" >立即申请</button>
+        </div>
+        <div class="service-card">
+            <h3>信用贷</h3>
+            <p>无抵押贷款，随借随还</p>
+            <button class="btn">立即申请</button>
+        </div>
+    </div> -->
+
+    <!-- 贷款产品推荐 -->
+    <div class="card">
+        <h3 style="font-size: 18px; margin-bottom: 15px;">热门贷款产品</h3>
+        
+        <div class="product-card">
+            <div class="product-title">闪电贷</div>
+            <div class="product-amount">最高20万</div>
+            <div class="product-info"><i class="fas fa-percentage"></i> 年化利率 <span class="product-rate">7.2%</span></div>
+            <div class="product-info"><i class="fas fa-calendar-alt"></i> 期限 3-12个月</div>
+            <button class="btn" style="margin-top: 15px;">立即申请</button>
+
+
+        </div>
+        
+        <div class="product-card">
+            <div class="product-title">信用贷</div>
+            <div class="product-amount">最高5万</div>
+            <div class="product-info"><i class="fas fa-percentage"></i> 年化利率 <span class="product-rate">8.5%</span></div>
+            <div class="product-info"><i class="fas fa-calendar-alt"></i> 期限 6-24个月</div>
+            <button class="btn" style="margin-top: 15px;">立即申请</button>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="nav">
+        <a href="index.html" class="nav-item active">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </a>
+        <a href="loan.html" class="nav-item">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>贷款</span>
+        </a>
+        <a href="message.html" class="nav-item">
+            <i class="fas fa-bell"></i>
+            <span>消息</span>
+        </a>
+        <a href="mine.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </a>
+    </div>
+
+
+
+    <style>
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+    </style>
+
+    <script>
+        // 时间自动更新
+        function updateTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            hours = hours < 10 ? '0' + hours : hours;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            const timeString = hours + ':' + minutes;
+            document.getElementById('currentTime').textContent = timeString;
+        }
+        
+        // 检查登录状态
+        function checkLoginStatus() {
+            // 从localStorage获取登录状态
+            const isLoggedIn = localStorage.getItem('userLoggedIn') === 'true';
+            
+            if (isLoggedIn) {
+                // 如果用户已登录，则隐藏悬浮登录窗
+                const loginWindow = document.getElementById('loginFloatingWindow');
+                if (loginWindow) {
+                    loginWindow.style.display = 'none';
+                }
+            }
+        }
+        
+        // 初始化时间并设置定时器
+        updateTime();
+        setInterval(updateTime, 60000);
+        
+        // 检查登录状态
+        checkLoginStatus();
+        
+        // 为按钮添加点击事件
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // 这里可以添加点击事件处理逻辑
+                // 所有申请按钮都跳转到实名认证页面
+                const value = localStorage.getItem('is_face_rec')
+                if (value != 'true'){
+                    window.location.href = '实名认证.html';
+                }else{
+                    window.location.href = '/loan_option/flash_loan.html';
+                }
+
+                console.log('Button clicked:', this.textContent);
+            });
+        });
+        
+        // 为导航项添加点击事件
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                // 移除所有活跃状态
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                // 添加当前活跃状态
+                this.classList.add('active');
+                // 导航到相应页面（通过href属性已经实现）
+            });
+        });
+
+
+    </script>
+    
+    <!-- Service Worker注册 -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker registration successful');
+                    }, function(err) {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

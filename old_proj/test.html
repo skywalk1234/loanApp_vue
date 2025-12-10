@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贷款订单管理系统</title>
+    <!-- 引入外部资源 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFFB',
+                        success: '#00B42A',
+                        warning: '#FF7D00',
+                        danger: '#F53F3F',
+                        dark: '#1D2129',
+                        'dark-2': '#4E5969',
+                        'light-1': '#F2F3F5',
+                        'light-2': '#E5E6EB',
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 4px 20px 0 rgba(0, 0, 0, 0.08)',
+                        'card-hover': '0 8px 30px 0 rgba(22, 93, 255, 0.15)',
+                    }
+                },
+            }
+        }
+    </script>
+
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .card-transition {
+                transition: all 0.3s ease;
+            }
+            .chart-container {
+                height: 300px;
+                width: 100%;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+        }
+    </style>
+
+    <style>
+        /* 全局样式 */
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: #F7F8FA;
+        }
+
+        /* 动画效果 */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .scale-hover {
+            transition: transform 0.3s ease;
+        }
+
+        .scale-hover:hover {
+            transform: translateY(-5px);
+        }
+
+        /* 图表容器样式 */
+        .chart-wrapper {
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .chart-wrapper.active {
+            opacity: 1;
+            height: auto;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body class="text-dark font-inter">
+<!-- 顶部导航栏 -->
+<header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+            <i class="fa fa-credit-card text-primary text-2xl"></i>
+            <h1 class="text-xl md:text-2xl font-bold text-primary">贷款订单管理系统</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+            <button class="hidden md:flex items-center space-x-1 text-dark-2 hover:text-primary transition-colors">
+                <i class="fa fa-bell-o"></i>
+                <span>通知</span>
+            </button>
+            <div class="flex items-center space-x-2">
+                <img src="https://picsum.photos/id/1005/40/40" alt="用户头像" class="w-10 h-10 rounded-full object-cover border-2 border-primary/20">
+                <span class="hidden md:inline font-medium">管理员</span>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- 主内容区 -->
+<main class="container mx-auto px-4 py-8">
+    <!-- 页面标题和统计信息 -->
+    <div class="mb-8">
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+            <div>
+                <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-bold text-dark">贷款订单列表</h2>
+                <p class="text-dark-2 mt-1">查看和管理所有贷款订单信息</p>
+            </div>
+            <div class="mt-4 md:mt-0 flex space-x-3">
+                <button class="px-4 py-2 bg-white border border-light-2 rounded-lg flex items-center space-x-1 hover:border-primary hover:text-primary transition-colors">
+                    <i class="fa fa-filter"></i>
+                    <span>筛选</span>
+                </button>
+                <button class="px-4 py-2 bg-primary text-white rounded-lg flex items-center space-x-1 hover:bg-primary/90 transition-colors shadow-md hover:shadow-lg">
+                    <i class="fa fa-download"></i>
+                    <span>导出</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 统计卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white rounded-xl p-5 shadow-card scale-hover">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-dark-2 text-sm">总订单数</p>
+                        <h3 class="text-2xl font-bold mt-1">128</h3>
+                        <p class="text-success text-sm mt-2 flex items-center">
+                            <i class="fa fa-arrow-up mr-1"></i> 12.5% <span class="text-dark-2 ml-1">较上月</span>
+                        </p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                        <i class="fa fa-list-alt text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl p-5 shadow-card scale-hover">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-dark-2 text-sm">总贷款金额</p>
+                        <h3 class="text-2xl font-bold mt-1">¥1,285,600</h3>
+                        <p class="text-success text-sm mt-2 flex items-center">
+                            <i class="fa fa-arrow-up mr-1"></i> 8.3% <span class="text-dark-2 ml-1">较上月</span>
+                        </p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-success/10 flex items-center justify-center text-success">
+                        <i class="fa fa-money text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl p-5 shadow-card scale-hover">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-dark-2 text-sm">待还款金额</p>
+                        <h3 class="text-2xl font-bold mt-1">¥856,320</h3>
+                        <p class="text-warning text-sm mt-2 flex items-center">
+                            <i class="fa fa-arrow-up mr-1"></i> 5.2% <span class="text-dark-2 ml-1">较上月</span>
+                        </p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-warning/10 flex items-center justify-center text-warning">
+                        <i class="fa fa-clock-o text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl p-5 shadow-card scale-hover">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-dark-2 text-sm">逾期订单数</p>
+                        <h3 class="text-2xl font-bold mt-1">12</h3>
+                        <p class="text-danger text-sm mt-2 flex items-center">
+                            <i class="fa fa-arrow-down mr-1"></i> 3.7% <span class="text-dark-2 ml-1">较上月</span>
+                        </p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-danger/10 flex items-center justify-center text-danger">
+                        <i class="fa fa-exclamation-triangle text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 订单列表区域 -->
+    <div class="mb-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- 订单卡片 1 -->
+            <div class="order-card bg-white rounded-xl shadow-card hover:shadow-card-hover card-transition cursor-pointer border-l-4 border-primary p-6 scale-hover" data-order-id="LOAN2025001">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                    <div>
+                        <div class="flex items-center">
+                            <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">正常还款</span>
+                            <span class="ml-3 text-sm text-dark-2">订单ID: LOAN2025001</span>
+                        </div>
+                        <h3 class="text-lg font-bold mt-2">个人消费贷款</h3>
+                    </div>
+                    <div class="mt-3 md:mt-0 text-right">
+                        <p class="text-dark-2 text-sm">总计欠款</p>
+                        <p class="text-xl font-bold text-primary">¥28,500.00</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                    <div class="text-center">
+                        <p class="text-dark-2 text-sm">当前欠款</p>
+                        <p class="font-semibold mt-1">¥15,680.00</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-dark-2 text-sm">最低还款</p>
+                        <p class="font-semibold mt-1">¥1,250.00</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-dark-2 text-sm">剩余期数</p>
+                        <p class="font-semibold mt-1">12期</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-dark-2 text-sm">最后还款日</p>
+                        <p class="font-semibold mt-1">2025-12-15</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex items-center justify-between">
+                    <div class="flex items-center">
+                        <span class="bg-light-1 text-dark-2 text-xs px-2 py-1 rounded-full mr-2">借贷方案: A类</span>
+                        <span class="bg-light-1 text-dark-2 text-xs px-2 py-1 rounded-full">总计期数: 24期</span>
+                    </div>
+                    <button class="text-primary hover:text-primary/80 transition-colors flex items-center">
+                        <span>查看详情</span>
+                        <i class="fa fa-angle-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 订单卡片 2 -->
+            <div class="order-card bg-white rounded-xl shadow-card hover:shadow-card-hover card-transition cursor-pointer border-l-4 border-warning p-6 scale-hover" data-order-id="LOAN2025002">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                    <div>
+                        <div class="flex items-center">
+                            <span class="bg-warning/10 text-warning text-xs px-2 py-1 rounded-full">即将到期</span>
+                            <span class="ml-3 text-sm text-dark-2">订单ID: LOAN2025002</span>
+                        </div>
+                        <h3 class="text-lg font-bold mt-2">房屋装修贷款</h3>
+                    </div>
+                    <div class="mt-3 md:mt-0 text-right">
+                        <p class="text-dark-2 text-sm">总计欠款</p>
+                        <p class="text-xl font-bold text-warning">¥156,800.00</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                    <div class="text-center">
+                        <p class="text-dark-2 text-sm">当前欠款</p>
+                        <p class="font-semibold mt-1">¥98,650.00</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-dark-2 text-sm">最低还款</p>
+                        <p class="font-semibold mt-1">¥8,250.00</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-dark-2 text-sm">剩余期数</p>
+                        <p class="font-semibold mt-1">36期</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-dark-2 text-sm">最后还款日</p>
+                        <p class="font-semibold mt-1 text-warning">2025-11-28</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex items-center justify-between">
+                    <div class="flex items-center">
+                        <span class="bg-light-1 text-dark-2 text-xs px-2 py-1 rounded-full mr-2">借贷方案: B类</span>
+                        <span class="bg-light-1 text-dark-2 text-xs px-2 py-1 rounded-full">总计期数: 60期</span>
+                    </div>
+                    <button class="text-primary hover:text-primary/80 transition-colors flex items-center">
+                        <span>查看详情</span>
+                        <i class="fa fa-angle-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 订单卡片 3 -->
+            <div class="order-card bg-white rounded-xl shadow-card hover:shadow-card-hover card-transition cursor-pointer border-l-4 border-danger p-6 scale-hover" data-order-id="LOAN2025003">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                    <div>
+                        <div class="flex items-center">
+                            <span class="bg-danger/10 text-danger text-xs px-2 py-1 rounded-full">已逾期</span>
+                            <span class="ml-3 text-sm text-dark-2">订单ID: LOAN2025003</span>
+                        </div>
+                        <h3 class="text-lg font-bold mt-2">汽车购置贷款</h3>
+                    </div>
+                    <div class="mt-3 md:mt-0 text-right">
+                        <p class="text-dark-2 text-sm">总计欠款</p>
+                        <p class="text-xl font-bold text-danger">¥289,500.00</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                    <div class="text-center">
+                        <p class="text-dark-2 text-sm">当前欠款</p>
+                        <p class="font-semibold mt-1">¥245,800.00</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-dark-2 text-sm">最低还款</p>
+                        <p class="font-semibold mt-1">¥12,850.00</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-dark-2 text-sm">剩余期数</p>
+                        <p class="font-semibold mt-1">48期</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-dark-2 text-sm">最后还款日</p>
+                        <p class="font-semibold mt-1 text-danger">2025-10-08</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex items-center justify-between">
+                    <div class="flex items-center">
+                        <span class="bg-light-1 text-dark-2 text-xs px-2 py-1 rounded-full mr-2">借贷方案: C类</span>
+                        <span class="bg-light-1 text-dark-2 text-xs px-2 py-1 rounded-full">总计期数: 60期</span>
+                    </div>
+                    <button class="text-primary hover:text-primary/80 transition-colors flex items-center">
+                        <span>查看详情</span>
+                        <i class="fa fa-angle-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 订单卡片 4 -->
+            <div class="order-card bg-white rounded-xl shadow-card hover:shadow-card-hover card-transition cursor-pointer border-l-4 border-success p-6 scale-hover" data-order-id="LOAN2025004">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                    <div>
+                        <div class="flex items-center">
+                            <span class="bg-success/10 text-success text-xs px-2 py-1 rounded-full">已结清</span>
+                            <span class="ml-3 text-sm text-dark-2">订单ID: LOAN2025004</span>
+                        </div>
+                        <h3 class="text-lg font-bold mt-2">教育进修贷款</h3>
+                    </div>
+                    <div class="mt-3 md:mt-0 text-right">
+                        <p class="text-dark-2 text-sm">总计欠款</p>
+                        <p class="text-xl font-bold text-success">¥0.00</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                    <div class="text-center">
+                        <p class="text-dark-2 text-sm">当前欠款</p>
+                        <p class="font-semibold mt-1">¥0.00</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-dark-2 text-sm">最低还款</p>
+                        <p class="font-semibold mt-1">¥0.00</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-dark-2 text-sm">剩余期数</p>
+                        <p class="font-semibold mt-1">0期</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-dark-2 text-sm">结清日期</p>
+                        <p class="font-semibold mt-1 text-success">2025-09-30</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex items-center justify-between">
+                    <div class="flex items-center">
+                        <span class="bg-light-1 text-dark-2 text-xs px-2 py-1 rounded-full mr-2">借贷方案: A类</span>
+                        <span class="bg-light-1 text-dark-2 text-xs px-2 py-1 rounded-full">总计期数: 12期</span>
+                    </div>
+                    <button class="text-primary hover:text-primary/80 transition-colors flex items-center">
+                        <span>查看详情</span>
+                        <i class="fa fa-angle-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 图表展示区域 -->
+    <div class="chart-wrapper bg-white rounded-xl p-6 shadow-card" id="chartContainer">
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+            <div>
+                <h3 class="text-xl font-bold text-dark" id="chartTitle">订单详情分析 - LOAN2025001</h3>
+                <p class="text-dark-2 mt-1" id="chartSubtitle">个人消费贷款 · 总计欠款 ¥28,500.00</p>
+            </div>
+            <button class="mt-4 md:mt-0 px-4 py-2 bg-light-1 text-dark-2 rounded-lg flex items-center space-x-1 hover:bg-light-2 transition-colors" id="closeChart">
+                <i class="fa fa-times"></i>
+                <span>关闭详情</span>
+            </button>
+        </div>
+
+        <!-- 图表网格 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- 还款进度环形图 -->
+            <div class="bg-light-1/50 rounded-lg p-4">
+                <h4 class="text-lg font-semibold mb-4">还款进度分析</h4>
+                <div class="chart-container">
+                    <canvas id="repaymentProgressChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 期数分布柱状图 -->
+            <div class="bg-light-1/50 rounded-lg p-4">
+                <h4 class="text-lg font-semibold mb-4">期数还款分布</h4>
+                <div class="chart-container">
+                    <canvas id="installmentDistributionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 金额变化折线图 -->
+            <div class="bg-light-1/50 rounded-lg p-4 lg:col-span-2">
+                <h4 class="text-lg font-semibold mb-4">月度还款金额变化</h4>
+                <div class="chart-container h-48">
+                    <canvas id="monthlyPaymentChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 订单详情表格 -->
+        <div class="mt-8 overflow-x-auto">
+            <table class="w-full min-w-[640px]">
+                <thead>
+                <tr class="border-b border-light-2">
+                    <th class="text-left py-3 px-4 font-semibold text-dark-2">项目</th>
+                    <th class="text-left py-3 px-4 font-semibold text-dark-2">详情</th>
+                    <th class="text-left py-3 px-4 font-semibold text-dark-2">项目</th>
+                    <th class="text-left py-3 px-4 font-semibold text-dark-2">详情</th>
+                </tr>
+                </thead>
+                <tbody id="orderDetailsTable">
+                <tr class="border-b border-light-2">
+                    <td class="py-3 px-4 text-dark-2">订单ID</td>
+                    <td class="py-3 px-4 font-medium">LOAN2025001</td>
+                    <td class="py-3 px-4 text-dark-2">借贷方案</td>
+                    <td class="py-3 px-4 font-medium">A类 - 标准利率</td>
+                </tr>
+                <tr class="border-b border-light-2">
+                    <td class="py-3 px-4 text-dark-2">贷款类型</td>
+                    <td class="py-3 px-4 font-medium">个人消费贷款</td>
+                    <td class="py-3 px-4 text-dark-2">总计期数</td>
+                    <td class="py-3 px-4 font-medium">24期</td>
+                </tr>
+                <tr class="border-b border-light-2">
+                    <td class="py-3 px-4 text-dark-2">总计欠款</td>
+                    <td class="py-3 px-4 font-medium text-primary">¥28,500.00</td>
+                    <td class="py-3 px-4 text-dark-2">剩余期数</td>
+                    <td class="py-3 px-4 font-medium">12期</td>
+                </tr>
+                <tr class="border-b border-light-2">
+                    <td class="py-3 px-4 text-dark-2">当前欠款</td>
+                    <td class="py-3 px-4 font-medium">¥15,680.00</td>
+                    <td class="py-3 px-4 text-dark-2">最后还款日</td>
+                    <td class="py-3 px-4 font-medium">2025-12-15</td>
+                </tr>
+                <tr>
+                    <td class="py-3 px-4 text-dark-2">最低还款金额</td>
+                    <td class="py-3 px-4 font-medium">¥1,250.00</td>
+                    <td class="py-3 px-4 text-dark-2">还款状态</td>
+                    <td class="py-3 px-4 font-medium text-success">正常还款</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<!-- 页脚 -->
+<footer class="bg-white border-t border-light-2 mt-12 py-6">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+            <div class="text-dark-2 text-sm mb-4 md:mb-0">
+                © 2025 贷款订单管理系统 版权所有
+            </div>
+            <div class="flex space-x-6">
+                <a href="#" class="text-dark-2 hover:text-primary transition-colors text-sm">帮助中心</a>
+                <a href="#" class="text-dark-2 hover:text-primary transition-colors text-sm">联系我们</a>
+                <a href="#" class="text-dark-2 hover:text-primary transition-colors text-sm">隐私政策</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- JavaScript -->
+<script>
+    // 订单数据
+    const orderData = {
+        'LOAN2025001': {
+            loanId: 'LOAN2025001',
+            type: '个人消费贷款',
+            status: '正常还款',
+            statusColor: 'success',
+            amountOwned: 28500.00,
+            nowamount: 15680.00,
+            minAmount: 1250.00,
+            allterm: '24期',
+            lastterm: '12期',
+            lastDate: '2025-12-15',
+            strategy_code: 'A类 - 标准利率',
+            chartData: {
+                progress: {
+                    repaid: 12820,
+                    unpaid: 15680,
+                    labels: ['已还款', '未还款']
+                },
+                installments: [
+                    {name: '1-6期', amount: 7500},
+                    {name: '7-12期', amount: 5320},
+                    {name: '13-18期', amount: 6250},
+                    {name: '19-24期', amount: 9430}
+                ],
+                monthly: {
+                    labels: ['6月', '7月', '8月', '9月', '10月', '11月'],
+                    payments: [1250, 1250, 1320, 1280, 1350, 1420]
+                }
+            }
+        },
+        'LOAN2025002': {
+            loanId: 'LOAN2025002',
+            type: '房屋装修贷款',
+            status: '即将到期',
+            statusColor: 'warning',
+            amountOwned: 156800.00,
+            nowamount: 98650.00,
+            minAmount: 8250.00,
+            allterm: '60期',
+            lastterm: '36期',
+            lastDate: '2025-11-28',
+            strategy_code: 'B类 - 优惠利率',
+            chartData: {
+                progress: {
+                    repaid: 58150,
+                    unpaid: 98650,
+                    labels: ['已还款', '未还款']
+                },
+                installments: [
+                    {name: '1-12期', amount: 28500},
+                    {name: '13-24期', amount: 22800},
+                    {name: '25-36期', amount: 32650},
+                    {name: '37-48期', amount: 38250},
+                    {name: '49-60期', amount: 34600}
+                ],
+                monthly: {
+                    labels: ['6月', '7月', '8月', '9月', '10月', '11月'],
+                    payments: [8250, 8250, 8350, 8420, 8380, 8520]
+                }
+            }
+        },
+        'LOAN2025003': {
+            loanId: 'LOAN2025003',
+            type: '汽车购置贷款',
+            status: '已逾期',
+            statusColor: 'danger',
+            amountOwned: 289500.00,
+            nowamount: 245800.00,
+            minAmount: 12850.00,
+            allterm: '60期',
+            lastterm: '48期',
+            lastDate: '2025-10-08',
+            strategy_code: 'C类 - 专项利率',
+            chartData: {
+                progress: {
+                    repaid: 43700,
+                    unpaid: 245800,
+                    labels: ['已还款', '未还款']
+                },
+                installments: [
+                    {name: '1-12期', amount: 38500},
+                    {name: '13-24期', amount: 42800},
+                    {name: '25-36期', amount: 58600},
+                    {name: '37-48期', amount: 65200},
+                    {name: '49-60期', amount: 84400}
+                ],
+                monthly: {
+                    labels: ['6月', '7月', '8月', '9月', '10月', '11月'],
+                    payments: [12850, 12850, 12850, 0, 0, 0]
+                }
+            }
+        },
+        'LOAN2025004': {
+            loanId: 'LOAN2025004',
+            type: '教育进修贷款',
+            status: '已结清',
+            statusColor: 'success',
+            amountOwned: 0.00,
+            nowamount: 0.00,
+            minAmount: 0.00,
+            allterm: '12期',
+            lastterm: '0期',
+            lastDate: '2025-09-30',
+            strategy_code: 'A类 - 标准利率',
+            chartData: {
+                progress: {
+                    repaid: 18500,
+                    unpaid: 0,
+                    labels: ['已还款', '未还款']
+                },
+                installments: [
+                    {name: '1-3期', amount: 4650},
+                    {name: '4-6期', amount: 4650},
+                    {name: '7-9期', amount: 4600},
+                    {name: '10-12期', amount: 4600}
+                ],
+                monthly: {
+                    labels: ['3月', '4月', '5月', '6月', '7月', '8月', '9月'],
+                    payments: [1580, 1550, 1520, 1580, 1550, 1520, 1550]
+                }
+            }
+        }
+    };
+
+    // 图表实例
+    let progressChart, distributionChart, paymentChart;
+
+    // 初始化图表
+    function initCharts(orderId) {
+        const data = orderData[orderId].chartData;
+
+        // 销毁现有图表
+        if (progressChart) progressChart.destroy();
+        if (distributionChart) distributionChart.destroy();
+        if (paymentChart) paymentChart.destroy();
+
+        // 还款进度环形图
+        const progressCtx = document.getElementById('repaymentProgressChart').getContext('2d');
+        progressChart = new Chart(progressCtx, {
+            type: 'doughnut',
+            data: {
+                labels: data.progress.labels,
+                datasets: [{
+                    data: [data.progress.repaid, data.progress.unpaid],
+                    backgroundColor: [
+                        getComputedStyle(document.documentElement).getPropertyValue('--tw-color-primary'),
+                        getComputedStyle(document.documentElement).getPropertyValue('--tw-color-light-2')
+                    ],
+                    borderWidth: 0,
+                    borderRadius: 5,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.raw;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `${context.label}: ¥${value.toLocaleString()} (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    animateScale: true,
+                    animateRotate: true,
+                    duration: 1000,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+
+        // 期数分布柱状图
+        const distributionCtx = document.getElementById('installmentDistributionChart').getContext('2d');
+        distributionChart = new Chart(distributionCtx, {
+            type: 'bar',
+            data: {
+                labels: data.installments.map(item => item.name),
+                datasets: [{
+                    label: '还款金额 (元)',
+                    data: data.installments.map(item => item.amount),
+                    backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--tw-color-primary'),
+                    borderRadius: 6,
+                    barThickness: 30,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `还款金额: ¥${context.raw.toLocaleString()}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawBorder: false,
+                            color: getComputedStyle(document.documentElement).getPropertyValue('--tw-color-light-1')
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '¥' + value.toLocaleString();
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+
+        // 月度还款金额变化折线图
+        const paymentCtx = document.getElementById('monthlyPaymentChart').getContext('2d');
+        paymentChart = new Chart(paymentCtx, {
+            type: 'line',
+            data: {
+                labels: data.monthly.labels,
+                datasets: [{
+                    label: '月还款金额 (元)',
+                    data: data.monthly.payments,
+                    borderColor: getComputedStyle(document.documentElement).getPropertyValue('--tw-color-primary'),
+                    backgroundColor: `${getComputedStyle(document.documentElement).getPropertyValue('--tw-color-primary')}20`,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: getComputedStyle(document.documentElement).getPropertyValue('--tw-color-primary'),
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `还款金额: ¥${context.raw.toLocaleString()}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawBorder: false,
+                            color: getComputedStyle(document.documentElement).getPropertyValue('--tw-color-light-1')
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '¥' + value.toLocaleString();
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+    }
+
+    // 更新订单详情表格
+    function updateOrderDetails(orderId) {
+        const order = orderData[orderId];
+
+        // 更新标题
+        document.getElementById('chartTitle').textContent = `订单详情分析 - ${order.loanId}`;
+        document.getElementById('chartSubtitle').textContent = `${order.type} · 总计欠款 ¥${order.amountOwned.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+
+        // 更新表格内容
+        const tableBody = document.getElementById('orderDetailsTable');
+        tableBody.innerHTML = `
+        <tr class="border-b border-light-2">
+          <td class="py-3 px-4 text-dark-2">订单ID</td>
+          <td class="py-3 px-4 font-medium">${order.loanId}</td>
+          <td class="py-3 px-4 text-dark-2">借贷方案</td>
+          <td class="py-3 px-4 font-medium">${order.strategy_code}</td>
+        </tr>
+        <tr class="border-b border-light-2">
+          <td class="py-3 px-4 text-dark-2">贷款类型</td>
+          <td class="py-3 px-4 font-medium">${order.type}</td>
+          <td class="py-3 px-4 text-dark-2">总计期数</td>
+          <td class="py-3 px-4 font-medium">${order.allterm}</td>
+        </tr>
+        <tr class="border-b border-light-2">
+          <td class="py-3 px-4 text-dark-2">总计欠款</td>
+          <td class="py-3 px-4 font-medium text-primary">¥${order.amountOwned.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+          <td class="py-3 px-4 text-dark-2">剩余期数</td>
+          <td class="py-3 px-4 font-medium">${order.lastterm}</td>
+        </tr>
+        <tr class="border-b border-light-2">
+          <td class="py-3 px-4 text-dark-2">当前欠款</td>
+          <td class="py-3 px-4 font-medium">¥${order.nowamount.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+          <td class="py-3 px-4 text-dark-2">最后还款日</td>
+          <td class="py-3 px-4 font-medium ${order.statusColor === 'warning' || order.statusColor === 'danger' ? 'text-' + order.statusColor : ''}">${order.lastDate}</td>
+        </tr>
+        <tr>
+          <td class="py-3 px-4 text-dark-2">最低还款金额</td>
+          <td class="py-3 px-4 font-medium">¥${order.minAmount.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+          <td class="py-3 px-4 text-dark-2">还款状态</td>
+          <td class="py-3 px-4 font-medium text-${order.statusColor}">${order.status}</td>
+        </tr>
+      `;
+    }
+
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        const orderCards = document.querySelectorAll('.order-card');
+        const chartContainer = document.getElementById('chartContainer');
+        const closeChartBtn = document.getElementById('closeChart');
+
+        // 点击订单卡片显示图表
+        orderCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const orderId = this.getAttribute('data-order-id');
+
+                // 更新图表和详情
+                updateOrderDetails(orderId);
+                initCharts(orderId);
+
+                // 显示图表容器
+                chartContainer.classList.add('active');
+
+                // 滚动到图表区域
+                chartContainer.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+
+                // 添加激活状态
+                orderCards.forEach(c => c.classList.remove('ring-2', 'ring-primary/30'));
+                this.classList.add('ring-2', 'ring-primary/30');
+            });
+        });
+
+        // 关闭图表
+        closeChartBtn.addEventListener('click', function() {
+            chartContainer.classList.remove('active');
+            orderCards.forEach(c => c.classList.remove('ring-2', 'ring-primary/30'));
+        });
+
+        // 初始化第一个订单的图表（默认）
+        initCharts('LOAN2025001');
+    });
+</script>
+</body>
+</html>

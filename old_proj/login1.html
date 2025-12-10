@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 金融借贷平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: rgba(0, 0, 0, 0.5);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* 悬浮登录窗 */
+        #loginFloatingWindow {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 320px;
+            background: linear-gradient(135deg, rgba(15, 76, 129, 0.95), rgba(26, 58, 95, 0.95));
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            animation: fadeInUp 0.5s ease-out;
+        }
+        
+        #loginFloatingWindow h3 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        #loginFloatingWindow p {
+            font-size: 14px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        #oneClickLogin {
+            width: 100%;
+            height: 50px;
+            background: white;
+            color: #0f4c81;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+        
+        #oneClickLogin:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+        }
+        
+        #otherLogin {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+        
+        #otherLogin:hover {
+            color: white;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 悬浮登录窗 -->
+    <div id="loginFloatingWindow">
+        <h3>欢迎使用安心贷</h3>
+        <p>请登录后享受完整服务</p>
+        <button id="oneClickLogin">一键登录</button>
+        <div id="otherLogin">其他方式登录</div>
+    </div>
+
+    <script>
+        // 检查登录状态
+        function checkLoginStatus() {
+            // 从localStorage获取登录状态
+            const isLoggedIn = localStorage.getItem('userLoggedIn') === 'true';
+            
+            if (isLoggedIn) {
+                // 如果用户已登录，则跳转到首页且不显示登录框
+                window.location.href = 'index.html';
+            }
+        }
+        
+        // 初始化检查登录状态
+        checkLoginStatus();
+        
+        // 悬浮窗按钮点击事件
+        document.getElementById('oneClickLogin').addEventListener('click', function() {
+            // 跳转到邮箱登录页面
+            window.location.href = 'login_email.html';
+        });
+        
+        document.getElementById('otherLogin').addEventListener('click', function() {
+            // 跳转到手机号登录页面
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>

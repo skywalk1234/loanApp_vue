@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实名认证</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f2f5 0%, #e6e9ed 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        
+        .container {
+            max-width: 36rem;
+            margin: 0 auto;
+            background: white;
+            border-radius: 1.6rem;
+            overflow: hidden;
+            box-shadow: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.08);
+        }
+        
+        /* 状态栏模拟 */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 1.2rem 1.6rem;
+            background: white;
+            font-size: 1.2rem;
+            color: #333;
+            border-bottom: 0.1rem solid #f0f0f0;
+        }
+        
+        .time {
+            font-weight: 500;
+        }
+        
+        .status-icons {
+            display: flex;
+            gap: 0.6rem;
+        }
+        
+        /* 头部标题 */
+        .header {
+            text-align: center;
+            padding: 1.6rem;
+            background: white;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 0.8rem;
+        }
+        
+        .header p {
+            font-size: 1.4rem;
+            color: #0f4c81;
+            margin-bottom: 0.4rem;
+        }
+        
+        .header .subtext {
+            font-size: 1.2rem;
+            color: #666;
+        }
+        
+        /* 身份证上传区域 */
+        .id-upload {
+            padding: 1.6rem;
+            background: white;
+        }
+        
+        .upload-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+        
+        .upload-box {
+            width: 48%;
+            border: 0.2rem dashed #0f4c81;
+            border-radius: 1.2rem;
+            padding: 1.6rem;
+            text-align: center;
+            background: #f0f2f5;
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: #0f4c81;
+            margin-bottom: 1rem;
+        }
+        
+        .upload-text {
+            font-size: 1.4rem;
+            color: #333;
+        }
+        
+        /* 上传须知 */
+        .instructions {
+            padding: 1.6rem;
+            background: #f8f8f8;
+            border-radius: 1.2rem;
+            margin-top: 1.6rem;
+        }
+        
+        .instructions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+        }
+        
+        .instructions-header h2 {
+            font-size: 1.6rem;
+            color: #222;
+        }
+        
+        .instructions-header a {
+            font-size: 1.4rem;
+            color: #0f4c81;
+            text-decoration: none;
+        }
+        
+        .examples {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.2rem;
+        }
+        
+        .example {
+            text-align: center;
+        }
+        
+        .example-icon {
+            font-size: 2rem;
+            margin-bottom: 0.6rem;
+        }
+        
+        .correct .example-icon {
+            color: #0f4c81;
+        }
+        
+        .incorrect .example-icon {
+            color: #f44336;
+        }
+        
+        .example-text {
+            font-size: 1.2rem;
+            color: #666;
+        }
+        
+        /* 底部区域 */
+        .footer {
+            padding: 1.6rem;
+            text-align: center;
+            background: white;
+        }
+        
+        .privacy {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 1.6rem;
+        }
+        
+        .next-btn {
+            display: block;
+            width: 100%;
+            padding: 1.6rem;
+            background: linear-gradient(135deg, #0f4c81 0%, #1a3a5f 100%);
+            color: white;
+            border: none;
+            border-radius: 1.2rem;
+            font-size: 1.6rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 1.2rem;
+            transition: all 0.3s;
+        }
+        
+        .brand {
+            font-size: 1.2rem;
+            color: #999;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div class="time">09:17</div>
+            <div class="status-icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <span>80%</span>
+            </div>
+        </div>
+        
+        <!-- 头部标题 -->
+        <div class="header">
+            <h1>实名认证</h1>
+            <p>识别本人身份证获最高100元现金</p>
+            <div class="subtext">正在申请互联网小额贷款，应监管要求，将通过合作机构验证</div>
+        </div>
+        
+        <!-- 身份证上传区域 -->
+        <div class="id-upload">
+            <div class="upload-container">
+                <div class="upload-box" style="position: relative;">
+                    <input type="file" class="file-input" accept="image/*" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
+                    <div class="upload-icon">
+                        <i class="fas fa-id-card"></i>
+                    </div>
+                    <div class="upload-text">识别人像面</div>
+                </div>
+                <div class="upload-box" style="position: relative;">
+                    <input type="file" class="file-input" accept="image/*" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
+                    <div class="upload-icon">
+                        <i class="fas fa-id-card"></i>
+                    </div>
+                    <div class="upload-text">识别国徽面</div>
+                </div>
+            </div>
+            
+            <!-- 上传须知 -->
+            <div class="instructions">
+                <div class="instructions-header">
+                    <h2>上传须知</h2>
+                    <a href="#">详情</a>
+                </div>
+                <div class="examples">
+                    <div class="example correct">
+                        <div class="example-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="example-text">标准拍摄</div>
+                    </div>
+                    <div class="example incorrect">
+                        <div class="example-icon"><i class="fas fa-times-circle"></i></div>
+                        <div class="example-text">边框缺失</div>
+                    </div>
+                    <div class="example incorrect">
+                        <div class="example-icon"><i class="fas fa-times-circle"></i></div>
+                        <div class="example-text">内容模糊</div>
+                    </div>
+                    <div class="example incorrect">
+                        <div class="example-icon"><i class="fas fa-times-circle"></i></div>
+                        <div class="example-text">反光有亮斑</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部区域 -->
+        <div class="footer">
+            <div class="privacy">全流程保障</div>
+            <button class="next-btn">下一步</button>
+            <div class="brand">
+                <div>并由绿色金融为信保用户提供服务</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 添加上传框点击效果
+        document.querySelectorAll('.upload-box').forEach(box => {
+            box.addEventListener('click', function() {
+                this.style.backgroundColor = '#f0f9f0';
+                setTimeout(() => {
+                    this.style.backgroundColor = '#f9fdf9';
+                }, 300);
+                
+                // 这里可以添加实际的文件上传逻辑
+                console.log('上传身份证:', this.querySelector('.upload-text').textContent);
+            });
+        });
+        
+        // 文件上传预览
+        const fileInputs = document.querySelectorAll('.file-input');
+        fileInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const uploadBox = this.parentElement;
+                    const uploadIcon = uploadBox.querySelector('.upload-icon i');
+                    const uploadText = uploadBox.querySelector('.upload-text');
+                    
+                    uploadIcon.classList.remove('fa-id-card');
+                    uploadIcon.classList.add('fa-check-circle');
+                    uploadIcon.style.color = '#0f4c81';
+                    uploadText.textContent = '已上传：' + this.files[0].name;
+                    uploadText.style.color = '#0f4c81';
+                    uploadBox.style.borderColor = '#0f4c81';
+                }
+            });
+        });
+        
+        // 下一步按钮点击效果
+        document.querySelector('.next-btn').addEventListener('click', function() {
+            this.style.backgroundColor = '#1a3a5f';
+            setTimeout(() => {
+                this.style.backgroundColor = '#0f4c81';
+                // 预留接口：提交实名认证信息（实际项目需处理文件上传）
+                alert('实名认证信息已提交，待审核（预留接口）');
+                // 审核后跳转回“我的”页面
+                window.location.href = 'mine.html';
+            }, 300);
+        });
+        
+        // 更新当前时间
+        function updateTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            document.querySelector('.time').textContent = `${hours}:${minutes}`;
+        }
+        
+        updateTime();
+        setInterval(updateTime, 60000);
+    </script>
+</body>
+</html>

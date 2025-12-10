@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>交易记录 - 金融借贷平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .transactions-container {
+            max-width: 95%;
+            margin: 0 auto;
+            padding-bottom: 70px;
+        }
+        .filter-bar {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .filter-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid #0f4c81;
+            color: #0f4c81;
+            border-radius: 16px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .transaction-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        .transaction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .transaction-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+        }
+        .transaction-amount {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .amount-income { color: #27ae60; }
+        .amount-expense { color: #e74c3c; }
+        .transaction-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: #666;
+        }
+        .transaction-time {
+            font-size: 13px;
+        }
+        .transaction-id {
+            font-size: 13px;
+        }
+        .transaction-type {
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            background: #f0f2f5;
+            color: #666;
+        }
+        .search-box {
+            background: #f0f2f5;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .search-box i {
+            color: #999;
+            margin-right: 10px;
+        }
+        .search-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            outline: none;
+        }
+        .date-picker {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .date-btn {
+            flex: 1;
+            padding: 10px;
+            margin: 0 5px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .date-btn.active {
+            border-color: #0f4c81;
+            color: #0f4c81;
+            background: #e6eeff;
+        }
+    </style>
+</head>
+<body>
+    <!-- 欢迎头部 -->
+    <div class="welcome-header">
+        <div class="welcome-text">交易记录</div>
+        <div class="welcome-subtext">查看您的所有交易历史</div>
+    </div>
+
+    <div class="transactions-container">
+        <!-- 搜索框 -->
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="搜索交易记录...">
+        </div>
+
+        <!-- 日期筛选 -->
+        <div class="date-picker">
+            <div class="date-btn active">今日</div>
+            <div class="date-btn">本周</div>
+            <div class="date-btn">本月</div>
+            <div class="date-btn">自定义</div>
+        </div>
+
+        <!-- 交易类型筛选 -->
+        <div class="filter-bar">
+            <span>交易类型</span>
+            <div>
+                <button class="filter-btn">全部</button>
+                <button class="filter-btn" style="margin-left: 10px;">收支</button>
+            </div>
+        </div>
+
+        <!-- 交易记录列表 -->
+        <div class="transaction-item">
+            <div class="transaction-header">
+                <div class="transaction-title">贷款发放</div>
+                <div class="transaction-amount amount-income">+3,000.00</div>
+            </div>
+            <div class="transaction-footer">
+                <div>
+                    <span class="transaction-time">2024-01-20 14:30:25</span>
+                </div>
+                <div>
+                    <span class="transaction-type">收入</span>
+                    <span class="transaction-id" style="margin-left: 10px;">#88765432</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="transaction-item">
+            <div class="transaction-header">
+                <div class="transaction-title">还款</div>
+                <div class="transaction-amount amount-expense">-1,500.00</div>
+            </div>
+            <div class="transaction-footer">
+                <div>
+                    <span class="transaction-time">2024-01-15 10:22:18</span>
+                </div>
+                <div>
+                    <span class="transaction-type">支出</span>
+                    <span class="transaction-id" style="margin-left: 10px;">#77654321</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="transaction-item">
+            <div class="transaction-header">
+                <div class="transaction-title">提现</div>
+                <div class="transaction-amount amount-expense">-1,000.00</div>
+            </div>
+            <div class="transaction-footer">
+                <div>
+                    <span class="transaction-time">2024-01-10 09:45:33</span>
+                </div>
+                <div>
+                    <span class="transaction-type">支出</span>
+                    <span class="transaction-id" style="margin-left: 10px;">#66543210</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="transaction-item">
+            <div class="transaction-header">
+                <div class="transaction-title">贷款发放</div>
+                <div class="transaction-amount amount-income">+5,000.00</div>
+            </div>
+            <div class="transaction-footer">
+                <div>
+                    <span class="transaction-time">2024-01-05 16:10:47</span>
+                </div>
+                <div>
+                    <span class="transaction-type">收入</span>
+                    <span class="transaction-id" style="margin-left: 10px;">#55432109</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </a>
+        <a href="loan.html" class="nav-item">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>贷款</span>
+        </a>
+        <a href="message.html" class="nav-item">
+            <i class="fas fa-bell"></i>
+            <span>消息</span>
+        </a>
+        <a href="mine.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </a>
+    </div>
+
+    <script>
+        // 日期筛选按钮点击事件
+        document.querySelectorAll('.date-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.date-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+                this.classList.add('active');
+                console.log(`选择了${this.textContent}`);
+            });
+        });
+        
+        // 底部导航栏点击事件
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

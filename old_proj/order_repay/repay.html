@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>还款 - 金融借贷平台</title>
+    <script src="../js/refreshToken.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            padding-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0f4c81, #1a3a5f);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .repay-container {
+            max-width: 95%;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #0f4c81, #1a3a5f);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+        }
+
+        .repay-info {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .info-label {
+            color: #666;
+        }
+
+        .info-value {
+            font-weight: bold;
+        }
+
+        .error-message {
+            background: #ffe6e6;
+            color: #d63031;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .success-message {
+            background: #e6f7e6;
+            color: #27ae60;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            position: absolute;
+            left: 15px;
+            top: 15px;
+        }
+
+        /* 还款计划列表样式 */
+        .schedules-container {
+            margin-top: 20px;
+        }
+
+        .schedules-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .schedules-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 8px;
+        }
+
+        .schedule-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            background: white;
+        }
+
+        .schedule-item:last-child {
+            border-bottom: none;
+        }
+
+        .schedule-item-header {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .schedule-period {
+            flex: 1;
+            text-align: center;
+        }
+
+        .schedule-date {
+            flex: 2;
+            text-align: center;
+        }
+
+        .schedule-principal {
+            flex: 1;
+            text-align: right;
+            color: #e74c3c;
+        }
+
+        .schedule-interest {
+            flex: 1;
+            text-align: right;
+            color: #f39c12;
+        }
+
+        .schedule-total {
+            flex: 1;
+            text-align: right;
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+        }
+
+        /* 移动端滚动条优化 */
+        .schedules-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .schedules-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 2px;
+        }
+
+        .schedules-list::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+<!-- 头部 -->
+<div class="header">
+    <a href="bill_list.html" class="back-button">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <h1>账单还款</h1>
+</div>
+
+<div class="repay-container">
+    <div id="repay-content">
+        <div class="card">
+            <div class="repay-info">
+                <div class="info-row">
+                    <span class="info-label">贷款编号:</span>
+                    <span class="info-value" id="loan-id">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">当前欠款:</span>
+                    <span class="info-value" id="now-amount">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">总计期数:</span>
+                    <span class="info-value" id="all-term">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">剩余期数:</span>
+                    <span class="info-value" id="last-term">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">最后还款日:</span>
+                    <span class="info-value" id="last-date">-</span>
+                </div>
+            </div>
+
+            <!-- 还款计划列表 -->
+            <div class="schedules-container">
+                <div class="schedules-title">还款计划详情</div>
+                <div class="schedules-list" id="schedules-list">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i> 加载中...
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="repay-amount">还款金额</label>
+                <input type="number" id="repay-amount" class="form-input" placeholder="请输入还款金额" min="0">
+                <div style="font-size: 12px; color: #666; margin-top: 5px;">最低还款金额: <span id="min-amount">0</span> 元</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">还款方式</label>
+                <select id="repay-method" class="form-select">
+                    <option value="PAVEMENT_REDUCTION">期限不变，减少每月还款额度</option>
+                    <option value="TERM_REDUCTION">还款额度不变，减少期数</option>
+                </select>
+            </div>
+
+            <button class="btn" id="submit-repay">确认还款</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 从localStorage获取账单信息
+    function getCurrentBill() {
+        try {
+            const billData = localStorage.getItem('currentBill');
+            if (billData) {
+                console.log('获取账单信息成功:', billData);
+                return JSON.parse(billData);
+            }
+        } catch (e) {
+            console.error('获取账单信息失败:', e);
+        }
+        return null;
+    }
+
+    // 获取还款计划
+    async function getRepaymentSchedules(loanId) {
+        const token = getToken();
+        if (!token) {
+            throw new Error('未找到登录信息');
+        }
+
+        try {
+            const myHeaders = new Headers();
+            myHeaders.append("Authorization", token);
+            myHeaders.append("Content-Type", "application/json");
+
+            const raw = JSON.stringify({
+                "id": loanId
+            });
+
+            const requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+
+            const response = await fetch("http://115.190.40.44:45444/loan/getSchedules", requestOptions);
+            const result = await response.json();
+
+            if (result.success) {
+                return result.schedules || [];
+            } else {
+                throw new Error(result.message || '获取还款计划失败');
+            }
+        } catch (error) {
+            console.error('获取还款计划错误:', error);
+            throw error;
+        }
+    }
+
+    // 显示还款计划列表
+    function displaySchedules(schedules) {
+        const schedulesList = document.getElementById('schedules-list');
+
+        if (!schedules || schedules.length === 0) {
+            schedulesList.innerHTML = '<div class="no-data">暂无还款计划数据</div>';
+            return;
+        }
+
+        // 创建表头
+        let html = `
+            <div class="schedule-item schedule-item-header">
+                <div class="schedule-period">期数</div>
+                <div class="schedule-date">还款日期</div>
+                <div class="schedule-principal">本金</div>
+                <div class="schedule-interest">利息</div>
+                <div class="schedule-total">合计</div>
+            </div>
+        `;
+
+        // 添加每一期数据
+        schedules.forEach(schedule => {
+            const principal = parseFloat(schedule.principal || 0).toFixed(2);
+            const interest = parseFloat(schedule.interest || 0).toFixed(2);
+            const total = (parseFloat(principal) + parseFloat(interest)).toFixed(2);
+
+            html += `
+                    <div class="schedule-item">
+                        <div class="schedule-period">第${schedule.period}期</div>
+                        <div class="schedule-date">${schedule['due-date'] || '-'}</div>
+                        <div class="schedule-principal">${principal}</div>
+                        <div class="schedule-interest">${interest}</div>
+                        <div class="schedule-total">${total}</div>
+                    </div>
+                `;
+        });
+
+        schedulesList.innerHTML = html;
+    }
+
+    // 显示账单信息
+    async function displayBillInfo() {
+        //从localStorage获取账单信息
+        const bill = getCurrentBill();
+        if (!bill) {
+            document.getElementById('repay-content').innerHTML = '<div class="error-message">未找到账单信息，请返回账单页面重试</div>';
+            return;
+        }
+        let totalPeriods = parseInt(bill.totalPeriods);
+        let paidPeriods = parseInt(bill.paidPeriods);
+        console.log('总期数:', totalPeriods)
+        console.log('已还期数:', paidPeriods)
+        console.log('账单信息:', bill)
+        document.getElementById('loan-id').textContent = bill.loanId || '-';
+        document.getElementById('now-amount').textContent = (bill.nowamount || '0') + ' 元';
+        document.getElementById('all-term').textContent = bill.totalPeriods || '-';
+        document.getElementById('last-term').textContent = (totalPeriods - paidPeriods);
+        document.getElementById('last-date').textContent = bill.lastDate || '-';
+        document.getElementById('min-amount').textContent = bill.minAmount || '0';
+
+        // 设置还款金额的最小值
+        document.getElementById('repay-amount').min = bill.minAmount || 0;
+
+        // 获取并显示还款计划
+        try {
+            const schedules = await getRepaymentSchedules(bill.loanId);
+            displaySchedules(schedules);
+        } catch (error) {
+            document.getElementById('schedules-list').innerHTML =
+                `<div class="error-message">加载还款计划失败: ${error.message}</div>`;
+        }
+    }
+
+    // 执行还款操作
+    async function submitRepayment() {
+        const bill = getCurrentBill();
+        if (!bill) {
+            alert('未找到账单信息');
+            return;
+        }
+
+        const repayAmount = document.getElementById('repay-amount').value;
+        const repayMethod = document.getElementById('repay-method').value;
+
+        // 验证输入
+        if (!repayAmount || parseFloat(repayAmount) <= 0) {
+            alert('请输入有效的还款金额');
+            return;
+        }
+
+        if (parseFloat(repayAmount) < parseFloat(bill.minAmount || 0)) {
+            alert('还款金额不能低于最低还款金额');
+            return;
+        }
+
+        const token = getToken();
+        if (!token) {
+            alert('未找到登录信息，请重新登录');
+            return;
+        }
+        //发送还款请求
+        try {
+            const myHeaders = new Headers();
+            myHeaders.append("Authorization", token);
+            myHeaders.append("Content-Type", "application/json"); // 重要：声明内容类型
+
+// 构造请求体
+            const requestBody = `{
+              "loanId": ${bill.loanId},
+              "amount": ${repayAmount},
+              "path": "${repayMethod}"
+            }`;
+            // let body = JSON.stringify(requestBody);
+            // console.log('请求体:', body);
+            const requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: requestBody,
+                redirect: 'follow'
+            };
+
+// URL 不再包含查询参数
+            const url = "http://115.190.40.44:45444/loan/repay";
+            const response = await fetch(url, requestOptions);
+            const result = await response.json();
+            if (result.success) {
+                alert('还款成功！');
+                // 返回账单页面
+                window.location.href = 'bill_list.html';
+            } else {
+                alert('还款失败: ' + (result.message || '未知错误'));
+            }
+        } catch (error) {
+            console.error('还款错误:', error);
+            alert('网络错误，请稍后重试');
+        }
+    }
+
+    // 从localStorage获取token
+    function getToken() {
+        try {
+            const authData = localStorage.getItem('authData');
+            if (authData) {
+                const parsed = JSON.parse(authData);
+                return parsed.accessToken;
+            }
+        } catch (e) {
+            console.error('获取token失败:', e);
+        }
+        return null;
+    }
+
+    // 页面加载完成后显示账单信息
+    document.addEventListener('DOMContentLoaded', function() {
+        displayBillInfo();
+
+        // 还款按钮事件
+        document.getElementById('submit-repay').addEventListener('click', submitRepayment);
+    });
+</script>
+</body>
+</html>
