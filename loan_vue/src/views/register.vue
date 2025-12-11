@@ -143,12 +143,75 @@ export default {
         return
       }
       
-      // 模拟注册请求
-      console.log('注册信息:', this.form)
+      // 验证是否已发送验证码
+      if (!this.form.emailCode) {
+        alert('请输入邮箱验证码')
+        return
+      }
       
-      // 模拟注册成功
-      alert('注册成功！请登录')
-      this.$router.push('/login')
+      // 获取保存的邮箱验证token
+      const emailVerifyToken = sessionStorage.getItem('emailVerifyToken');
+      if (!emailVerifyToken) {
+        alert('请先发送邮箱验证码')
+        return
+      }
+      
+      console.log('开始注册流程...')
+      
+      // 创建请求头
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      
+      // 准备注册数据
+      var raw = JSON.stringify({
+        "username": this.form.nickname,
+        "phone": this.form.phone,
+        "email": this.form.email,
+        "password": this.form.password,
+        "verifyCode": this.form.emailCode,
+        "emailToken": emailVerifyToken
+      });
+      
+      console.log('注册请求数据:', raw)
+      
+      // 配置请求选项
+      var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+      };
+      
+      // 发送注册请求
+      fetch("http://115.190.40.44:45444/user/register", requestOptions)
+        .then(response => response.text())
+        .then(result => {
+          console.log('注册响应:', result);
+          
+          // 解析响应数据
+          try {
+            const responseData = JSON.parse(result);
+            
+            if (responseData.success) {
+              console.log('注册成功');
+              
+              // 清除sessionStorage中的邮箱验证token
+              sessionStorage.removeItem('emailVerifyToken');
+              
+              alert('注册成功！请登录')
+              this.$router.push('/login')
+            } else {
+              alert('注册失败: ' + (responseData.message || '未知错误'));
+            }
+          } catch (e) {
+            console.error('解析响应失败:', e);
+            alert('注册失败: 响应格式错误');
+          }
+        })
+        .catch(error => {
+          console.log('注册错误:', error);
+          alert('注册失败: 网络错误或服务器不可用');
+        });
     },
     
     sendEmailCode() {
@@ -162,19 +225,62 @@ export default {
         return
       }
       
-      // 模拟发送验证码
-      console.log('发送邮箱验证码到:', this.form.email)
+      console.log('开始发送验证码到:', this.form.email)
       
-      // 开始倒计时
-      this.countdown = 60
-      const timer = setInterval(() => {
-        this.countdown--
-        if (this.countdown <= 0) {
-          clearInterval(timer)
-        }
-      }, 1000)
+      // 创建请求头
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
       
-      alert('验证码已发送到您的邮箱，请查收')
+      // 准备请求数据
+      var raw = JSON.stringify({
+        "email": this.form.email
+      });
+      
+      // 配置请求选项
+      var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+      };
+      
+      // 发送验证码请求
+      fetch("http://115.190.40.44:45444/user/registerVerifyCode", requestOptions)
+        .then(response => response.text())
+        .then(result => {
+          console.log('验证码发送响应:', result);
+          
+          // 解析响应数据
+          try {
+            const responseData = JSON.parse(result);
+            
+            if (responseData.success) {
+              // 保存token到sessionStorage
+              sessionStorage.setItem('emailVerifyToken', responseData.token);
+              console.log('验证码发送成功，token已保存:', responseData.token);
+              
+              // 开始倒计时
+              this.countdown = 60
+              const timer = setInterval(() => {
+                this.countdown--
+                if (this.countdown <= 0) {
+                  clearInterval(timer)
+                }
+              }, 1000)
+              
+              alert('验证码已发送到您的邮箱，请查收')
+            } else {
+              alert('验证码发送失败: ' + (responseData.message || '未知错误'));
+            }
+          } catch (e) {
+            console.error('解析响应失败:', e);
+            alert('验证码发送失败: 响应格式错误');
+          }
+        })
+        .catch(error => {
+          console.log('验证码发送错误:', error);
+          alert('验证码发送失败: 网络错误或服务器不可用');
+        });
     }
   }
 }
