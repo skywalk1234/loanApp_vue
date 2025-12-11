@@ -164,9 +164,75 @@ export default {
     }
   },
   created() {
+    this.refreshAccessToken()
     this.loadLoanProducts()
   },
   methods: {
+    // 刷新accessToken
+    async refreshAccessToken() {
+      try {
+        // 从localStorage获取refreshToken
+        const refreshToken = localStorage.getItem('refreshToken')
+        if (!refreshToken) {
+          console.log('没有找到refreshToken，跳过刷新')
+          return
+        }
+        
+        console.log('开始刷新accessToken...')
+        
+        // 创建请求头
+        var myHeaders = new Headers()
+        myHeaders.append("Authorization", "")
+        myHeaders.append("Content-Type", "application/json")
+        
+        // 准备请求数据
+        var raw = JSON.stringify({
+          "refresh_token": refreshToken
+        })
+        
+        // 配置请求选项
+        var requestOptions = {
+          method: 'POST',
+          headers: myHeaders,
+          body: raw,
+          redirect: 'follow'
+        }
+        
+        // 发送刷新token请求
+        const response = await fetch("http://115.190.40.44:45444/refresh", requestOptions)
+        const result = await response.text()
+        
+        console.log('刷新token响应:', result)
+        
+        // 解析响应数据
+        const responseData = JSON.parse(result)
+        
+        if (responseData.success) {
+          console.log('token刷新成功，更新localStorage...')
+          
+          // 更新localStorage中的token
+          localStorage.setItem('accessToken', responseData.accessToken)
+          localStorage.setItem('refreshToken', responseData.refreshToken)
+          
+          console.log('token更新完成')
+        } else {
+          console.error('刷新token失败:', responseData.message || '未知错误')
+          // 如果刷新失败，可能需要重新登录
+          if (responseData.errCode === 401) {
+            console.log('刷新token无效，需要重新登录')
+            // 可以选择跳转到登录页面
+            // this.$router.push('/login')
+          }
+        }
+      } catch (error) {
+        console.error('刷新token错误:', error)
+        // 网络错误或服务器错误
+        if (error.message.includes('Failed to fetch')) {
+          console.log('网络错误，无法连接到服务器')
+        }
+      }
+    },
+    
     async loadLoanProducts() {
       try {
         // 预留接口：获取贷款产品列表
