@@ -16,36 +16,19 @@
         <div class="product-header">
           <div class="product-info">
             <h3 class="product-name">{{ product.name }}</h3>
-            <p class="product-desc">{{ product.description }}</p>
-          </div>
-          <div class="product-amount">
-            <span class="amount-range">{{ product.amountRange }}</span>
+            <p class="product-desc">年化利率: {{ (parseFloat(product.interest) * 100).toFixed(2) }}%</p>
           </div>
         </div>
         
         <div class="product-details">
           <div class="detail-item">
-            <span class="detail-label">日利率</span>
-            <span class="detail-value">{{ product.dailyRate }}</span>
+            <span class="detail-label">借款额度</span>
+            <span class="detail-value">{{ product.min_principle }} - {{ product.max_principle }}元</span>
           </div>
           <div class="detail-item">
-            <span class="detail-label">期限</span>
-            <span class="detail-value">{{ product.term }}</span>
+            <span class="detail-label">借款期限</span>
+            <span class="detail-value">{{ product.min_periods }} - {{ product.max_periods }}{{ product.period_type === 'DAY' ? '天' : product.period_type === 'MONTH' ? '个月' : '年' }}</span>
           </div>
-          <div class="detail-item">
-            <span class="detail-label">放款时间</span>
-            <span class="detail-value">{{ product.loanTime }}</span>
-          </div>
-        </div>
-        
-        <div class="product-features">
-          <span 
-            class="feature-tag" 
-            v-for="feature in product.features" 
-            :key="feature"
-          >
-            {{ feature }}
-          </span>
         </div>
         
         <button class="btn btn-primary btn-block apply-btn">
@@ -64,47 +47,110 @@
         
         <form @submit.prevent="submitApplication">
           <div class="form-group">
+            <label class="form-label">产品名称</label>
+            <input 
+              :value="selectedProduct.name"
+              type="text" 
+              class="form-input"
+              disabled
+            >
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">年化利率</label>
+            <input 
+              :value="(parseFloat(selectedProduct.interest) * 100).toFixed(2) + '%'"
+              type="text" 
+              class="form-input"
+              disabled
+            >
+          </div>
+          
+          <div class="form-group">
             <label class="form-label">借款金额</label>
             <input 
               v-model="application.amount"
               type="number" 
               class="form-input"
-              :placeholder="`请输入${selectedProduct.amountRange}之间的金额`"
+              :placeholder="`请输入${selectedProduct.min_principle}-${selectedProduct.max_principle}元之间的金额`"
+              :min="selectedProduct.min_principle"
+              :max="selectedProduct.max_principle"
               required
             >
           </div>
           
           <div class="form-group">
-            <label class="form-label">借款期限</label>
+            <label class="form-label">借款期数</label>
             <select v-model="application.term" class="form-input" required>
-              <option value="">请选择借款期限</option>
-              <option value="7">7天</option>
-              <option value="14">14天</option>
-              <option value="30">30天</option>
-              <option value="90">90天</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">借款用途</label>
-            <select v-model="application.purpose" class="form-input" required>
-              <option value="">请选择借款用途</option>
-              <option value="consumption">日常消费</option>
-              <option value="education">教育培训</option>
-              <option value="medical">医疗健康</option>
-              <option value="business">创业经营</option>
-              <option value="other">其他</option>
+              <option value="">请选择借款期数</option>
+              <option 
+                v-for="period in getPeriodOptions()" 
+                :key="period"
+                :value="period"
+              >
+                {{ period }}{{ getPeriodTypeText() }}
+              </option>
             </select>
           </div>
           
           <div class="form-group">
             <label class="form-label">还款方式</label>
-            <select v-model="application.repaymentMethod" class="form-input" required>
-              <option value="">请选择还款方式</option>
-              <option value="equal">等额本息</option>
-              <option value="interest">先息后本</option>
-              <option value="principal">等额本金</option>
-            </select>
+            <input 
+              :value="getRepayTypeText(selectedProduct.repay_type)"
+              type="text" 
+              class="form-input"
+              disabled
+            >
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">宽限期</label>
+            <input 
+              :value="selectedProduct.grace_term + '期'"
+              type="text" 
+              class="form-input"
+              disabled
+            >
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">宽限天数</label>
+            <input 
+              :value="selectedProduct.grace_day + '天'"
+              type="text" 
+              class="form-input"
+              disabled
+            >
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">违约金率</label>
+            <input 
+              :value="(parseFloat(selectedProduct.penalty) * 100).toFixed(2) + '%'"
+              type="text" 
+              class="form-input"
+              disabled
+            >
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">违约利率</label>
+            <input 
+              :value="(parseFloat(selectedProduct.default_rate) * 100).toFixed(2) + '%'"
+              type="text" 
+              class="form-input"
+              disabled
+            >
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">产品说明</label>
+            <textarea 
+              :value="selectedProduct.info"
+              class="form-input"
+              rows="3"
+              disabled
+            ></textarea>
           </div>
           
           <div class="loan-preview">
@@ -114,16 +160,20 @@
               <span>¥{{ application.amount || 0 }}</span>
             </div>
             <div class="preview-item">
-              <span>日利率：</span>
-              <span>{{ selectedProduct.dailyRate }}</span>
+              <span>年化利率：</span>
+              <span>{{ (parseFloat(selectedProduct.interest) * 100).toFixed(2) }}%</span>
+            </div>
+            <div class="preview-item">
+              <span>借款期数：</span>
+              <span>{{ application.term || 0 }}{{ getPeriodTypeText() }}</span>
             </div>
             <div class="preview-item">
               <span>预计利息：</span>
-              <span>¥{{ calculateInterest }}</span>
+              <span>¥{{ calculateInterest.toFixed(2) }}</span>
             </div>
             <div class="preview-item">
               <span>到期应还：</span>
-              <span>¥{{ calculateTotal }}</span>
+              <span>¥{{ calculateTotal.toFixed(2) }}</span>
             </div>
           </div>
           
@@ -154,10 +204,10 @@ export default {
   },
   computed: {
     calculateInterest() {
-      if (!this.application.amount || !this.selectedProduct.dailyRate) return 0
-      const rate = parseFloat(this.selectedProduct.dailyRate.replace('%', '')) / 100
-      const days = parseInt(this.application.term) || 0
-      return Math.round(this.application.amount * rate * days * 100) / 100
+      if (!this.application.amount || !this.selectedProduct.interest) return 0
+      const rate = parseFloat(this.selectedProduct.interest)
+      const periods = parseInt(this.application.term) || 0
+      return Math.round(this.application.amount * rate * periods * 100) / 100
     },
     calculateTotal() {
       return parseFloat(this.application.amount || 0) + this.calculateInterest
@@ -235,44 +285,62 @@ export default {
     
     async loadLoanProducts() {
       try {
-        // 预留接口：获取贷款产品列表
         console.log('调用API获取贷款产品列表')
         
-        // 模拟数据
-        this.loanProducts = [
-          {
-            id: 1,
-            name: '信用贷',
-            description: '纯信用贷款，无需抵押',
-            amountRange: '1000-50000元',
-            dailyRate: '0.02%',
-            term: '7-90天',
-            loanTime: '30分钟',
-            features: ['极速放款', '随借随还', '信用借款']
-          },
-          {
-            id: 2,
-            name: '消费贷',
-            description: '专为日常消费设计',
-            amountRange: '500-20000元',
-            dailyRate: '0.025%',
-            term: '7-30天',
-            loanTime: '1小时',
-            features: ['额度灵活', '分期还款', '低利率']
-          },
-          {
-            id: 3,
-            name: '经营贷',
-            description: '小微企业经营周转',
-            amountRange: '10000-100000元',
-            dailyRate: '0.018%',
-            term: '30-90天',
-            loanTime: '2小时',
-            features: ['额度较高', '期限较长', '企业专享']
-          }
-        ]
+        // 从localStorage获取accessToken
+        const accessToken = localStorage.getItem('accessToken')
+        if (!accessToken) {
+          console.error('没有找到accessToken')
+          return
+        }
+        
+        // 创建请求头
+        var myHeaders = new Headers()
+        myHeaders.append("Authorization", accessToken)
+        
+        var requestOptions = {
+          method: 'GET',
+          headers: myHeaders,
+          redirect: 'follow'
+        }
+        
+        // 发送获取产品列表请求
+        const response = await fetch("http://115.190.40.44:45444/loan/option", requestOptions)
+        const result = await response.text()
+        
+        console.log('获取产品列表响应:', result)
+        
+        // 解析响应数据
+        const responseData = JSON.parse(result)
+        
+        if (responseData.success && responseData.products) {
+          console.log('获取产品列表成功，共', responseData.products.length, '个产品')
+          
+          // 将后端数据转换为前端需要的格式
+          this.loanProducts = responseData.products.map(product => ({
+            id: product.id,
+            name: product.name,
+            interest: product.interest,
+            min_principle: product.min_principle,
+            max_principle: product.max_principle,
+            min_periods: product.min_periods,
+            max_periods: product.max_periods,
+            period_type: product.period_type,
+            repay_type: product.repay_type,
+            grace_term: product.grace_term,
+            grace_day: product.grace_day,
+            penalty: product.penalty,
+            default_rate: product.default_rate,
+            info: product.info
+          }))
+        } else {
+          console.error('获取产品列表失败:', responseData.message || '未知错误')
+        }
       } catch (error) {
         console.error('获取贷款产品失败:', error)
+        if (error.message.includes('Failed to fetch')) {
+          console.log('网络错误，无法连接到服务器')
+        }
       }
     },
     
@@ -287,10 +355,52 @@ export default {
       }
     },
     
+    // 获取期数选项
+    getPeriodOptions() {
+      if (!this.selectedProduct || !this.selectedProduct.min_periods || !this.selectedProduct.max_periods) {
+        return []
+      }
+      const options = []
+      for (let i = this.selectedProduct.min_periods; i <= this.selectedProduct.max_periods; i++) {
+        options.push(i)
+      }
+      return options
+    },
+    
+    // 获取期数单位文本
+    getPeriodTypeText() {
+      if (!this.selectedProduct || !this.selectedProduct.period_type) return ''
+      switch (this.selectedProduct.period_type) {
+        case 'DAY': return '天'
+        case 'MONTH': return '个月'
+        case 'YEAR': return '年'
+        default: return '期'
+      }
+    },
+    
+    // 获取还款方式文本
+    getRepayTypeText(repayType) {
+      switch (repayType) {
+        case 'EQUAL_PRINCIPAL': return '等额本金'
+        case 'EQUAL_INSTALLMENT': return '等额本息'
+        case 'INTEREST_ONLY': return '先息后本'
+        default: return repayType
+      }
+    },
+    
     async submitApplication() {
-      if (!this.application.amount || !this.application.term || 
-          !this.application.purpose || !this.application.repaymentMethod) {
-        alert('请填写完整的申请信息')
+      if (!this.application.amount || !this.application.term) {
+        alert('请填写借款金额和期数')
+        return
+      }
+      
+      // 验证金额范围
+      const amount = parseFloat(this.application.amount)
+      const minAmount = parseFloat(this.selectedProduct.min_principle)
+      const maxAmount = parseFloat(this.selectedProduct.max_principle)
+      
+      if (amount < minAmount || amount > maxAmount) {
+        alert(`借款金额必须在${minAmount}-${maxAmount}元之间`)
         return
       }
       
@@ -298,7 +408,10 @@ export default {
         // 预留接口：提交贷款申请
         console.log('提交贷款申请:', {
           productId: this.selectedProduct.id,
-          ...this.application
+          amount: this.application.amount,
+          term: this.application.term,
+          interest: this.selectedProduct.interest,
+          repayType: this.selectedProduct.repay_type
         })
         
         alert('申请提交成功，请等待审核')
