@@ -81,16 +81,16 @@
           
           <div class="form-group">
             <label class="form-label">借款期数</label>
-            <select v-model="application.term" class="form-input" required>
-              <option value="">请选择借款期数</option>
-              <option 
-                v-for="period in getPeriodOptions()" 
-                :key="period"
-                :value="period"
-              >
-                {{ period }}{{ getPeriodTypeText() }}
-              </option>
-            </select>
+            <div class="input-hint">一期为{{ getPeriodTypeText() }}</div>
+            <input 
+              v-model.number="application.term"
+              type="number" 
+              class="form-input"
+              :placeholder="`请输入${selectedProduct.min_periods}-${selectedProduct.max_periods}之间的整数`"
+              :min="selectedProduct.min_periods"
+              :max="selectedProduct.max_periods"
+              required
+            >
           </div>
           
           <div class="form-group">
@@ -308,10 +308,15 @@ export default {
         const response = await fetch("http://115.190.40.44:45444/loan/option", requestOptions)
         const result = await response.text()
         
-        console.log('获取产品列表响应:', result)
-        
+        // console.log('获取产品列表响应:', result)
+        const jsonString = result;
+        const fixedJsonString = jsonString.replace(
+          /"id":\s*(\d{15,})/g,  // 匹配15位以上的数字id
+          '"id":"$1"'  // 添加双引号使其变为字符串
+        )
+        console.log('获取产品列表响应:', fixedJsonString)
         // 解析响应数据
-        const responseData = JSON.parse(result)
+        const responseData = JSON.parse(fixedJsonString)
         
         if (responseData.success && responseData.products) {
           console.log('获取产品列表成功，共', responseData.products.length, '个产品')
@@ -333,6 +338,8 @@ export default {
             default_rate: product.default_rate,
             info: product.info
           }))
+
+          
         } else {
           console.error('获取产品列表失败:', responseData.message || '未知错误')
         }
@@ -404,24 +411,85 @@ export default {
         return
       }
       
+      // 验证期数范围
+      const term = parseInt(this.application.term)
+      const minTerm = parseInt(this.selectedProduct.min_periods)
+      const maxTerm = parseInt(this.selectedProduct.max_periods)
+      
+      if (term < minTerm || term > maxTerm) {
+        alert(`借款期数必须在${minTerm}-${maxTerm}之间`)
+        return
+      }
+      
       try {
-        // 预留接口：提交贷款申请
+        // 获取accessToken
+        const accessToken = localStorage.getItem('accessToken')
+        if (!accessToken) {
+          alert('请先登录')
+          return
+        }
+        
         console.log('提交贷款申请:', {
           productId: this.selectedProduct.id,
           amount: this.application.amount,
-          term: this.application.term,
-          interest: this.selectedProduct.interest,
-          repayType: this.selectedProduct.repay_type
+          term: this.application.term
         })
         
-        alert('申请提交成功，请等待审核')
-        this.showApplyModal = false
+        // 创建请求头
+        var myHeaders = new Headers()
+        myHeaders.append("Authorization", accessToken)
+        myHeaders.append("Content-Type", "application/json")
+
+        // console.log("loan_id:",this.selectedProduct.id)
+        //手动构造json格式
+        var raw = `{"productId":${this.selectedProduct.id},` +
+          `"amount":${this.application.amount},` +
+          `"termCount":${this.application.term}}`;
+        console.log("raw:",raw)
+
+        // 准备请求数据
+        // var raw = JSON.stringify({
+        //   "productId": this.selectedProduct.id,
+        //   "amount": parseFloat(this.application.amount),
+        //   "termCount": parseInt(this.application.term)
+        // })
         
-        // 跳转到申请记录页面
-        this.$router.push('/loan-records')
+        // 配置请求选项
+        var requestOptions = {
+          method: 'POST',
+          headers: myHeaders,
+          body: raw,
+          redirect: 'follow'
+        }
+        
+        // 发送申请请求
+        const response = await fetch("http://115.190.40.44:45444/loan/loan", requestOptions)
+        const result = await response.text()
+        
+        console.log('申请响应:', result)
+        
+        // 解析响应数据
+        const responseData = JSON.parse(result)
+        
+        if (responseData.success) {
+          // 申请成功，显示成功弹窗
+          alert('申请成功，等待管理员审核，可到借款记录中查看')
+          this.showApplyModal = false
+          
+          // 跳转到申请记录页面
+          this.$router.push('/loan-records')
+        } else {
+          // 申请失败
+          console.error('申请失败:', responseData.message || '未知错误')
+          alert('申请失败: ' + (responseData.message || '请重试'))
+        }
       } catch (error) {
         console.error('提交申请失败:', error)
-        alert('申请提交失败，请重试')
+        if (error.message.includes('Failed to fetch')) {
+          alert('网络错误，无法连接到服务器')
+        } else {
+          alert('申请提交失败，请重试')
+        }
       }
     }
   }
@@ -599,6 +667,25 @@ export default {
 
 .modal-content form {
   padding: 20px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #212121;
+}
+
+.input-hint {
+  font-size: 12px;
+  color: #757575;
+  margin-bottom: 6px;
+  margin-top: -4px;
 }
 
 .loan-preview {
