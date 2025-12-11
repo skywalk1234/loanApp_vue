@@ -6,35 +6,18 @@
     </div>
     
     <div class="login-form">
-      <div class="login-tabs">
-        <button 
-          class="tab-btn"
-          :class="{ active: loginType === 'password' }"
-          @click="loginType = 'password'"
-        >
-          密码登录
-        </button>
-        <button 
-          class="tab-btn"
-          :class="{ active: loginType === 'email' }"
-          @click="loginType = 'email'"
-        >
-          邮箱验证码登录
-        </button>
-      </div>
-      
       <form @submit.prevent="handleLogin">
         <div class="form-group">
           <input 
             v-model="form.account"
             type="text" 
             class="form-input"
-            :placeholder="loginType === 'password' ? '请输入手机号/邮箱' : '请输入邮箱'"
+            placeholder="请输入用户名"
             required
           >
         </div>
         
-        <div class="form-group" v-if="loginType === 'password'">
+        <div class="form-group">
           <input 
             v-model="form.password"
             type="password" 
@@ -42,26 +25,6 @@
             placeholder="请输入密码"
             required
           >
-        </div>
-        
-        <div class="form-group" v-if="loginType === 'email'">
-          <div class="verify-group">
-            <input 
-              v-model="form.verifyCode"
-              type="text" 
-              class="form-input verify-input"
-              placeholder="请输入验证码"
-              required
-            >
-            <button 
-              type="button" 
-              class="verify-btn"
-              @click="sendVerifyCode"
-              :disabled="countdown > 0"
-            >
-              {{ countdown > 0 ? `${countdown}s` : '发送验证码' }}
-            </button>
-          </div>
         </div>
         
         <button type="submit" class="btn btn-primary btn-block">
@@ -83,49 +46,87 @@ export default {
   name: 'Login',
   data() {
     return {
-      loginType: 'password',
       form: {
         account: '',
-        password: '',
-        verifyCode: ''
-      },
-      countdown: 0
+        password: ''
+      }
     }
   },
   methods: {
     handleLogin() {
-      // 模拟登录请求
-      console.log('登录信息:', this.form)
+      console.log('开始登录流程...');
+      console.log('用户名:', this.form.account);
       
-      // 模拟登录成功
-      localStorage.setItem('token', 'mock_token')
-      localStorage.setItem('user', JSON.stringify({
-        name: '用户' + Math.floor(Math.random() * 1000),
-        phone: this.form.account
-      }))
+      // 创建请求头
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
       
-      this.$router.push('/home')
-    },
-    
-    sendVerifyCode() {
-      if (!this.form.account) {
-        alert('请输入邮箱地址')
-        return
-      }
+      // 准备请求数据
+      var raw = JSON.stringify({
+        "username": this.form.account,
+        "pwd": this.form.password,
+        "force": true
+      });
       
-      // 模拟发送验证码
-      console.log('发送验证码到:', this.form.account)
+      console.log('请求数据:', raw);
       
-      // 开始倒计时
-      this.countdown = 60
-      const timer = setInterval(() => {
-        this.countdown--
-        if (this.countdown <= 0) {
-          clearInterval(timer)
-        }
-      }, 1000)
+      // 配置请求选项
+      var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+      };
       
-      alert('验证码已发送，请查收邮箱')
+      // 发送登录请求
+      fetch("http://115.190.40.44:45444/user/login", requestOptions)
+        .then(response => {
+          console.log('响应状态:', response.status);
+          return response.text();
+        })
+        .then(result => {
+          console.log('登录响应:', result);
+          
+          // 解析响应数据
+          try {
+            const responseData = JSON.parse(result);
+            console.log('解析后的响应数据:', responseData);
+            
+            if (responseData.success) {
+              console.log('登录成功，开始保存token...');
+              // 保存token到localStorage
+              localStorage.setItem('accessToken', responseData.accessToken);
+              localStorage.setItem('refreshToken', responseData.refreshToken);
+              
+              // 保存用户信息
+              localStorage.setItem('user', JSON.stringify({
+                name: this.form.account,
+                phone: this.form.account
+              }));
+              
+              console.log('token保存完成，准备跳转...');
+              
+              // 跳转到首页
+              this.$router.push('/home').then(() => {
+                console.log('路由跳转成功');
+              }).catch(err => {
+                console.log('路由跳转错误:', err);
+                // 如果跳转失败，强制刷新页面
+                console.log('使用强制跳转');
+                window.location.href = '/home';
+              });
+            } else {
+              alert('登录失败: ' + (responseData.message || '未知错误'));
+            }
+          } catch (e) {
+            console.error('解析响应失败:', e);
+            alert('登录失败: 响应格式错误');
+          }
+        })
+        .catch(error => {
+          console.log('登录错误:', error);
+          alert('登录失败: 网络错误或服务器不可用');
+        });
     }
   }
 }
@@ -165,63 +166,16 @@ export default {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
-.login-tabs {
-  display: flex;
-  margin-bottom: 24px;
-  border-bottom: 1px solid #e0e0e0;
-}
 
-.tab-btn {
-  flex: 1;
-  background: none;
-  border: none;
-  padding: 12px;
-  font-size: 16px;
-  color: #757575;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.3s ease;
-}
 
-.tab-btn.active {
-  color: #1e88e5;
-  border-bottom-color: #1e88e5;
-}
-
-.verify-group {
-  display: flex;
-  gap: 12px;
-}
-
-.verify-input {
-  flex: 1;
-}
-
-.verify-btn {
-  background: #1e88e5;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 16px;
-  font-size: 14px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background-color 0.3s ease;
-}
-
-.verify-btn:hover {
-  background: #1976d2;
-}
-
-.verify-btn:disabled {
-  background: #bdbdbd;
-  cursor: not-allowed;
-}
-
-.form-footer {
-  text-align: center;
-  margin-top: 24px;
-}
+.form-group {
+    margin-bottom: 16px;
+  }
+  
+  .form-footer {
+    text-align: center;
+    margin-top: 24px;
+  }
 
 .link-text {
   color: #1e88e5;

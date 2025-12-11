@@ -81,7 +81,7 @@ const router = createRouter({
 
 // 路由守卫
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = localStorage.getItem('token')
+  const isAuthenticated = localStorage.getItem('accessToken')
   
   if (to.path === '/login' || to.path === '/register') {
     next()
