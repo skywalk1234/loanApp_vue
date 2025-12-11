@@ -51,17 +51,22 @@ export default {
   border-top: 1px solid #e0e0e0;
   display: flex;
   justify-content: space-around;
-  padding: 8px 0;
+  padding: 6px 0;
   z-index: 1000;
+  height: 56px;
 }
 
 .nav-item {
   flex: 1;
   text-align: center;
-  padding: 8px;
+  padding: 4px;
   color: #757575;
   text-decoration: none;
   transition: color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .nav-item.active {
@@ -70,12 +75,12 @@ export default {
 
 .nav-icon {
   display: block;
-  font-size: 24px;
-  margin-bottom: 4px;
+  font-size: 20px;
+  margin-bottom: 2px;
 }
 
 .nav-item span {
-  font-size: 12px;
+  font-size: 11px;
   display: block;
 }
 </style>
