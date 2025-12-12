@@ -16,23 +16,15 @@
             <span class="stat-icon">⭐</span>
             <span class="stat-label">信用评分</span>
           </div>
-          <div class="stat-value">{{ userInfo.creditScore }}</div>
+          <div class="stat-value large">{{ userInfo.creditScore }}</div>
           <div class="stat-desc">信用{{ userInfo.creditLevel }}</div>
-        </div>
-        <div class="stat-card stat-loan">
-          <div class="stat-header">
-            <span class="stat-icon">📊</span>
-            <span class="stat-label">借款次数</span>
-          </div>
-          <div class="stat-value">{{ userInfo.loanCount }}</div>
-          <div class="stat-desc">次</div>
         </div>
         <div class="stat-card stat-total">
           <div class="stat-header">
             <span class="stat-icon">💰</span>
             <span class="stat-label">累计借款</span>
           </div>
-          <div class="stat-value">¥{{ userInfo.totalLoan.toLocaleString() }}</div>
+          <div class="stat-value large">¥{{ userInfo.totalLoan.toLocaleString() }}</div>
           <div class="stat-desc">总额</div>
         </div>
       </div>
@@ -265,14 +257,14 @@ export default {
 
 .user-stats {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   margin-top: 20px;
 }
 
 .stat-card {
   flex: 1;
   border-radius: 16px;
-  padding: 16px;
+  padding: 12px;
   text-align: center;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(0, 0, 0, 0.05);
@@ -297,23 +289,28 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  margin-bottom: 8px;
+  gap: 4px;
+  margin-bottom: 6px;
 }
 
 .stat-icon {
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .stat-label {
-  font-size: 12px;
+  font-size: 11px;
   opacity: 0.8;
 }
 
 .stat-value {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
   margin-bottom: 2px;
+}
+
+.stat-value.large {
+  font-size: 24px;
+  font-weight: 700;
 }
 
 .stat-desc {
@@ -421,11 +418,15 @@ export default {
   }
   
   .stat-card {
-    padding: 14px;
+    padding: 10px;
   }
   
   .stat-value {
-    font-size: 18px;
+    font-size: 16px;
+  }
+  
+  .stat-value.large {
+    font-size: 20px;
   }
   
   .menu-item {
