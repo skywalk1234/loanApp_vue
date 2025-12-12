@@ -116,8 +116,12 @@
 </template>
 
 <script>
+import { tokenService } from '@/services/api'
+import tokenRefreshMixin from '@/mixins/tokenRefresh'
+
 export default {
   name: 'Profile',
+  mixins: [tokenRefreshMixin],
   data() {
     return {
       userInfo: {

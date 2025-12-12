@@ -101,8 +101,12 @@
 </template>
 
 <script>
+import { tokenService } from '@/services/api'
+import tokenRefreshMixin from '@/mixins/tokenRefresh'
+
 export default {
   name: 'Message',
+  mixins: [tokenRefreshMixin],
   data() {
     return {
       activeTab: 'all',

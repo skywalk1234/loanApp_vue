@@ -1,4 +1,5 @@
 import axios from 'axios'
+import tokenService from './token'
 
 // 创建axios实例
 const api = axios.create({
@@ -8,6 +9,33 @@ const api = axios.create({
     'Content-Type': 'application/json'
   }
 })
+
+// 添加一个通用的请求方法，自动处理token刷新
+const requestWithTokenRefresh = async (requestFunc) => {
+  try {
+    // 先尝试正常请求
+    return await requestFunc()
+  } catch (error) {
+    // 如果返回401错误，尝试刷新token
+    if (error.response && error.response.status === 401) {
+      console.log('Token过期，尝试刷新...')
+      const refreshSuccess = await tokenService.refreshAccessToken()
+      
+      if (refreshSuccess) {
+        console.log('Token刷新成功，重试原请求...')
+        // 刷新成功后重试原请求
+        return await requestFunc()
+      } else {
+        console.log('Token刷新失败，需要重新登录')
+        // 刷新失败，清除token并跳转到登录页
+        tokenService.clearTokens()
+        window.location.href = '/login'
+        throw error
+      }
+    }
+    throw error
+  }
+}
 
 // 请求拦截器
 api.interceptors.request.use(
@@ -69,6 +97,11 @@ const apiService = {
     // 退出登录
     logout() {
       return api.post('/auth/logout')
+    },
+    
+    // 刷新accessToken（使用原生fetch以保持与现有代码的一致性）
+    async refreshAccessToken() {
+      return await tokenService.refreshAccessToken()
     }
   },
   
@@ -207,4 +240,4 @@ export default {
   }
 }
 
-export { apiService }
+export { apiService, tokenService, requestWithTokenRefresh }
