@@ -7,22 +7,33 @@
         <div class="user-info">
           <h3 class="user-name">{{ userInfo.name }}</h3>
           <p class="user-phone">{{ userInfo.phone }}</p>
-          <p class="user-level">信用等级：{{ userInfo.creditLevel }}</p>
         </div>
       </div>
       
       <div class="user-stats">
-        <div class="stat-item">
-          <span class="stat-value">{{ userInfo.loanCount }}</span>
-          <span class="stat-label">借款次数</span>
+        <div class="stat-card stat-score">
+          <div class="stat-header">
+            <span class="stat-icon">⭐</span>
+            <span class="stat-label">信用评分</span>
+          </div>
+          <div class="stat-value">{{ userInfo.creditScore }}</div>
+          <div class="stat-desc">信用{{ userInfo.creditLevel }}</div>
         </div>
-        <div class="stat-item">
-          <span class="stat-value">¥{{ userInfo.totalLoan }}</span>
-          <span class="stat-label">累计借款</span>
+        <div class="stat-card stat-loan">
+          <div class="stat-header">
+            <span class="stat-icon">📊</span>
+            <span class="stat-label">借款次数</span>
+          </div>
+          <div class="stat-value">{{ userInfo.loanCount }}</div>
+          <div class="stat-desc">次</div>
         </div>
-        <div class="stat-item">
-          <span class="stat-value">{{ userInfo.creditScore }}</span>
-          <span class="stat-label">信用评分</span>
+        <div class="stat-card stat-total">
+          <div class="stat-header">
+            <span class="stat-icon">💰</span>
+            <span class="stat-label">累计借款</span>
+          </div>
+          <div class="stat-value">¥{{ userInfo.totalLoan.toLocaleString() }}</div>
+          <div class="stat-desc">总额</div>
         </div>
       </div>
     </div>
@@ -211,11 +222,12 @@ export default {
 }
 
 .user-card {
-  background: linear-gradient(135deg, #1e88e5 0%, #42a5f5 100%);
-  border-radius: 16px;
+  background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+  border-radius: 20px;
   padding: 24px;
-  color: white;
   margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(30, 136, 229, 0.1);
 }
 
 .user-header {
@@ -227,54 +239,86 @@ export default {
 .user-avatar {
   width: 60px;
   height: 60px;
-  background: rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 24px;
   margin-right: 16px;
+  color: #1976d2;
+  border: 2px solid rgba(25, 118, 210, 0.2);
 }
 
 .user-name {
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 4px;
+  color: #1a1a1a;
 }
 
 .user-phone {
   font-size: 14px;
-  opacity: 0.9;
+  color: #666;
   margin-bottom: 4px;
-}
-
-.user-level {
-  font-size: 12px;
-  background: rgba(255, 255, 255, 0.2);
-  padding: 4px 8px;
-  border-radius: 12px;
 }
 
 .user-stats {
   display: flex;
-  justify-content: space-around;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.stat-card {
+  flex: 1;
+  border-radius: 16px;
+  padding: 16px;
   text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.stat-item {
+.stat-score {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  color: #1976d2;
+}
+
+.stat-loan {
+  background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+  color: #7b1fa2;
+}
+
+.stat-total {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  color: #388e3c;
+}
+
+.stat-header {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 8px;
 }
 
-.stat-value {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 4px;
+.stat-icon {
+  font-size: 14px;
 }
 
 .stat-label {
   font-size: 12px;
-  opacity: 0.9;
+  opacity: 0.8;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.stat-desc {
+  font-size: 10px;
+  opacity: 0.7;
 }
 
 .menu-section {
@@ -373,7 +417,15 @@ export default {
   
   .user-stats {
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
+  }
+  
+  .stat-card {
+    padding: 14px;
+  }
+  
+  .stat-value {
+    font-size: 18px;
   }
   
   .menu-item {

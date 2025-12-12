@@ -11,13 +11,21 @@
       </div>
       
       <div class="credit-info">
-        <div class="credit-score">
-          <span class="score-label">信用评分</span>
-          <span class="score-value">{{ creditScore }}</span>
+        <div class="credit-score-card">
+          <div class="score-header">
+            <span class="score-icon">⭐</span>
+            <span class="score-label">信用评分</span>
+          </div>
+          <div class="score-value">{{ creditScore }}</div>
+          <div class="score-desc">信用优秀</div>
         </div>
-        <div class="credit-limit">
-          <span class="limit-label">可借额度</span>
-          <span class="limit-value">¥{{ creditLimit }}</span>
+        <div class="credit-limit-card">
+          <div class="limit-header">
+            <span class="limit-icon">💰</span>
+            <span class="limit-label">可借额度</span>
+          </div>
+          <div class="limit-value">¥{{ creditLimit.toLocaleString() }}</div>
+          <div class="limit-desc">总额度</div>
         </div>
       </div>
     </div>
@@ -161,11 +169,12 @@ export default {
 }
 
 .user-card {
-  background: linear-gradient(135deg, #1e88e5 0%, #42a5f5 100%);
-  border-radius: 16px;
+  background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+  border-radius: 20px;
   padding: 24px;
-  color: white;
   margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(30, 136, 229, 0.1);
 }
 
 .user-header {
@@ -177,45 +186,83 @@ export default {
 .user-avatar {
   width: 60px;
   height: 60px;
-  background: rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 24px;
   margin-right: 16px;
+  color: #1976d2;
+  border: 2px solid rgba(25, 118, 210, 0.2);
 }
 
 .user-name {
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 4px;
+  color: #1a1a1a;
 }
 
 .user-phone {
   font-size: 14px;
-  opacity: 0.9;
+  color: #666;
 }
 
 .credit-info {
   display: flex;
-  justify-content: space-between;
+  gap: 16px;
+  margin-top: 20px;
 }
 
-.credit-score, .credit-limit {
+.credit-score-card {
+  flex: 1;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-radius: 16px;
+  padding: 20px;
+  color: #1976d2;
   text-align: center;
+  box-shadow: 0 4px 15px rgba(25, 118, 210, 0.15);
+  border: 1px solid rgba(25, 118, 210, 0.1);
+}
+
+.credit-limit-card {
+  flex: 1;
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border-radius: 16px;
+  padding: 20px;
+  color: #388e3c;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(56, 142, 60, 0.15);
+  border: 1px solid rgba(56, 142, 60, 0.1);
+}
+
+.score-header, .limit-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.score-icon, .limit-icon {
+  font-size: 16px;
 }
 
 .score-label, .limit-label {
-  display: block;
   font-size: 14px;
   opacity: 0.9;
-  margin-bottom: 4px;
 }
 
 .score-value, .limit-value {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.score-desc, .limit-desc {
+  font-size: 12px;
+  opacity: 0.8;
 }
 
 .section-title {
@@ -357,7 +404,17 @@ export default {
   
   .credit-info {
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
+  }
+  
+  .credit-score-card,
+  .credit-limit-card {
+    padding: 16px;
+  }
+  
+  .score-value,
+  .limit-value {
+    font-size: 24px;
   }
 }
 </style>
