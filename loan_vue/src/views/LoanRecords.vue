@@ -56,12 +56,12 @@
         
         <div class="record-info">
           <div class="info-item">
-            <span class="info-label">借款日期</span>
-            <span class="info-value">{{ formatDate(record.loanDate) }}</span>
+            <span class="info-label">总期数</span>
+            <span class="info-value">{{ record.totalPeriods }}期</span>
           </div>
           <div class="info-item">
-            <span class="info-label">到期日期</span>
-            <span class="info-value">{{ formatDate(record.dueDate) }}</span>
+            <span class="info-label">已还期数</span>
+            <span class="info-value">{{ record.paidPeriods }}期</span>
           </div>
           <div class="info-item">
             <span class="info-label">剩余应还</span>
@@ -77,6 +77,67 @@
             ></div>
           </div>
           <span class="progress-text">{{ record.progress }}%</span>
+        </div>
+        
+        <!-- 产品信息按钮 -->
+        <div class="product-info">
+          <button 
+            class="btn-product" 
+            @click.stop="showProductDetails(record.productId)"
+          >
+            {{ record.productName }}
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 产品详情弹窗 -->
+    <div v-if="showProductModal" class="modal-overlay" @click="closeProductModal">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h3 class="modal-title">产品详情</h3>
+          <button class="modal-close" @click="closeProductModal">×</button>
+        </div>
+        <div class="modal-body">
+          <div v-if="productLoading" class="modal-loading">加载中...</div>
+          <div v-else-if="productError" class="modal-error">{{ productError }}</div>
+          <div v-else class="product-details">
+            <div class="detail-item">
+              <span class="detail-label">产品名称</span>
+              <span class="detail-value">{{ productInfo.name }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">利率</span>
+              <span class="detail-value">{{ (parseFloat(productInfo.interest) * 100).toFixed(2) }}%</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">借款范围</span>
+              <span class="detail-value">¥{{ productInfo.min_principle }} - ¥{{ productInfo.max_principle }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">期限范围</span>
+              <span class="detail-value">{{ productInfo.min_periods }} - {{ productInfo.max_periods }} 天</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">还款方式</span>
+              <span class="detail-value">{{ getRepayTypeText(productInfo.repay_type) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">罚息利率</span>
+              <span class="detail-value">{{ (parseFloat(productInfo.penalty) * 100).toFixed(2) }}%</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">宽限期</span>
+              <span class="detail-value">{{ productInfo.grace_term }} 天</span>
+            </div>
+            <div class="detail-item full-width">
+              <span class="detail-label">产品说明</span>
+              <span class="detail-value">{{ productInfo.info }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" @click="closeProductModal">关闭</button>
         </div>
       </div>
     </div>
@@ -94,7 +155,11 @@ export default {
     return {
       activeTab: 'all',
       loading: false,
-      records: []
+      records: [],
+      showProductModal: false,
+      productLoading: false,
+      productError: '',
+      productInfo: {}
     }
   },
   computed: {
@@ -120,56 +185,46 @@ export default {
     async loadLoanRecords() {
       this.loading = true
       try {
-        // 预留接口：获取借款记录
-        console.log('调用API获取借款记录')
+        // 直接调用后端接口获取借款记录
+        const myHeaders = new Headers()
+        const token = localStorage.getItem('accessToken')
+        if (token) {
+          myHeaders.append('Authorization', `Bearer ${token}`)
+        }
+
+        const requestOptions = {
+          method: 'GET',
+          headers: myHeaders,
+          redirect: 'follow'
+        }
+
+        const response = await fetch('http://115.190.40.44:45444/loan/orderList', requestOptions)
+        const result = await response.text()
+        const data = JSON.parse(result)
         
-        // 模拟数据
-        setTimeout(() => {
-          this.records = [
-            {
-              id: 1,
-              amount: 5000,
-              loanDate: '2024-01-15',
-              dueDate: '2024-02-15',
-              remainingAmount: 2500,
-              status: 'repaying',
-              progress: 50,
-              productName: '极速贷',
-              term: 30,
-              interestRate: 0.05
-            },
-            {
-              id: 2,
-              amount: 3000,
-              loanDate: '2023-12-10',
-              dueDate: '2024-01-10',
-              remainingAmount: 0,
-              status: 'completed',
-              progress: 100,
-              productName: '信用贷',
-              term: 30,
-              interestRate: 0.04
-            },
-            {
-              id: 3,
-              amount: 8000,
-              loanDate: '2024-01-20',
-              dueDate: '2024-02-20',
-              remainingAmount: 6000,
-              status: 'repaying',
-              progress: 25,
-              productName: '大额贷',
-              term: 30,
-              interestRate: 0.06
-            }
-          ]
-          this.loading = false
-        }, 1000)
-        
-        // const response = await this.$api.getLoanRecords()
-        // this.records = response.data
+        if (data.errCode === 200 && data.success) {
+          // 将后端数据格式转换为前端需要的格式
+          this.records = data.list.map(item => ({
+            id: item.loan_id,
+            amount: parseFloat(item.Principal),
+            totalPeriods: item.TotalPeriods,
+            paidPeriods: item.PaidPeriods,
+            remainingAmount: parseFloat(item.Principal) - parseFloat(item.PaidAmount),
+            status: this.mapStatus(item.Status),
+            progress: item.TotalPeriods > 0 ? Math.round((item.PaidPeriods / item.TotalPeriods) * 100) : 0,
+            productName: `产品${item.product_id}`,
+            productId: item.product_id,
+            term: item.TotalPeriods,
+            interestRate: 0.05
+          }))
+        } else {
+          console.error('获取借款记录失败:', data)
+          this.records = []
+        }
       } catch (error) {
         console.error('获取借款记录失败:', error)
+        this.records = []
+      } finally {
         this.loading = false
       }
     },
@@ -196,11 +251,6 @@ export default {
       return statusMap[status] || '还款中'
     },
     
-    formatDate(dateStr) {
-      const date = new Date(dateStr)
-      return `${date.getMonth() + 1}月${date.getDate()}日`
-    },
-    
     goToRepayment(record) {
       this.$router.push({
         path: '/repayment',
@@ -208,10 +258,89 @@ export default {
           loanId: record.id,
           amount: record.amount,
           remainingAmount: record.remainingAmount,
-          dueDate: record.dueDate,
           status: record.status
         }
       })
+    },
+    
+    
+    // 产品详情相关方法
+    async showProductDetails(productId) {
+      this.showProductModal = true
+      this.productLoading = true
+      this.productError = ''
+      
+      try {
+        // 直接调用后端接口获取产品详情
+        try {
+          const myHeaders = new Headers()
+          const token = localStorage.getItem('accessToken')
+          if (token) {
+            myHeaders.append('Authorization', `Bearer ${token}`)
+          }
+          myHeaders.append('Content-Type', 'application/json')
+
+          const raw = JSON.stringify({
+            id: productId
+          })
+
+          const requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+          }
+
+          const response = await fetch('http://115.190.40.44:45444/loan/getProduct', requestOptions)
+          const result = await response.text()
+          const data = JSON.parse(result)
+          
+          if (data.errCode === 200 && data.success) {
+            this.productInfo = data.product
+          } else {
+            this.productError = '获取产品信息失败'
+            console.error('获取产品信息失败:', data)
+          }
+        } catch (error) {
+          this.productError = '获取产品信息失败'
+          console.error('获取产品信息失败:', error)
+        }
+      } catch (error) {
+        this.productError = '获取产品信息失败'
+        console.error('获取产品信息失败:', error)
+      } finally {
+        this.productLoading = false
+      }
+    },
+    
+    closeProductModal() {
+      this.showProductModal = false
+      this.productInfo = {}
+      this.productError = ''
+    },
+    
+    getRepayTypeText(repayType) {
+      const typeMap = {
+        'EQUAL_PRINCIPAL': '等额本金',
+        'EQUAL_INSTALLMENT': '等额本息',
+        'INTEREST_ONLY': '先息后本',
+        'BULLET': '一次性还本付息'
+      }
+      return typeMap[repayType] || repayType
+    },
+    
+    
+    mapStatus(status) {
+      const statusMap = {
+        'PENDING': 'repaying',
+        'APPROVED': 'repaying',
+        'REJECTED': 'overdue',
+        'DISBURSED': 'repaying',
+        'PAID': 'completed',
+        'OVERDUE': 'overdue',
+        'DEFAULTED': 'overdue'
+      }
+      return statusMap[status] || 'repaying'
     },
     
     goBack() {
@@ -463,5 +592,167 @@ export default {
     justify-content: space-between;
     text-align: left;
   }
+}
+
+/* 产品信息按钮样式 */
+.product-info {
+  margin-top: 12px;
+  text-align: right;
+}
+
+.btn-product {
+  background: #1e88e5;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-product:hover {
+  background: #1976d2;
+  transform: translateY(-1px);
+}
+
+/* 模态框样式 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #212121;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  color: #333;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-loading {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.modal-error {
+  text-align: center;
+  padding: 20px;
+  color: #d32f2f;
+  background: #ffebee;
+  border-radius: 8px;
+}
+
+.product-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.detail-item.full-width {
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+  min-width: 80px;
+}
+
+.detail-value {
+  font-size: 14px;
+  color: #212121;
+  font-weight: 600;
+  text-align: right;
+  flex: 1;
+}
+
+.detail-item.full-width .detail-value {
+  text-align: left;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.modal-footer {
+  padding: 20px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: #1e88e5;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #1976d2;
 }
 </style>

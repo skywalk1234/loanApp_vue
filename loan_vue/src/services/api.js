@@ -3,7 +3,7 @@ import tokenService from './token'
 
 // 创建axios实例
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api',
+  baseURL: 'http://115.190.40.44:45444',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json'
@@ -152,7 +152,7 @@ const apiService = {
     
     // 获取借款记录
     getLoanRecords(params = {}) {
-      return api.get('/loan/records', { params })
+      return api.get('/loan/orderList', { params })
     },
     
     // 获取借款详情
