@@ -200,7 +200,15 @@ export default {
 
         const response = await fetch('http://115.190.40.44:45444/loan/orderList', requestOptions)
         const result = await response.text()
-        const data = JSON.parse(result)
+        const jsonString = result;
+        const fixedJsonString = jsonString.replace(
+          /"product_id":\s*(\d{15,})/g,  // 匹配15位以上的数字id
+          '"product_id":"$1"'  // 添加双引号使其变为字符串
+        ).replace(
+          /"loan_id":\s*(\d{15,})/g,  // 匹配15位以上的数字id
+          '"loan_id":"$1"'  // 添加双引号使其变为字符串
+        )
+        const data = JSON.parse(fixedJsonString)
         
         if (data.errCode === 200 && data.success) {
           // 将后端数据格式转换为前端需要的格式
@@ -217,6 +225,7 @@ export default {
             term: item.TotalPeriods,
             interestRate: 0.05
           }))
+          console.log(this.records)
         } else {
           console.error('获取借款记录失败:', data)
           this.records = []
@@ -280,10 +289,12 @@ export default {
           }
           myHeaders.append('Content-Type', 'application/json')
 
-          const raw = JSON.stringify({
-            id: productId
-          })
+          // const raw = JSON.stringify({
+          //   id: productId
+          // })
+          var raw = `{"id":${productId}}`
 
+          console.log("请求产品详情：", raw)
           const requestOptions = {
             method: 'POST',
             headers: myHeaders,
