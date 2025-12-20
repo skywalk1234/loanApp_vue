@@ -226,6 +226,9 @@ export default {
             interestRate: 0.05
           }))
           console.log(this.records)
+           // 👇 新增：为每条记录获取真实产品名
+          await this.loadProductNames()
+
         } else {
           console.error('获取借款记录失败:', data)
           this.records = []
@@ -271,7 +274,44 @@ export default {
         }
       })
     },
-    
+    //只是获取产品名字
+    async loadProductNames() {
+      const promises = this.records.map(async (record) => {
+        try {
+          const myHeaders = new Headers()
+          const token = localStorage.getItem('accessToken')
+          if (token) {
+            myHeaders.append('Authorization', `Bearer ${token}`)
+          }
+          myHeaders.append('Content-Type', 'application/json')
+
+          const raw = `{"id":${record.productId}}`
+          const requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+          }
+
+          const response = await fetch('http://115.190.40.44:45444/loan/getProduct', requestOptions)
+          const result = await response.text()
+          const data = JSON.parse(result)
+
+          if (data.errCode === 200 && data.success) {
+            // 找到对应的 record，更新 productName
+            const index = this.records.findIndex(r => r.id === record.id)
+            if (index !== -1) {
+              this.records[index].productName = data.product.name || `产品${record.productId}`;
+            }
+          }
+        } catch (error) {
+          console.warn('获取产品名失败，productId:', record.productId, error)
+          // 失败就保留临时名字，不报错
+        }
+      })
+      // 等所有请求完成（即使有失败也不中断）
+      await Promise.allSettled(promises)
+    },
     
     // 产品详情相关方法
     async showProductDetails(productId) {
