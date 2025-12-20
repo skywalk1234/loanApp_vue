@@ -170,62 +170,177 @@ export default {
           status: query.status || 'repaying'
         }
         
-        // 预留接口：获取还款计划
-        console.log('调用API获取还款计划')
+        // 获取还款计划数据
+        await this.fetchRepaymentSchedules()
         
-        // 模拟数据
-        setTimeout(() => {
-          this.repaymentPlans = [
-            {
-              id: 1,
-              period: 1,
-              dueDate: '2024-01-15',
-              amount: 1250,
-              principal: 1000,
-              interest: 200,
-              serviceFee: 50,
-              status: 'completed'
-            },
-            {
-              id: 2,
-              period: 2,
-              dueDate: '2024-02-15',
-              amount: 1250,
-              principal: 1000,
-              interest: 200,
-              serviceFee: 50,
-              status: 'current'
-            },
-            {
-              id: 3,
-              period: 3,
-              dueDate: '2024-03-15',
-              amount: 1250,
-              principal: 1000,
-              interest: 200,
-              serviceFee: 50,
-              status: 'pending'
-            },
-            {
-              id: 4,
-              period: 4,
-              dueDate: '2024-04-15',
-              amount: 1250,
-              principal: 1000,
-              interest: 200,
-              serviceFee: 50,
-              status: 'pending'
-            }
-          ]
-          this.loading = false
-        }, 1000)
-        
-        // const response = await this.$api.getRepaymentPlans(this.$route.query.loanId)
-        // this.repaymentPlans = response.data
       } catch (error) {
         console.error('获取还款信息失败:', error)
         this.loading = false
       }
+    },
+    
+    async fetchRepaymentSchedules() {
+      try {
+        // 从localStorage获取accessToken
+        const accessToken = localStorage.getItem('accessToken')
+        if (!accessToken) {
+          throw new Error('未找到访问令牌')
+        }
+        
+        // 获取路由参数中的loan_id
+        const loanId = this.$route.query.loanId || this.$route.query.id
+        console.log('loanId:', loanId)
+        if (!loanId) {
+          throw new Error('未找到借款ID')
+        }
+        
+        // 设置请求头
+        const myHeaders = new Headers()
+        myHeaders.append('Authorization', accessToken)
+        myHeaders.append('Content-Type', 'application/json')
+        
+        // 设置请求体
+        // const raw = JSON.stringify({
+        //   id: Number(loanId)
+        // })
+        var raw = `{"id":${loanId}}`
+        console.log('请求体:', raw)
+        
+        const requestOptions = {
+          method: 'POST',
+          headers: myHeaders,
+          body: raw,
+          redirect: 'follow'
+        }
+        
+        // 调用API获取还款计划
+        const response = await fetch('http://115.190.40.44:45444/loan/getSchedules', requestOptions)
+        const result = await response.text()
+        const data = JSON.parse(result)
+        
+        if (data.errCode === 200 && data.success) {
+          // 处理还款计划数据
+          this.processRepaymentSchedules(data.schedules)
+        } else {
+          throw new Error(data.errMsg || '获取还款计划失败')
+        }
+        
+      } catch (error) {
+        console.error('获取还款计划失败:', error)
+        // 如果API调用失败，使用模拟数据作为后备
+        this.useMockData()
+      } finally {
+        this.loading = false
+      }
+    },
+    
+    processRepaymentSchedules(schedules) {
+      if (!schedules || schedules.length === 0) {
+        this.useMockData()
+        return
+      }
+      
+      // 转换API数据格式到组件格式
+      this.repaymentPlans = schedules.map(schedule => ({
+        id: schedule.ID,
+        period: schedule.Period,
+        dueDate: this.formatDate(schedule.DueDate),
+        amount: Number(schedule.TotalPayment),
+        principal: Number(schedule.Principal),
+        interest: Number(schedule.Interest),
+        serviceFee: schedule.ServiceFee && schedule.ServiceFee.length > 0 ? 
+          Number(schedule.ServiceFee[0].Fix) : 0,
+        status: this.convertStatus(schedule.Status, schedule.Overdue),
+        totalPaymentPaid: Number(schedule.TotalPaymentPaid),
+        overdue: schedule.Overdue
+      }))
+      
+      // 设置第一个未还款的计划为当前计划
+      this.setCurrentPlan()
+      
+      // 设置到期日期为最后一期的截止时间
+      if (schedules.length > 0) {
+        const lastSchedule = schedules[schedules.length - 1]
+        this.loanInfo.dueDate = this.formatDate(lastSchedule.DueDate)
+      }
+      
+      // 计算剩余应还金额
+      const remainingAmount = this.repaymentPlans
+        .filter(plan => plan.status !== 'completed')
+        .reduce((sum, plan) => sum + plan.amount, 0)
+      this.loanInfo.remainingAmount = remainingAmount
+    },
+    
+    setCurrentPlan() {
+      // 找到第一个未还款的计划，设置为当前计划
+      const firstUnpaidPlan = this.repaymentPlans.find(plan => plan.status === 'pending')
+      if (firstUnpaidPlan) {
+        firstUnpaidPlan.status = 'current'
+      }
+    },
+    
+    convertStatus(apiStatus, overdue) {
+      // 根据API状态转换为组件状态
+      if (apiStatus === 'PAID' || apiStatus === 'COMPLETED') {
+        return 'completed'
+      } else if (overdue) {
+        return 'overdue'
+      } else {
+        // 对于未支付的款项，根据日期判断是否为当前期
+        return 'pending'
+      }
+    },
+    
+    formatDate(dateString) {
+      // 将ISO日期格式转换为本地日期格式
+      const date = new Date(dateString)
+      return date.toLocaleDateString('zh-CN')
+    },
+    
+    useMockData() {
+      // 后备的模拟数据
+      this.repaymentPlans = [
+        {
+          id: 1,
+          period: 1,
+          dueDate: '2024-01-15',
+          amount: 1250,
+          principal: 1000,
+          interest: 200,
+          serviceFee: 50,
+          status: 'completed'
+        },
+        {
+          id: 2,
+          period: 2,
+          dueDate: '2024-02-15',
+          amount: 1250,
+          principal: 1000,
+          interest: 200,
+          serviceFee: 50,
+          status: 'current'
+        },
+        {
+          id: 3,
+          period: 3,
+          dueDate: '2024-03-15',
+          amount: 1250,
+          principal: 1000,
+          interest: 200,
+          serviceFee: 50,
+          status: 'pending'
+        },
+        {
+          id: 4,
+          period: 4,
+          dueDate: '2024-04-15',
+          amount: 1250,
+          principal: 1000,
+          interest: 200,
+          serviceFee: 50,
+          status: 'pending'
+        }
+      ]
     },
     
     getStatusClass(status) {
@@ -250,7 +365,8 @@ export default {
       const statusMap = {
         'completed': 'status-completed',
         'current': 'status-current',
-        'pending': 'status-pending'
+        'pending': 'status-pending',
+        'overdue': 'status-overdue'
       }
       return statusMap[status] || 'status-pending'
     },
@@ -259,7 +375,8 @@ export default {
       const statusMap = {
         'completed': '已还',
         'current': '当前',
-        'pending': '待还'
+        'pending': '待还',
+        'overdue': '逾期'
       }
       return statusMap[status] || '待还'
     },
