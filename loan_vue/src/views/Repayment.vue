@@ -11,11 +11,11 @@
       <div class="info-grid">
         <div class="info-item">
           <span class="info-label">借款金额</span>
-          <span class="info-value">¥{{ loanInfo.amount }}</span>
+          <span class="info-value">¥{{ formatCurrency(loanInfo.amount) }}</span>
         </div>
         <div class="info-item">
           <span class="info-label">剩余应还</span>
-          <span class="info-value highlight">¥{{ loanInfo.remainingAmount }}</span>
+          <span class="info-value highlight">¥{{ formatCurrency(loanInfo.remainingAmount) }}</span>
         </div>
         <div class="info-item">
           <span class="info-label">到期日期</span>
@@ -47,17 +47,17 @@
             </div>
             <div class="plan-amount">
               <span class="amount-label">应还金额</span>
-              <span class="amount-value">¥{{ plan.amount }}</span>
+              <span class="amount-value">¥{{ formatCurrency(plan.amount) }}</span>
             </div>
           </div>
           <div class="plan-details">
             <div class="detail-item">
               <span class="detail-label">本金</span>
-              <span class="detail-value">¥{{ plan.principal }}</span>
+              <span class="detail-value">¥{{ formatCurrency(plan.principal) }}</span>
             </div>
             <div class="detail-item">
               <span class="detail-label">利息</span>
-              <span class="detail-value">¥{{ plan.interest }}</span>
+              <span class="detail-value">¥{{ formatCurrency(plan.interest) }}</span>
             </div>
             <div class="detail-item">
               <span class="detail-label">状态</span>
@@ -109,7 +109,7 @@
         <div class="repayment-preview" v-if="earlyRepayment.amount">
           <div class="preview-item">
             <span class="preview-label">预计节省利息</span>
-            <span class="preview-value">¥{{ calculateInterestSaved() }}</span>
+            <span class="preview-value">¥{{ formatCurrency(calculateInterestSaved()) }}</span>
           </div>
           <div class="preview-item">
             <span class="preview-label">新还款期数</span>
@@ -400,7 +400,7 @@ export default {
         return
       }
       
-      if (confirm(`确认提前还款 ¥${this.earlyRepayment.amount} 吗？`)) {
+      if (confirm(`确认提前还款 ¥${this.formatCurrency(this.earlyRepayment.amount)} 吗？`)) {
         try {
           // 从localStorage获取accessToken
           const accessToken = localStorage.getItem('accessToken')
@@ -467,6 +467,11 @@ export default {
     },
     
 
+    
+    formatCurrency(amount) {
+      // 格式化金额为两位小数
+      return Number(amount).toFixed(2)
+    },
     
     goBack() {
       this.$router.push('/loan-records')
