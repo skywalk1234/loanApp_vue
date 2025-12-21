@@ -397,24 +397,79 @@ export default {
       return currentPeriods
     },
     
-    handleEarlyRepayment() {
+    async handleEarlyRepayment() {
       if (!this.earlyRepayment.amount || this.earlyRepayment.amount <= 0) {
         alert('请输入有效的还款金额')
         return
       }
       
       if (confirm(`确认提前还款 ¥${this.earlyRepayment.amount} 吗？`)) {
-        // 预留接口：提前还款
-        console.log('调用API提前还款', this.earlyRepayment)
-        alert('提前还款申请已提交，请等待处理结果')
-        
-        // 模拟提交后重置
-        this.earlyRepayment.amount = ''
-        this.earlyRepayment.type = 'reducePeriods'
+        try {
+          // 从localStorage获取accessToken
+          const accessToken = localStorage.getItem('accessToken')
+          if (!accessToken) {
+            throw new Error('未找到访问令牌')
+          }
+          
+          // 获取路由参数中的loan_id
+          const loanId = this.$route.query.loanId || this.$route.query.id
+          if (!loanId) {
+            throw new Error('未找到借款ID')
+          }
+          
+          // 设置请求头
+          const myHeaders = new Headers()
+          myHeaders.append('Authorization', accessToken)
+          myHeaders.append('Content-Type', 'application/json')
+          
+          // 转换还款方式
+          const path = this.earlyRepayment.type === 'reducePeriods' ? 'TERM_REDUCTION' : 'PAYMENT_REDUCTION'
+          
+          // 设置请求体
+          // const raw = JSON.stringify({
+          //   loanId: Number(loanId),
+          //   amount: String(this.earlyRepayment.amount),
+          //   path: path
+          // })
+          var raw = `{"loanId":${loanId},` +
+                    `"amount":${String(this.earlyRepayment.amount)},` +
+                    `"path":"${path}"}`
+
+          console.log("还款的请求体：", raw)
+          const requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+          }
+          
+          // 调用API进行提前还款
+          const response = await fetch('http://115.190.40.44:45444/loan/repay', requestOptions)
+          const result = await response.text()
+          const data = JSON.parse(result)
+          
+          if (data.success && data.errCode === 0) {
+            // 成功处理
+            alert('提前还款成功，正在跳转到还款记录页面...')
+            
+            // 重置表单
+            this.earlyRepayment.amount = ''
+            this.earlyRepayment.type = 'reducePeriods'
+            
+            // 跳转到还款记录页面
+            this.$router.push('/loan-records')
+          } else {
+            throw new Error(data.errMsg || '提前还款失败')
+          }
+          
+        } catch (error) {
+          console.error('提前还款失败:', error)
+          alert('提前还款失败: ' + error.message)
+        }
       }
     },
     
-    handleNormalRepayment() {
+    async handleNormalRepayment() {
       const currentPlan = this.repaymentPlans.find(p => p.status === 'current')
       if (!currentPlan) {
         alert('当前没有待还款项')
@@ -422,9 +477,57 @@ export default {
       }
       
       if (confirm(`确认还款 ¥${currentPlan.amount} 吗？`)) {
-        // 预留接口：正常还款
-        console.log('调用API正常还款', currentPlan)
-        alert('还款申请已提交，请等待处理结果')
+        try {
+          // 从localStorage获取accessToken
+          const accessToken = localStorage.getItem('accessToken')
+          if (!accessToken) {
+            throw new Error('未找到访问令牌')
+          }
+          
+          // 获取路由参数中的loan_id
+          const loanId = this.$route.query.loanId || this.$route.query.id
+          if (!loanId) {
+            throw new Error('未找到借款ID')
+          }
+          
+          // 设置请求头
+          const myHeaders = new Headers()
+          myHeaders.append('Authorization', accessToken)
+          myHeaders.append('Content-Type', 'application/json')
+          
+          // 设置请求体 - 正常还款使用当前期数的金额，path为NORMAL（表示正常还款）
+          const raw = JSON.stringify({
+            loanId: Number(loanId),
+            amount: String(currentPlan.amount),
+            path: 'NORMAL'
+          })
+          
+          const requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+          }
+          
+          // 调用API进行正常还款
+          const response = await fetch('http://115.190.40.44:45444/loan/repay', requestOptions)
+          const result = await response.text()
+          const data = JSON.parse(result)
+          
+          if (data.success && data.errCode === 0) {
+            // 成功处理
+            alert('还款申请已提交，正在跳转到还款记录页面...')
+            
+            // 跳转到还款记录页面
+            this.$router.push('/loan-records')
+          } else {
+            throw new Error(data.errMsg || '还款失败')
+          }
+          
+        } catch (error) {
+          console.error('还款失败:', error)
+          alert('还款失败: ' + error.message)
+        }
       }
     },
     
