@@ -8,24 +8,28 @@
     <!-- 借款信息 -->
     <div class="loan-info-card">
       <h3 class="card-title">借款信息</h3>
-      <div class="info-grid">
-        <div class="info-item">
-          <span class="info-label">借款金额</span>
-          <span class="info-value">¥{{ formatCurrency(loanInfo.amount) }}</span>
+      <div class="loan-info-rows">
+        <!-- 第一行：借款金额和剩余应还 -->
+        <div class="info-row">
+          <div class="info-pair">
+            <span class="info-label">借款金额</span>
+            <span class="info-value">¥{{ formatCurrency(loanInfo.amount) }}</span>
+          </div>
+          <div class="info-pair">
+            <span class="info-label">剩余应还</span>
+            <span class="info-value remaining-amount">¥{{ formatCurrency(loanInfo.remainingAmount) }}</span>
+          </div>
         </div>
-        <div class="info-item">
-          <span class="info-label">剩余应还</span>
-          <span class="info-value highlight">¥{{ formatCurrency(loanInfo.remainingAmount) }}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">到期日期</span>
-          <span class="info-value">{{ loanInfo.dueDate }}</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">借款状态</span>
-          <span class="info-value" :class="getStatusClass(loanInfo.status)">
-            {{ getStatusText(loanInfo.status) }}
-          </span>
+        <!-- 第二行：到期日期和借款状态 -->
+        <div class="info-row">
+          <div class="info-pair">
+            <span class="info-label">到期日期</span>
+            <span class="info-value">{{ loanInfo.dueDate }}</span>
+          </div>
+          <div class="info-pair">
+            <span class="info-label">借款状态</span>
+            <span class="info-value loan-status">{{ getStatusText(loanInfo.status) }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -565,6 +569,65 @@ export default {
   font-weight: bold;
 }
 
+/* 新借款信息布局样式 */
+.loan-info-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #fafafa;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.info-row:first-child {
+  padding-top: 0;
+}
+
+.info-pair {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.info-label {
+  font-size: 14px;
+  color: #666;
+  white-space: nowrap;
+}
+
+.info-value {
+  font-size: 16px;
+  color: #212121;
+  font-weight: 500;
+}
+
+.remaining-amount {
+  color: #f44336;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.loan-status {
+  color: #1976d2;
+  font-weight: bold;
+  font-size: 16px;
+}
+
 .status-repaying {
   color: #1976d2;
 }
@@ -791,6 +854,38 @@ export default {
   .radio-group {
     flex-direction: column;
     gap: 8px;
+  }
+  
+  /* 移动端借款信息布局优化 */
+  .loan-info-rows {
+    gap: 8px;
+  }
+  
+  .info-row {
+    flex-direction: row;
+    gap: 20px;
+    padding: 6px 0;
+  }
+  
+  .info-pair {
+    justify-content: space-between;
+    gap: 6px;
+  }
+  
+  .info-label {
+    font-size: 13px;
+  }
+  
+  .info-value {
+    font-size: 15px;
+  }
+  
+  .remaining-amount {
+    font-size: 16px;
+  }
+  
+  .loan-status {
+    font-size: 15px;
   }
   
 
