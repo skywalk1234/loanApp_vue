@@ -234,8 +234,11 @@ export default {
         return
       }
       
+      // 首先按Period从小到大排序
+      const sortedSchedules = [...schedules].sort((a, b) => a.Period - b.Period)
+      
       // 转换API数据格式到组件格式
-      this.repaymentPlans = schedules.map(schedule => ({
+      this.repaymentPlans = sortedSchedules.map(schedule => ({
         id: schedule.ID,
         period: schedule.Period,
         dueDate: this.formatDate(schedule.DueDate),
@@ -253,8 +256,8 @@ export default {
       this.setCurrentPlan()
       
       // 设置到期日期为最后一期的截止时间
-      if (schedules.length > 0) {
-        const lastSchedule = schedules[schedules.length - 1]
+      if (sortedSchedules.length > 0) {
+        const lastSchedule = sortedSchedules[sortedSchedules.length - 1]
         this.loanInfo.dueDate = this.formatDate(lastSchedule.DueDate)
       }
       
