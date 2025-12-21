@@ -126,12 +126,6 @@
       </div>
     </div>
     
-    <!-- 正常还款 -->
-    <div class="normal-repayment-section">
-      <button class="btn btn-primary btn-block" @click="handleNormalRepayment">
-        立即还款
-      </button>
-    </div>
   </div>
 </template>
 
@@ -469,67 +463,7 @@ export default {
       }
     },
     
-    async handleNormalRepayment() {
-      const currentPlan = this.repaymentPlans.find(p => p.status === 'current')
-      if (!currentPlan) {
-        alert('当前没有待还款项')
-        return
-      }
-      
-      if (confirm(`确认还款 ¥${currentPlan.amount} 吗？`)) {
-        try {
-          // 从localStorage获取accessToken
-          const accessToken = localStorage.getItem('accessToken')
-          if (!accessToken) {
-            throw new Error('未找到访问令牌')
-          }
-          
-          // 获取路由参数中的loan_id
-          const loanId = this.$route.query.loanId || this.$route.query.id
-          if (!loanId) {
-            throw new Error('未找到借款ID')
-          }
-          
-          // 设置请求头
-          const myHeaders = new Headers()
-          myHeaders.append('Authorization', accessToken)
-          myHeaders.append('Content-Type', 'application/json')
-          
-          // 设置请求体 - 正常还款使用当前期数的金额，path为NORMAL（表示正常还款）
-          const raw = JSON.stringify({
-            loanId: Number(loanId),
-            amount: String(currentPlan.amount),
-            path: 'NORMAL'
-          })
-          
-          const requestOptions = {
-            method: 'POST',
-            headers: myHeaders,
-            body: raw,
-            redirect: 'follow'
-          }
-          
-          // 调用API进行正常还款
-          const response = await fetch('http://115.190.40.44:45444/loan/repay', requestOptions)
-          const result = await response.text()
-          const data = JSON.parse(result)
-          
-          if (data.success && data.errCode === 0) {
-            // 成功处理
-            alert('还款申请已提交，正在跳转到还款记录页面...')
-            
-            // 跳转到还款记录页面
-            this.$router.push('/loan-records')
-          } else {
-            throw new Error(data.errMsg || '还款失败')
-          }
-          
-        } catch (error) {
-          console.error('还款失败:', error)
-          alert('还款失败: ' + error.message)
-        }
-      }
-    },
+
     
     goBack() {
       this.$router.push('/loan-records')
@@ -818,10 +752,6 @@ export default {
   font-weight: 500;
 }
 
-.normal-repayment-section {
-  padding: 0 16px;
-}
-
 .btn-block {
   width: 100%;
 }
@@ -855,8 +785,6 @@ export default {
     gap: 8px;
   }
   
-  .normal-repayment-section {
-    padding: 0 12px;
-  }
+
 }
 </style>
