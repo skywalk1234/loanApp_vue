@@ -34,46 +34,6 @@
       </div>
     </div>
     
-    <!-- 还款计划 -->
-    <div class="repayment-plan-card">
-      <h3 class="card-title">还款计划</h3>
-      <div class="plan-list">
-        <div 
-          v-for="plan in repaymentPlans" 
-          :key="plan.id"
-          class="plan-item"
-          :class="{ completed: plan.status === 'completed', current: plan.status === 'current' }"
-        >
-          <div class="plan-header">
-            <div class="plan-period">
-              <span class="period-label">第{{ plan.period }}期</span>
-              <span class="period-date">{{ plan.dueDate }}</span>
-            </div>
-            <div class="plan-amount">
-              <span class="amount-label">应还金额</span>
-              <span class="amount-value">¥{{ formatCurrency(plan.amount) }}</span>
-            </div>
-          </div>
-          <div class="plan-details">
-            <div class="detail-item">
-              <span class="detail-label">本金</span>
-              <span class="detail-value">¥{{ formatCurrency(plan.principal) }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">利息</span>
-              <span class="detail-value">¥{{ formatCurrency(plan.interest) }}</span>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">状态</span>
-              <span class="detail-value" :class="getPlanStatusClass(plan.status)">
-                {{ getPlanStatusText(plan.status) }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
     <!-- 提前还款 -->
     <div class="early-repayment-card">
       <h3 class="card-title">提前还款</h3>
@@ -127,6 +87,46 @@
         >
           确认提前还款
         </button>
+      </div>
+    </div>
+    
+    <!-- 还款计划 -->
+    <div class="repayment-plan-card">
+      <h3 class="card-title">还款计划</h3>
+      <div class="plan-list">
+        <div 
+          v-for="plan in repaymentPlans" 
+          :key="plan.id"
+          class="plan-item"
+          :class="{ completed: plan.status === 'completed', current: plan.status === 'current' }"
+        >
+          <div class="plan-header">
+            <div class="plan-period">
+              <span class="period-label">第{{ plan.period }}期</span>
+              <span class="period-date">{{ plan.dueDate }}</span>
+            </div>
+            <div class="plan-amount">
+              <span class="amount-label">应还金额</span>
+              <span class="amount-value">¥{{ formatCurrency(plan.amount) }}</span>
+            </div>
+          </div>
+          <div class="plan-details">
+            <div class="detail-item">
+              <span class="detail-label">本金</span>
+              <span class="detail-value">¥{{ formatCurrency(plan.principal) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">利息</span>
+              <span class="detail-value">¥{{ formatCurrency(plan.interest) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">状态</span>
+              <span class="detail-value" :class="getPlanStatusClass(plan.status)">
+                {{ getPlanStatusText(plan.status) }}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     
@@ -449,9 +449,9 @@ export default {
           const result = await response.text()
           const data = JSON.parse(result)
           
-          if (data.success && data.errCode === 0) {
+          if (data.success && data.errCode === 200) {
             // 成功处理
-            alert('提前还款成功，正在跳转到还款记录页面...')
+            alert('提前还款成功')
             
             // 重置表单
             this.earlyRepayment.amount = ''
