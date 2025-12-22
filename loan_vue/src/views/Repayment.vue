@@ -99,21 +99,21 @@
               <span class="amount-value">¥{{ formatCurrency(plan.amount) }}</span>
             </div>
           </div>
-          <div class="plan-details">
-            <div class="detail-item">
-              <span class="detail-label">本金</span>
-              <span class="detail-value">¥{{ formatCurrency(plan.principal) }}</span>
+          <div class="plan-principal-interest">
+            <div class="principal-box">
+              <div class="principal-amount">{{ formatCurrency(plan.principal) }}¥</div>
+              <div class="principal-label">本金</div>
             </div>
-            <div class="detail-item">
-              <span class="detail-label">利息</span>
-              <span class="detail-value">¥{{ formatCurrency(plan.interest) }}</span>
+            <div class="interest-box">
+              <div class="interest-amount">{{ formatCurrency(plan.interest) }}¥</div>
+              <div class="interest-label">利息</div>
             </div>
-            <div class="detail-item">
-              <span class="detail-label">状态</span>
-              <span class="detail-value" :class="getPlanStatusClass(plan.status)">
-                {{ getPlanStatusText(plan.status) }}
-              </span>
-            </div>
+          </div>
+          <div class="plan-status">
+            <span class="status-label">状态</span>
+            <span class="status-value" :class="getPlanStatusClass(plan.status)">
+              {{ getPlanStatusText(plan.status) }}
+            </span>
           </div>
         </div>
       </div>
@@ -638,7 +638,7 @@ export default {
 .plan-item {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  padding: 16px;
+  padding: 12px;
   transition: all 0.3s ease;
 }
 
@@ -657,7 +657,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .plan-period {
@@ -700,6 +700,55 @@ export default {
   justify-content: space-between;
   padding-top: 12px;
   border-top: 1px solid #f5f5f5;
+}
+
+.plan-principal-interest {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 8px;
+}
+
+.principal-box,
+.interest-box {
+  flex: 1;
+  text-align: center;
+  padding: 8px;
+  background: rgb(229 228 228 / 66%);
+  border-radius: 6px;
+}
+
+.principal-amount,
+.interest-amount {
+  font-size: 18px;
+  font-weight: bold;
+  color: #212121;
+  margin-bottom: 4px;
+}
+
+.principal-label,
+.interest-label {
+  font-size: 12px;
+  color: #666;
+}
+
+.plan-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 8px;
+  margin-top: 8px;
+  border-top: 1px solid #f5f5f5;
+}
+
+.status-label {
+  font-size: 11px;
+  color: #999;
+}
+
+.status-value {
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .detail-item {
@@ -814,15 +863,30 @@ export default {
     gap: 12px;
   }
   
-  .plan-details {
-    flex-direction: column;
-    gap: 8px;
+  .plan-principal-interest {
+    gap: 12px;
+    padding-top: 6px;
   }
   
-  .detail-item {
-    flex-direction: row;
-    justify-content: space-between;
-    text-align: left;
+  .principal-box,
+  .interest-box {
+    padding: 6px;
+  }
+  
+  .principal-amount,
+  .interest-amount {
+    font-size: 16px;
+    margin-bottom: 2px;
+  }
+  
+  .principal-label,
+  .interest-label {
+    font-size: 11px;
+  }
+  
+  .plan-status {
+    padding-top: 6px;
+    margin-top: 6px;
   }
   
   .repayment-type-buttons {
