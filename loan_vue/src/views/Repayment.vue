@@ -81,10 +81,35 @@
     
     <!-- 还款计划 -->
     <div class="repayment-plan-card">
-      <h3 class="card-title">还款计划</h3>
+      <div class="plan-header-section">
+        <h3 class="card-title">还款计划</h3>
+        <div class="filter-buttons">
+          <button 
+            class="filter-btn" 
+            :class="{ active: currentFilter === 'all' }"
+            @click="currentFilter = 'all'"
+          >
+            全部
+          </button>
+          <button 
+            class="filter-btn" 
+            :class="{ active: currentFilter === 'pending' }"
+            @click="currentFilter = 'pending'"
+          >
+            待还
+          </button>
+          <button 
+            class="filter-btn" 
+            :class="{ active: currentFilter === 'completed' }"
+            @click="currentFilter = 'completed'"
+          >
+            已还
+          </button>
+        </div>
+      </div>
       <div class="plan-list">
         <div 
-          v-for="plan in repaymentPlans" 
+          v-for="plan in filteredRepaymentPlans" 
           :key="plan.id"
           class="plan-item"
           :class="{ completed: plan.status === 'completed', current: plan.status === 'current' }"
@@ -134,11 +159,25 @@ export default {
         status: 'repaying'
       },
       repaymentPlans: [],
+      currentFilter: 'all',
       earlyRepayment: {
         amount: '',
         type: 'reducePeriods'
       },
       loading: false
+    }
+  },
+  computed: {
+    filteredRepaymentPlans() {
+      switch (this.currentFilter) {
+        case 'pending':
+          return this.repaymentPlans.filter(plan => plan.status === 'current' || plan.status === 'pending')
+        case 'completed':
+          return this.repaymentPlans.filter(plan => plan.status === 'completed')
+        case 'all':
+        default:
+          return this.repaymentPlans
+      }
     }
   },
   created() {
@@ -821,13 +860,13 @@ export default {
 
 .type-btn {
   flex: 1;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
   background: white;
-  color: #666;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
+  color: #666;
   cursor: pointer;
   transition: all 0.3s ease;
   white-space: nowrap;
@@ -839,6 +878,42 @@ export default {
 }
 
 .type-btn.active {
+  border-color: #1e88e5da;
+  background: #1e88e500;
+  color: rgb(25, 24, 24);
+}
+
+/* 筛选按钮样式 */
+.plan-header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.filter-btn {
+  padding: 5px 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 14px;
+  background: white;
+  font-size: 12px;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+  border-color: #1e88e5;
+  color: #1e88e5;
+}
+
+.filter-btn.active {
   border-color: #1e88e5;
   background: #1e88e5;
   color: white;
@@ -895,8 +970,8 @@ export default {
   }
   
   .type-btn {
-    padding: 8px 10px;
-    font-size: 12px;
+    padding: 10px 12px;
+    font-size: 13px;
     min-width: 80px;
   }
   
@@ -947,6 +1022,28 @@ export default {
   
   .amount-value {
     font-size: 17px;
+  }
+  
+  /* 移动端筛选按钮样式调整 */
+  .plan-header-section {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  
+  .filter-buttons {
+    gap: 4px;
+  }
+  
+  .filter-btn {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+  
+  .card-title {
+    font-size: 16px;
+    margin: 0;
   }
 
 }
