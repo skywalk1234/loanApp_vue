@@ -49,37 +49,26 @@
         </div>
         <div class="form-group">
           <label class="form-label">还款方式</label>
-          <div class="radio-group">
-            <label class="radio-item">
-              <input 
-                type="radio" 
-                name="repaymentType" 
-                value="reducePeriods"
-                v-model="earlyRepayment.type"
-              >
-              <span class="radio-label">减少期数</span>
-            </label>
-            <label class="radio-item">
-              <input 
-                type="radio" 
-                name="repaymentType" 
-                value="reduceMonthly"
-                v-model="earlyRepayment.type"
-              >
-              <span class="radio-label">减少月供</span>
-            </label>
+          <div class="repayment-type-buttons">
+            <button 
+              type="button"
+              class="type-btn"
+              :class="{ active: earlyRepayment.type === 'reducePeriods' }"
+              @click="earlyRepayment.type = 'reducePeriods'"
+            >
+              减少期数
+            </button>
+            <button 
+              type="button"
+              class="type-btn"
+              :class="{ active: earlyRepayment.type === 'reduceMonthly' }"
+              @click="earlyRepayment.type = 'reduceMonthly'"
+            >
+              减少月供
+            </button>
           </div>
         </div>
-        <div class="repayment-preview" v-if="earlyRepayment.amount">
-          <div class="preview-item">
-            <span class="preview-label">预计节省利息</span>
-            <span class="preview-value">¥{{ formatCurrency(calculateInterestSaved()) }}</span>
-          </div>
-          <div class="preview-item">
-            <span class="preview-label">新还款期数</span>
-            <span class="preview-value">{{ calculateNewPeriods() }}期</span>
-          </div>
-        </div>
+
         <button 
           class="btn btn-primary btn-block" 
           @click="handleEarlyRepayment"
@@ -775,53 +764,38 @@ export default {
   border-color: #1e88e5;
 }
 
-.radio-group {
+/* 还款方式按钮样式 */
+.repayment-type-buttons {
   display: flex;
-  gap: 16px;
+  gap: 10px;
 }
 
-.radio-item {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.radio-item input[type="radio"] {
-  margin-right: 8px;
-}
-
-.radio-label {
-  font-size: 14px;
-  color: #212121;
-}
-
-.repayment-preview {
-  background: #f5f5f5;
-  padding: 16px;
+.type-btn {
+  flex: 1;
+  padding: 10px 12px;
+  border: 2px solid #e0e0e0;
   border-radius: 8px;
-  margin-top: 8px;
-}
-
-.preview-item {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.preview-item:last-child {
-  margin-bottom: 0;
-}
-
-.preview-label {
-  font-size: 14px;
+  background: white;
   color: #666;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
-.preview-value {
-  font-size: 14px;
+.type-btn:hover {
+  border-color: #1e88e5;
   color: #1e88e5;
-  font-weight: 500;
 }
+
+.type-btn.active {
+  border-color: #1e88e5;
+  background: #1e88e5;
+  color: white;
+}
+
+
 
 .btn-block {
   width: 100%;
@@ -851,9 +825,15 @@ export default {
     text-align: left;
   }
   
-  .radio-group {
-    flex-direction: column;
+  .repayment-type-buttons {
+    flex-direction: row;
     gap: 8px;
+  }
+  
+  .type-btn {
+    padding: 8px 10px;
+    font-size: 12px;
+    min-width: 80px;
   }
   
   /* 移动端借款信息布局优化 */

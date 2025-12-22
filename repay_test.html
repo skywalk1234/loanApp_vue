@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>还款计划</title>
+  <style>
+    body {
+      font-family: "Microsoft YaHei", sans-serif;
+      background-color: #f9f9f9;
+      margin: 20px;
+      color: #333;
+    }
+
+    .card {
+      background-color: #f0f8e8;
+      border: 1px solid #d4edda;
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      color: #000;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .info-row label {
+      color: #666;
+      flex: 1;
+    }
+
+    .info-row span {
+      font-weight: 500;
+      color: #333;
+      text-align: right;
+    }
+
+    .amount {
+      font-size: 18px;
+      font-weight: bold;
+      color: #007bff;
+      margin-top: 8px;
+      text-align: right;
+    }
+
+    .status {
+      font-size: 14px;
+      font-weight: bold;
+      color: #28a745;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="title">还款计划</div>
+
+    <div class="info-row">
+      <label>第1期</label>
+      <span>2025/12/22</span>
+    </div>
+
+    <div class="info-row">
+      <label>应还金额</label>
+      <span class="amount">¥0.01</span>
+    </div>
+
+    <div class="info-row">
+      <label>本金</label>
+      <span>¥0.00</span>
+    </div>
+
+    <div class="info-row">
+      <label>利息</label>
+      <span>¥0.01</span>
+    </div>
+
+    <div class="info-row">
+      <label>状态</label>
+      <span class="status">已还</span>
+    </div>
+  </div>
+</body>
+</html>
