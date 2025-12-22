@@ -666,14 +666,14 @@ export default {
 }
 
 .period-label {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   color: #212121;
   margin-bottom: 2px;
 }
 
 .period-date {
-  font-size: 12px;
+  font-size: 13px;
   color: #999;
 }
 
@@ -684,13 +684,13 @@ export default {
 }
 
 .amount-label {
-  font-size: 12px;
+  font-size: 13px;
   color: #999;
   margin-bottom: 2px;
 }
 
 .amount-value {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
   color: #212121;
 }
@@ -932,6 +932,22 @@ export default {
     font-size: 15px;
   }
   
+  /* 移动端期数和应还金额字体大小调整 */
+  .period-label {
+    font-size: 15px;
+  }
+  
+  .period-date {
+    font-size: 12px;
+  }
+  
+  .amount-label {
+    font-size: 12px;
+  }
+  
+  .amount-value {
+    font-size: 17px;
+  }
 
 }
 </style>
