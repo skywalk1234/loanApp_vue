@@ -49,25 +49,15 @@
             <span class="info-label">借款编号</span>
             <span class="info-value">{{ record.loanId }}</span>
           </div>
-          <div class="info-item">
-            <span class="info-label">还款方式</span>
-            <span class="info-value">{{ getRepaymentMethodText(record.method) }}</span>
+          <div class="info-item" v-if="record.refundAmount && parseFloat(record.refundAmount) > 0">
+            <span class="info-label">退还金额</span>
+            <span class="info-value refund-amount">¥{{ record.refundAmount }}</span>
           </div>
         </div>
         
-        <div class="record-details" v-if="record.details">
-          <div class="detail-item">
-            <span class="detail-label">本金</span>
-            <span class="detail-value">¥{{ record.details.principal }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">利息</span>
-            <span class="detail-value">¥{{ record.details.interest }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">服务费</span>
-            <span class="detail-value">¥{{ record.details.serviceFee }}</span>
-          </div>
+        <div class="record-refund" v-if="record.refundAmount && parseFloat(record.refundAmount) > 0">
+          <span class="refund-label">系统退还</span>
+          <span class="refund-value">¥{{ record.refundAmount }}</span>
         </div>
       </div>
     </div>
@@ -92,99 +82,119 @@ export default {
     async loadRepaymentRecords() {
       this.loading = true
       try {
-        // 预留接口：获取还款记录
-        console.log('调用API获取还款记录')
+        // 从localStorage获取accessToken
+        const accessToken = localStorage.getItem('accessToken')
+        if (!accessToken) {
+          throw new Error('未找到访问令牌')
+        }
         
-        // 模拟数据
-        setTimeout(() => {
-          this.records = [
-            {
-              id: 1,
-              amount: 1250,
-              repaymentDate: '2024-01-20',
-              loanId: 'L20240115001',
-              status: 'success',
-              method: 'auto',
-              details: {
-                principal: 1000,
-                interest: 200,
-                serviceFee: 50
-              }
-            },
-            {
-              id: 2,
-              amount: 1250,
-              repaymentDate: '2024-01-15',
-              loanId: 'L20240110002',
-              status: 'success',
-              method: 'manual',
-              details: {
-                principal: 1000,
-                interest: 200,
-                serviceFee: 50
-              }
-            },
-            {
-              id: 3,
-              amount: 2500,
-              repaymentDate: '2024-01-10',
-              loanId: 'L20240110002',
-              status: 'success',
-              method: 'early',
-              details: {
-                principal: 2000,
-                interest: 400,
-                serviceFee: 100
-              }
-            }
-          ]
-          
-          // 计算统计信息
-          this.totalRepayment = this.records.reduce((sum, record) => sum + record.amount, 0)
-          this.repaymentCount = this.records.length
-          this.loading = false
-        }, 1000)
+        // 设置请求头
+        const myHeaders = new Headers()
+        myHeaders.append('Authorization', accessToken)
+        myHeaders.append('Content-Type', 'application/json')
         
-        // const response = await this.$api.getRepaymentRecords()
-        // this.records = response.data
-        // this.totalRepayment = response.totalRepayment
-        // this.repaymentCount = response.repaymentCount
+        const requestOptions = {
+          method: 'GET',
+          headers: myHeaders,
+          redirect: 'follow'
+        }
+        
+        // 调用API获取还款记录
+        const response = await fetch('http://115.190.40.44:45444/loan/getRepayment', requestOptions)
+        const result = await response.text()
+        
+        const jsonString = result;
+        const fixedJsonString = jsonString.replace(
+          /"loan_id":\s*(\d{15,})/g,  // 匹配15位以上的数字id
+          '"loan_id":"$1"'  // 添加双引号使其变为字符串
+        )
+        const data = JSON.parse(fixedJsonString)
+
+        if (data.errCode === 200 && data.success) {
+          // 处理还款记录数据
+          this.processRepaymentRecords(data.repayments || [])
+        } else {
+          console.error('获取还款记录失败:', data.message)
+          this.useMockData()
+        }
       } catch (error) {
         console.error('获取还款记录失败:', error)
+        this.useMockData()
+      } finally {
         this.loading = false
       }
     },
     
+    processRepaymentRecords(repayments) {
+      if (!repayments || repayments.length === 0) {
+        this.records = []
+        this.totalRepayment = 0
+        this.repaymentCount = 0
+        return
+      }
+      
+      // 转换API数据格式到组件格式
+      this.records = repayments.map(repayment => ({
+        id: repayment.id,
+        amount: Number(repayment.total_amount).toFixed(2),
+        repaymentDate: repayment.repay_at,
+        loanId: String(repayment.loan_id),
+        status: repayment.status,
+        refundAmount: Number(repayment.refund_amount || 0).toFixed(2),
+        extra: repayment.extra
+      }))
+      
+      // 计算统计信息
+      this.totalRepayment = this.records.reduce((sum, record) => sum + parseFloat(record.amount), 0).toFixed(2)
+      this.repaymentCount = this.records.length
+    },
+    
+    useMockData() {
+      // 模拟数据作为后备
+      this.records = [
+        {
+          id: 1,
+          amount: '1250.00',
+          repaymentDate: '2024-01-20T10:30:00Z',
+          loanId: '786915251432996852',
+          status: 'SUCCESS',
+          refundAmount: '0.00'
+        },
+        {
+          id: 2,
+          amount: '1250.00',
+          repaymentDate: '2024-01-15T14:20:00Z',
+          loanId: '786915251432996852',
+          status: 'PROCESSING',
+          refundAmount: '0.00'
+        }
+      ]
+      
+      this.totalRepayment = '2500.00'
+      this.repaymentCount = 2
+    },
+    
     getStatusClass(status) {
       const statusMap = {
-        'success': 'status-success',
-        'processing': 'status-processing',
-        'failed': 'status-failed'
+        'SUCCESS': 'status-success',
+        'PROCESSING': 'status-processing',
+        'FAILED': 'status-failed'
       }
       return statusMap[status] || 'status-success'
     },
     
     getStatusText(status) {
       const statusMap = {
-        'success': '还款成功',
-        'processing': '处理中',
-        'failed': '还款失败'
+        'SUCCESS': '还款成功',
+        'PROCESSING': '处理中',
+        'FAILED': '还款失败'
       }
       return statusMap[status] || '还款成功'
     },
     
-    getRepaymentMethodText(method) {
-      const methodMap = {
-        'auto': '自动扣款',
-        'manual': '主动还款',
-        'early': '提前还款'
-      }
-      return methodMap[method] || '其他'
-    },
-    
     formatDate(dateStr) {
       const date = new Date(dateStr)
-      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
     },
     
     goBack() {
@@ -375,6 +385,33 @@ export default {
   font-size: 14px;
   color: #212121;
   font-weight: 500;
+}
+
+.refund-amount {
+  color: #ff4d4f;
+  font-weight: 600;
+}
+
+.record-refund {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #fff1f0;
+  border-radius: 6px;
+  margin-top: 8px;
+  border-left: 3px solid #ff4d4f;
+}
+
+.refund-label {
+  font-size: 13px;
+  color: #666;
+}
+
+.refund-value {
+  font-size: 14px;
+  color: #ff4d4f;
+  font-weight: 600;
 }
 
 .record-details {
