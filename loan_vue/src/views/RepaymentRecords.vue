@@ -59,6 +59,12 @@
           <span class="refund-label">系统退还</span>
           <span class="refund-value">¥{{ record.refundAmount }}</span>
         </div>
+        
+        <div class="record-actions">
+          <button class="btn-view-details" @click="viewRepaymentDetails(record.loanId)">
+            查看对应借款
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -199,6 +205,14 @@ export default {
     
     goBack() {
       this.$router.push('/profile')
+    },
+    
+    viewRepaymentDetails(loanId) {
+      // 跳转到借款记录页面，传递借款编号作为参数，用于置顶显示对应记录
+      this.$router.push({
+        path: '/loan-records',
+        query: { highlightLoanId: loanId }
+      })
     }
   }
 }
@@ -412,6 +426,38 @@ export default {
   font-size: 14px;
   color: #ff4d4f;
   font-weight: 600;
+}
+
+.record-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f5f5f5;
+}
+
+.btn-view-details {
+  background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(30, 136, 229, 0.3);
+}
+
+.btn-view-details:hover {
+  background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+  box-shadow: 0 4px 12px rgba(30, 136, 229, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-view-details:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(30, 136, 229, 0.3);
 }
 
 .record-details {

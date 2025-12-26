@@ -42,6 +42,7 @@
         v-for="record in filteredRecords" 
         :key="record.id"
         class="record-item"
+        :class="{ 'highlight-record': record.isHighlight && isHighlighting }"
         @click="goToRepayment(record)"
       >
         <div class="record-header">
@@ -159,7 +160,9 @@ export default {
       showProductModal: false,
       productLoading: false,
       productError: '',
-      productInfo: {}
+      productInfo: {},
+      highlightLoanId: null, // 需要高亮显示的借款编号
+      isHighlighting: false // 是否正在高亮显示
     }
   },
   computed: {
@@ -179,6 +182,12 @@ export default {
     }
   },
   created() {
+    // 检查是否有需要高亮显示的借款编号
+    const query = this.$route.query
+    if (query.highlightLoanId) {
+      this.highlightLoanId = query.highlightLoanId
+      this.isHighlighting = true
+    }
     this.loadLoanRecords()
   },
   methods: {
@@ -212,7 +221,7 @@ export default {
         
         if (data.errCode === 200 && data.success) {
           // 将后端数据格式转换为前端需要的格式
-          this.records = data.list.map(item => ({
+          let records = data.list.map(item => ({
             id: item.loan_id,
             amount: parseFloat(item.Principal),
             totalPeriods: item.TotalPeriods,
@@ -223,11 +232,29 @@ export default {
             productName: `产品${item.product_id}`,
             productId: item.product_id,
             term: item.TotalPeriods,
-            interestRate: 0.05
+            interestRate: 0.05,
+            isHighlight: item.loan_id === this.highlightLoanId // 标记是否需要高亮
           }))
+          
+          // 如果需要高亮显示特定记录，将其置顶
+          if (this.highlightLoanId) {
+            const highlightRecord = records.find(record => record.id === this.highlightLoanId)
+            if (highlightRecord) {
+              records = [highlightRecord, ...records.filter(record => record.id !== this.highlightLoanId)]
+            }
+          }
+          
+          this.records = records
           console.log(this.records)
            // 👇 新增：为每条记录获取真实产品名
           await this.loadProductNames()
+          
+          // 如果正在高亮显示，滚动到顶部并添加动画效果
+          if (this.isHighlighting && this.highlightLoanId) {
+            this.$nextTick(() => {
+              this.scrollToHighlightedRecord()
+            })
+          }
 
         } else {
           console.error('获取借款记录失败:', data)
@@ -396,6 +423,19 @@ export default {
     
     goBack() {
       this.$router.push('/profile')
+    },
+    
+    scrollToHighlightedRecord() {
+      // 滚动到页面顶部，因为高亮记录已经被置顶
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      })
+      
+      // 3秒后移除高亮效果
+      setTimeout(() => {
+        this.isHighlighting = false
+      }, 3000)
     }
   }
 }
@@ -603,6 +643,24 @@ export default {
   font-size: 12px;
   color: #666;
   font-weight: 500;
+}
+
+/* 高亮记录样式 - 简洁闪烁效果 */
+.highlight-record {
+  border: 2px solid #1e88e5 !important;
+  animation: borderFlash 1.5s ease-in-out 3;
+  background-color: #f8f9ff;
+}
+
+@keyframes borderFlash {
+  0%, 100% {
+    border-color: #1e88e5;
+    box-shadow: 0 0 0 rgba(30, 136, 229, 0);
+  }
+  50% {
+    border-color: #42a5f5;
+    box-shadow: 0 0 10px rgba(30, 136, 229, 0.3);
+  }
 }
 
 @media (max-width: 480px) {
