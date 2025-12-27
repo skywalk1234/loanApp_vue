@@ -183,8 +183,14 @@ export default {
     },
     
     goToBankCard() {
-      // 预留接口：绑定银行卡
-      alert('绑定银行卡功能开发中...')
+      // 检查是否已经完成实名认证
+      if (localStorage.getItem('faced') !== 'true') {
+        alert('请先完成实名认证后再绑定银行卡')
+        return
+      }
+      
+      // 跳转到绑定银行卡页面
+      this.$router.push('/bank-card')
     },
     
     goToSettings() {
