@@ -89,11 +89,17 @@
           <p class="face-desc">请确保光线充足，面部无遮挡</p>
           
           <div class="face-camera">
-            <div v-if="!facePhoto" class="camera-placeholder">
+            <div v-if="!cameraStream && !facePhoto" class="camera-placeholder" @click="startCamera">
               <div class="camera-icon">📷</div>
-              <div class="camera-text">点击下方按钮开始拍照</div>
+              <div class="camera-text">点击开启摄像头</div>
             </div>
-            <div v-else class="face-preview">
+            <div v-else-if="cameraStream && !facePhoto" class="camera-active">
+              <video ref="videoElement" autoplay playsinline class="camera-video"></video>
+              <div class="camera-overlay">
+                <div class="face-guide"></div>
+              </div>
+            </div>
+            <div v-else-if="facePhoto" class="face-preview">
               <img :src="facePhoto" alt="人脸照片" />
               <div class="face-overlay">
                 <button class="retake-btn" @click="retakePhoto">重新拍照</button>
@@ -102,15 +108,23 @@
           </div>
 
           <button 
-            v-if="!facePhoto"
+            v-if="cameraStream && !facePhoto"
             class="camera-button" 
             @click="takePhoto"
           >
             📷 拍照
           </button>
+          
+          <button 
+            v-if="!cameraStream && !facePhoto"
+            class="camera-button" 
+            @click="startCamera"
+          >
+            📷 开启摄像头
+          </button>
 
           <button 
-            v-else
+            v-if="facePhoto"
             class="confirm-button" 
             @click="confirmPhoto"
           >
@@ -150,7 +164,8 @@ export default {
       idCardFront: '',
       idCardBack: '',
       facePhoto: '',
-      showProcessingModal: false
+      showProcessingModal: false,
+      cameraStream: null
     }
   },
   methods: {
@@ -191,14 +206,67 @@ export default {
       }
     },
 
+    async startCamera() {
+      try {
+        // 请求摄像头权限
+        this.cameraStream = await navigator.mediaDevices.getUserMedia({
+          video: { 
+            facingMode: 'user',
+            width: { ideal: 640 },
+            height: { ideal: 480 }
+          },
+          audio: false
+        })
+        
+        // 将视频流绑定到video元素
+        this.$nextTick(() => {
+          if (this.$refs.videoElement) {
+            this.$refs.videoElement.srcObject = this.cameraStream
+          }
+        })
+      } catch (error) {
+        console.error('摄像头启动失败:', error)
+        alert('无法访问摄像头，请检查权限设置')
+      }
+    },
+
     takePhoto() {
-      // 模拟拍照功能
-      // 在实际应用中，这里应该调用摄像头API
-      this.facePhoto = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjE2IiBmaWxsPSIjOTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+人脸照片</L3RleHQ+PC9zdmc+'
+      if (!this.cameraStream) {
+        alert('摄像头未启动')
+        return
+      }
+      
+      const video = this.$refs.videoElement
+      const canvas = document.createElement('canvas')
+      const context = canvas.getContext('2d')
+      
+      // 设置canvas尺寸
+      canvas.width = video.videoWidth
+      canvas.height = video.videoHeight
+      
+      // 绘制当前视频帧
+      context.drawImage(video, 0, 0, canvas.width, canvas.height)
+      
+      // 转换为base64图片
+      this.facePhoto = canvas.toDataURL('image/jpeg', 0.8)
+      
+      // 停止摄像头
+      this.stopCamera()
+    },
+
+    stopCamera() {
+      if (this.cameraStream) {
+        this.cameraStream.getTracks().forEach(track => track.stop())
+        this.cameraStream = null
+      }
     },
 
     retakePhoto() {
       this.facePhoto = ''
+      // 重新开始摄像头
+      this.$nextTick(() => {
+        this.startCamera()
+      })
     },
 
     confirmPhoto() {
@@ -238,6 +306,11 @@ export default {
     finishAuth() {
       this.$router.push('/')
     }
+  },
+  
+  beforeDestroy() {
+    // 组件销毁时清理摄像头资源
+    this.stopCamera()
   }
 }
 </script>
@@ -447,9 +520,9 @@ export default {
 }
 
 .face-camera {
-  width: 200px;
-  height: 200px;
-  border: 2px dashed #ddd;
+  width: 280px;
+  height: 280px;
+  border: 3px dashed #ddd;
   border-radius: 50%;
   margin: 0 auto 24px;
   display: flex;
@@ -457,6 +530,7 @@ export default {
   justify-content: center;
   position: relative;
   overflow: hidden;
+  background: #f8f9fa;
 }
 
 .camera-placeholder {
