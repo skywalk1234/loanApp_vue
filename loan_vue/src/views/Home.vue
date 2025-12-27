@@ -8,6 +8,10 @@
           <h3 class="user-name">{{ userName }}</h3>
           <p class="user-phone">{{ userPhone }}</p>
         </div>
+        <button class="auth-button" @click="goToRealNameAuth" :class="{ 'authenticated': isAuthenticated }">
+          <span class="auth-icon">{{ isAuthenticated ? '✓' : '⚠' }}</span>
+          <span class="auth-text">{{ isAuthenticated ? '已实名' : '未实名' }}</span>
+        </button>
       </div>
       
       <div class="credit-info">
@@ -61,28 +65,24 @@
           <div class="advantage-icon">⚡</div>
           <div class="advantage-content">
             <h4>极速放贷</h4>
-            <p>最快30分钟到账，急用钱不求人</p>
           </div>
         </div>
         <div class="advantage-item">
           <div class="advantage-icon">🛡️</div>
           <div class="advantage-content">
             <h4>风险管控</h4>
-            <p>多重安全保障，保护您的资金安全</p>
           </div>
         </div>
         <div class="advantage-item">
           <div class="advantage-icon">📱</div>
           <div class="advantage-content">
             <h4>操作便捷</h4>
-            <p>手机一键申请，随时随地借款</p>
           </div>
         </div>
         <div class="advantage-item">
           <div class="advantage-icon">💎</div>
           <div class="advantage-content">
             <h4>额度灵活</h4>
-            <p>根据个人信用，提供合适额度</p>
           </div>
         </div>
       </div>
@@ -121,6 +121,11 @@ export default {
   created() {
     this.loadUserInfo()
   },
+  computed: {
+    isAuthenticated() {
+      return localStorage.getItem('faced') === 'true'
+    }
+  },
   methods: {
     loadUserInfo() {
       const user = JSON.parse(localStorage.getItem('user') || '{}')
@@ -157,6 +162,15 @@ export default {
     
     goToProfile() {
       this.$router.push('/profile')
+    },
+    
+    goToRealNameAuth() {
+      if (this.isAuthenticated) {
+        // 如果已经认证，可以显示认证详情或跳转到认证信息页面
+        alert('您已完成实名认证')
+      } else {
+        this.$router.push('/real-name-auth')
+      }
     }
   }
 }
@@ -181,6 +195,49 @@ export default {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
+  position: relative;
+}
+
+.auth-button {
+  margin-left: auto;
+  background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.auth-button.authenticated {
+  background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.auth-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+.auth-button.authenticated:hover {
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+.auth-icon {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.auth-text {
+  font-size: 14px;
 }
 
 .user-avatar {
@@ -308,34 +365,53 @@ export default {
 }
 
 .advantages {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+}
+
+.advantages .section-title {
+  margin-bottom: 6px;
+  font-size: 14px;
 }
 
 .advantage-list {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  justify-content: space-between;
+  gap: 4px;
 }
 
 .advantage-item {
   background: white;
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: 6px;
+  padding: 8px 4px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  min-width: 0;
 }
 
 .advantage-icon {
-  font-size: 32px;
-  margin-right: 16px;
+  font-size: 28px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .advantage-content h4 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: normal;
+  margin-bottom: 2px;
   color: #212121;
+}
+
+.advantage-content p {
+  font-size: 12px;
+  color: #757575;
+  margin: 0;
+  line-height: 1.4;
 }
 
 .advantage-content p {
@@ -415,6 +491,38 @@ export default {
   .score-value,
   .limit-value {
     font-size: 24px;
+  }
+  
+  /* 田字形布局在小屏幕下的调整 */
+  .advantage-list {
+    gap: 8px;
+  }
+  
+  .auth-button {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  
+  .auth-icon {
+    font-size: 14px;
+  }
+  
+  .auth-text {
+    font-size: 12px;
+  }
+  
+  .advantage-item {
+    padding: 16px 12px;
+  }
+  
+  .advantage-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
+  
+  .advantage-content h4 {
+    font-size: 12px;
+    margin-bottom: 4px;
   }
 }
 </style>

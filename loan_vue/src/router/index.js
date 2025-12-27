@@ -11,6 +11,7 @@ const Profile = () => import('@/views/Profile.vue')
 const Repayment = () => import('@/views/Repayment.vue')
 const LoanRecords = () => import('@/views/LoanRecords.vue')
 const RepaymentRecords = () => import('@/views/RepaymentRecords.vue')
+const RealNameAuth = () => import('@/views/RealNameAuth.vue')
 
 const routes = [
   {
@@ -39,6 +40,12 @@ const routes = [
     path: '/repayment',
     name: 'Repayment',
     component: Repayment,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/real-name-auth',
+    name: 'RealNameAuth',
+    component: RealNameAuth,
     meta: { requiresAuth: true }
   },
   {
