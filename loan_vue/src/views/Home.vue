@@ -166,8 +166,8 @@ export default {
     
     goToRealNameAuth() {
       if (this.isAuthenticated) {
-        // 如果已经认证，可以显示认证详情或跳转到认证信息页面
-        alert('您已完成实名认证')
+        // 如果已经认证，提醒用户无需重复认证
+        alert('您已完成实名认证，无需重复认证')
       } else {
         this.$router.push('/real-name-auth')
       }

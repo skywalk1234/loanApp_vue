@@ -152,6 +152,9 @@ export default {
         this.userInfo.name = user.name || '用户'
         this.userInfo.phone = user.phone || '138****8888'
         
+        // 检查实名认证状态
+        this.userInfo.isRealNameAuth = localStorage.getItem('faced') === 'true'
+        
         // 模拟获取用户统计信息
         // const response = await this.$api.getUserInfo()
         // this.userInfo = response.data
@@ -169,8 +172,14 @@ export default {
     },
     
     goToRealNameAuth() {
-      // 预留接口：实名认证
-      alert('实名认证功能开发中...')
+      // 检查是否已经完成实名认证
+      if (localStorage.getItem('faced') === 'true') {
+        alert('您已完成实名认证，无需重复认证')
+        return
+      }
+      
+      // 跳转到实名认证页面
+      this.$router.push('/real-name-auth')
     },
     
     goToBankCard() {
