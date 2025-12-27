@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 // 页面组件
-const Login = () => import('@/views/Login.vue')
-const Register = () => import('@/views/Register.vue')
+const Login = () => import('@/views/login.vue')
+const Register = () => import('@/views/register.vue')
 const MainLayout = () => import('@/layouts/MainLayout.vue')
 const Home = () => import('@/views/Home.vue')
 const Loan = () => import('@/views/Loan.vue')
