@@ -1,5 +1,10 @@
 <template>
   <div class="login-container">
+    <!-- 装饰性背景元素 -->
+    <div class="bg-decoration bg-circle-1"></div>
+    <div class="bg-decoration bg-circle-2"></div>
+    <div class="bg-decoration bg-circle-3"></div>
+    
     <div class="login-header">
       <h1 class="app-title">LoanApp</h1>
       <p class="app-subtitle">安全便捷的贷款服务平台</p>
@@ -286,17 +291,81 @@ export default {
 <style scoped>
 .login-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1e88e5 0%, #42a5f5 100%);
+  background: linear-gradient(135deg, #1e88e5 0%, #64b5f6 50%, #90caf9 100%);
   display: flex;
   flex-direction: column;
   justify-content: center;
   padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    linear-gradient(45deg, transparent 49%, rgba(255, 255, 255, 0.05) 50%, transparent 51%),
+    linear-gradient(-45deg, transparent 49%, rgba(255, 255, 255, 0.05) 50%, transparent 51%);
+  background-size: 100% 100%, 100% 100%, 20px 20px, 20px 20px;
+  animation: backgroundMove 20s ease-in-out infinite;
+}
+
+@keyframes backgroundMove {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  25% { transform: translateX(-5px) translateY(-5px); }
+  50% { transform: translateX(5px) translateY(-5px); }
+  75% { transform: translateX(-5px) translateY(5px); }
+}
+
+/* 装饰性背景元素 */
+.bg-decoration {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  animation: float 6s ease-in-out infinite;
+}
+
+.bg-circle-1 {
+  width: 80px;
+  height: 80px;
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.bg-circle-2 {
+  width: 120px;
+  height: 120px;
+  top: 60%;
+  right: 15%;
+  animation-delay: 2s;
+}
+
+.bg-circle-3 {
+  width: 60px;
+  height: 60px;
+  bottom: 20%;
+  left: 20%;
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(180deg); }
 }
 
 .login-header {
   text-align: center;
   color: white;
   margin-bottom: 40px;
+  position: relative;
+  z-index: 1;
 }
 
 .app-title {
@@ -315,6 +384,8 @@ export default {
   border-radius: 20px;
   padding: 32px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
 }
 
 /* 基础按钮样式 */

@@ -305,6 +305,7 @@ export default {
   font-size: 32px;
   font-weight: bold;
   margin-bottom: 8px;
+  color: white;
 }
 
 .subtitle {
