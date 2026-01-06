@@ -27,7 +27,7 @@
           </div>
           <div class="detail-item">
             <span class="detail-label">借款期限</span>
-            <span class="detail-value">{{ product.min_periods }} - {{ product.max_periods }}{{ product.period_type === 'DAY' ? '天' : product.period_type === 'MONTH' ? '个月' : '年' }}</span>
+            <span class="detail-value">0 - {{ product.max_periods }}{{ product.period_type === 'DAY' ? '天' : product.period_type === 'MONTH' ? '个月' : '年' }}</span>
           </div>
         </div>
         
