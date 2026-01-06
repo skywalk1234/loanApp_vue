@@ -283,6 +283,7 @@ export default {
     
     getStatusText(status) {
       const statusMap = {
+        'checking': '审核中',
         'repaying': '还款中',
         'completed': '已结清',
         'overdue': '已逾期'
@@ -410,7 +411,8 @@ export default {
     
     mapStatus(status) {
       const statusMap = {
-        'PENDING': 'repaying',
+        'UNPAID': 'repaying',
+        'PENDING': 'checking',
         'APPROVED': 'repaying',
         'REJECTED': 'overdue',
         'DISBURSED': 'repaying',

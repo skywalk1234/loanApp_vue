@@ -150,7 +150,7 @@ export default {
       }
       
       // 获取保存的邮箱验证token
-      const emailVerifyToken = sessionStorage.getItem('emailVerifyToken');
+      const emailVerifyToken = localStorage.getItem('emailVerifyToken');
       if (!emailVerifyToken) {
         alert('请先发送邮箱验证码')
         return
@@ -162,14 +162,14 @@ export default {
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
       
-      // 准备注册数据
+      // 准备注册数据 - 严格按照API文档格式
       var raw = JSON.stringify({
-        "username": this.form.nickname,
+        "username": this.form.nickname,  // 对应表单中的nickname
+        "pwd": this.form.password,       // 对应password
         "phone": this.form.phone,
         "email": this.form.email,
-        "password": this.form.password,
-        "verifyCode": this.form.emailCode,
-        "emailToken": emailVerifyToken
+        "code": this.form.emailCode,     // 对应emailCode
+        "token": emailVerifyToken       // 从localStorage中的emailVerifyToken字段获取
       });
       
       console.log('注册请求数据:', raw)
@@ -182,7 +182,7 @@ export default {
         redirect: 'follow'
       };
       
-      // 发送注册请求
+      // 发送注册请求 - 只使用POST请求体，URL不带参数
       fetch("http://115.190.40.44:45444/user/register", requestOptions)
         .then(response => response.text())
         .then(result => {
@@ -195,8 +195,8 @@ export default {
             if (responseData.success) {
               console.log('注册成功');
               
-              // 清除sessionStorage中的邮箱验证token
-              sessionStorage.removeItem('emailVerifyToken');
+              // 清除localStorage中的邮箱验证token
+              localStorage.removeItem('emailVerifyToken');
               
               alert('注册成功！请登录')
               this.$router.push('/login')
@@ -255,8 +255,8 @@ export default {
             const responseData = JSON.parse(result);
             
             if (responseData.success) {
-              // 保存token到sessionStorage
-              sessionStorage.setItem('emailVerifyToken', responseData.token);
+              // 保存token到localStorage
+              localStorage.setItem('emailVerifyToken', responseData.token);
               console.log('验证码发送成功，token已保存:', responseData.token);
               
               // 开始倒计时
