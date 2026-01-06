@@ -103,6 +103,8 @@
 <script>
 import { tokenService } from '@/services/api'
 import tokenRefreshMixin from '@/mixins/tokenRefresh'
+import websocketService from '@/services/websocket'
+import messageStore from '@/stores/messageStore'
 
 export default {
   name: 'Message',
@@ -110,18 +112,22 @@ export default {
   data() {
     return {
       activeTab: 'all',
-      messages: [],
       showMessageDetail: false,
-      currentMessage: {},
-      messageCount: {
-        all: 0,
-        system: 0,
-        loan: 0,
-        repayment: 0
-      }
+      currentMessage: {}
     }
   },
   computed: {
+    messages() {
+      return messageStore.messages
+    },
+    messageCount() {
+      return {
+        all: this.messages.length,
+        system: this.messages.filter(msg => msg.type === 'system').length,
+        loan: this.messages.filter(msg => msg.type === 'loan').length,
+        repayment: this.messages.filter(msg => msg.type === 'repayment').length
+      }
+    },
     filteredMessages() {
       if (this.activeTab === 'all') {
         return this.messages
@@ -131,6 +137,9 @@ export default {
   },
   created() {
     this.loadMessages()
+    this.initWebSocketListener()
+    // 当用户打开消息页面时，标记所有消息为已读
+    messageStore.markAllAsRead()
   },
   methods: {
     async loadMessages() {
@@ -140,66 +149,59 @@ export default {
         
         // 模拟数据
         this.messages = [
-          {
-            id: 1,
-            title: '借款申请已通过',
-            content: '恭喜您！您的借款申请已通过审核，款项将在30分钟内到账，请注意查收。',
-            type: 'loan',
-            isRead: false,
-            createTime: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-            extraInfo: {
-              '申请金额': '¥5000',
-              '到账金额': '¥4950',
-              '手续费': '¥50'
-            }
-          },
-          {
-            id: 2,
-            title: '还款提醒',
-            content: '您的借款将于明天到期，请及时还款，避免产生逾期费用。应还金额：¥5100',
-            type: 'repayment',
-            isRead: false,
-            createTime: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-            extraInfo: {
-              '应还金额': '¥5100',
-              '到期日期': '2024-01-20',
-              '借款编号': 'LOAN202401001'
-            }
-          },
-          {
-            id: 3,
-            title: '系统维护通知',
-            content: '系统将于今晚23:00-01:00进行维护，期间可能影响部分功能使用，请提前做好准备。',
-            type: 'system',
-            isRead: true,
-            createTime: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString()
-          },
-          {
-            id: 4,
-            title: '信用评分更新',
-            content: '您的信用评分已更新，当前评分为：750分，信用等级：优秀。',
-            type: 'system',
-            isRead: true,
-            createTime: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
-            extraInfo: {
-              '当前评分': '750分',
-              '信用等级': '优秀',
-              '提升建议': '保持良好的还款记录'
-            }
-          }
+          // {
+          //   id: 1,
+          //   title: '借款申请已通过',
+          //   content: '恭喜您！您的借款申请已通过审核，款项将在30分钟内到账，请注意查收。',
+          //   type: 'loan',
+          //   isRead: false,
+          //   createTime: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+          //   extraInfo: {
+          //     '申请金额': '¥5000',
+          //     '到账金额': '¥4950',
+          //     '手续费': '¥50'
+          //   }
+          // },
+          // {
+          //   id: 2,
+          //   title: '还款提醒',
+          //   content: '您的借款将于明天到期，请及时还款，避免产生逾期费用。应还金额：¥5100',
+          //   type: 'repayment',
+          //   isRead: false,
+          //   createTime: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+          //   extraInfo: {
+          //     '应还金额': '¥5100',
+          //     '到期日期': '2024-01-20',
+          //     '借款编号': 'LOAN202401001'
+          //   }
+          // },
+          // {
+          //   id: 3,
+          //   title: '系统维护通知',
+          //   content: '系统将于今晚23:00-01:00进行维护，期间可能影响部分功能使用，请提前做好准备。',
+          //   type: 'system',
+          //   isRead: true,
+          //   createTime: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString()
+          // },
+          // {
+          //   id: 4,
+          //   title: '信用评分更新',
+          //   content: '您的信用评分已更新，当前评分为：750分，信用等级：优秀。',
+          //   type: 'system',
+          //   isRead: true,
+          //   createTime: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
+          //   extraInfo: {
+          //     '当前评分': '750分',
+          //     '信用等级': '优秀',
+          //     '提升建议': '保持良好的还款记录'
+          //   }
+          // }
         ]
         
         this.updateMessageCount()
       } catch (error) {
         console.error('获取消息失败:', error)
       }
-    },
-    
-    updateMessageCount() {
-      this.messageCount.all = this.messages.length
-      this.messageCount.system = this.messages.filter(msg => msg.type === 'system').length
-      this.messageCount.loan = this.messages.filter(msg => msg.type === 'loan').length
-      this.messageCount.repayment = this.messages.filter(msg => msg.type === 'repayment').length
     },
     
     getMessageIcon(type) {
@@ -243,12 +245,17 @@ export default {
       this.showMessageDetail = true
       
       if (!message.isRead) {
-        message.isRead = true
-        this.updateMessageCount()
+        messageStore.markAsRead(message.id)
         
         // 预留接口：标记消息为已读
         console.log('标记消息为已读:', message.id)
       }
+    },
+
+    // 初始化WebSocket监听器
+    initWebSocketListener() {
+      // WebSocket消息现在由全局服务自动处理，不需要在这里监听
+      console.log('消息页面WebSocket监听器已初始化')
     }
   }
 }

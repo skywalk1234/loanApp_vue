@@ -103,6 +103,8 @@
 </template>
 
 <script>
+import websocketService from '@/services/websocket'
+
 export default {
   name: 'Home',
   data() {
@@ -115,11 +117,17 @@ export default {
         { id: 1, title: '关于调整借款利率的公告', date: '2024-01-15' },
         { id: 2, title: '春节期间服务时间安排', date: '2024-01-10' },
         { id: 3, title: '新用户专享优惠活动', date: '2024-01-05' }
-      ]
+      ],
+      websocketConnected: false
     }
   },
   created() {
     this.loadUserInfo()
+    this.initWebSocket()
+  },
+  beforeDestroy() {
+    // 页面销毁时移除WebSocket消息监听器
+    window.removeEventListener('websocket-message', this.handleWebSocketMessage)
   },
   computed: {
     isAuthenticated() {
@@ -145,6 +153,66 @@ export default {
         // this.creditLimit = response.data.creditLimit
       } catch (error) {
         console.error('获取信用信息失败:', error)
+      }
+    },
+
+    // 初始化WebSocket连接
+    async initWebSocket() {
+      try {
+        await websocketService.connect()
+        this.websocketConnected = true
+        console.log('WebSocket连接成功')
+        
+        // 监听WebSocket消息
+        window.addEventListener('websocket-message', this.handleWebSocketMessage)
+        
+        // 注册消息处理器 - 现在由全局服务处理，这里只需要显示通知
+        websocketService.onMessage('all', this.handleWebSocketNotification)
+      } catch (error) {
+        console.error('WebSocket连接失败:', error)
+        this.websocketConnected = false
+      }
+    },
+
+    // 处理WebSocket消息
+    handleWebSocketMessage(event) {
+      const message = event.detail
+      // console.log('收到WebSocket消息:', message)
+    },
+
+    // 处理WebSocket通知
+    handleWebSocketNotification(message) {
+      // 显示消息通知
+      this.showMessageNotification(message)
+    },
+
+    // 显示消息通知
+    showMessageNotification(message) {
+      // 获取消息类型文本
+      let typeText = ''
+      switch (message.type) {
+        case 0:
+          typeText = '系统通知'
+          break
+        case 1:
+          typeText = '贷款通知'
+          break
+        case 2:
+          typeText = '还款通知'
+          break
+        default:
+          typeText = '消息通知'
+      }
+
+      // 使用浏览器的通知API或简单的alert
+      if (Notification.permission === 'granted') {
+        new Notification(typeText, {
+          body: message.msg,
+          icon: '/favicon.ico'
+        })
+      } else {
+        // 如果通知权限未授予，使用简单的提示
+        alert(`${typeText}: ${message.msg}`)
       }
     },
     

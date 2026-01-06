@@ -21,7 +21,10 @@
       class="nav-item"
       :class="{ active: $route.path === '/message' }"
     >
-      <i class="nav-icon">💬</i>
+      <div class="nav-icon-wrapper">
+        <i class="nav-icon">💬</i>
+        <span v-if="unreadCount > 0" class="notification-dot"></span>
+      </div>
       <span>消息</span>
     </router-link>
     <router-link 
@@ -36,8 +39,15 @@
 </template>
 
 <script>
+import { unreadCount } from '@/stores/messageStore'
+
 export default {
-  name: 'BottomNav'
+  name: 'BottomNav',
+  computed: {
+    unreadCount() {
+      return unreadCount.value
+    }
+  }
 }
 </script>
 
@@ -82,5 +92,37 @@ export default {
 .nav-item span {
   font-size: 11px;
   display: block;
+}
+
+.nav-icon-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.notification-dot {
+  position: absolute;
+  top: -2px;
+  right: -4px;
+  width: 8px;
+  height: 8px;
+  background-color: #ff4444;
+  border-radius: 50%;
+  border: 1px solid white;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 </style>
