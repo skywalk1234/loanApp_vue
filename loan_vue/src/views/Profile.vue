@@ -10,22 +10,28 @@
         </div>
       </div>
       
-      <div class="user-stats">
-        <div class="stat-card stat-score">
-          <div class="stat-header">
-            <span class="stat-icon">⭐</span>
-            <span class="stat-label">信用评分</span>
+      <div class="credit-score-section">
+        <div class="score-left">
+          <div class="score-label">信用评分</div>
+          <div class="score-circle">
+            <div class="score-value">{{ userInfo.creditScore }}</div>
           </div>
-          <div class="stat-value large">{{ userInfo.creditScore }}</div>
-          <div class="stat-desc">信用{{ userInfo.creditLevel }}</div>
         </div>
-        <div class="stat-card stat-total">
-          <div class="stat-header">
-            <span class="stat-icon">💰</span>
-            <span class="stat-label">累计借款</span>
+        <div class="score-right">
+          <div class="credit-levels">
+            <div class="level-item" :class="{ active: userInfo.creditScore >= 700 }">
+              <div class="level-dot"></div>
+              <span class="level-text">优秀</span>
+            </div>
+            <div class="level-item" :class="{ active: userInfo.creditScore >= 600 && userInfo.creditScore < 700 }">
+              <div class="level-dot"></div>
+              <span class="level-text">良好</span>
+            </div>
+            <div class="level-item" :class="{ active: userInfo.creditScore < 600 }">
+              <div class="level-dot"></div>
+              <span class="level-text">较差</span>
+            </div>
           </div>
-          <div class="stat-value large">¥{{ userInfo.totalLoan.toLocaleString() }}</div>
-          <div class="stat-desc">总额</div>
         </div>
       </div>
     </div>
@@ -270,10 +276,103 @@ export default {
   margin-bottom: 4px;
 }
 
-.user-stats {
+.credit-score-section {
   display: flex;
-  gap: 16px;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-top: 20px;
+  padding: 24px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.15);
+}
+
+.score-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.score-circle {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffffff 0%, #f1f8e9 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.25);
+  border: 4px solid #4caf50;
+}
+
+.score-value {
+  font-size: 32px;
+  font-weight: bold;
+  color: #2e7d32;
+  margin-bottom: 4px;
+}
+
+.score-label {
+  font-size: 18px;
+  color: #2e7d32;
+  font-weight: 700;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.score-right {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 8px;
+}
+
+.credit-levels {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.level-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0.4;
+  transition: all 0.3s ease;
+}
+
+.level-item.active {
+  opacity: 1;
+}
+
+.level-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #4caf50;
+  transition: all 0.3s ease;
+}
+
+.level-item.active .level-dot {
+  width: 16px;
+  height: 16px;
+  background: #2e7d32;
+  box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.3);
+}
+
+.level-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: #388e3c;
+  transition: all 0.3s ease;
+}
+
+.level-item.active .level-text {
+  font-weight: 600;
+  color: #2e7d32;
+  font-size: 18px;
 }
 
 .stat-card {
@@ -427,21 +526,44 @@ export default {
     padding: 20px;
   }
   
-  .user-stats {
-    flex-direction: column;
+  .credit-score-section {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+  }
+  
+  .score-circle {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .score-value {
+    font-size: 24px;
+  }
+  
+  .score-label {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  
+  .credit-levels {
     gap: 12px;
   }
   
-  .stat-card {
-    padding: 10px;
+  .level-text {
+    font-size: 14px;
   }
   
-  .stat-value {
-    font-size: 16px;
+  .level-dot {
+    width: 10px;
+    height: 10px;
   }
   
-  .stat-value.large {
-    font-size: 20px;
+  .level-item.active .level-dot {
+    width: 14px;
+    height: 14px;
   }
   
   .menu-item {
@@ -451,6 +573,46 @@ export default {
   .menu-icon {
     font-size: 20px;
     margin-right: 12px;
+  }
+}
+
+/* 超小屏幕适配 */
+@media (max-width: 360px) {
+  .credit-score-section {
+    gap: 12px;
+    padding: 16px;
+  }
+  
+  .score-circle {
+    width: 65px;
+    height: 65px;
+  }
+  
+  .score-value {
+    font-size: 22px;
+  }
+  
+  .score-label {
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+  
+  .credit-levels {
+    gap: 10px;
+  }
+  
+  .level-text {
+    font-size: 13px;
+  }
+  
+  .level-dot {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .level-item.active .level-dot {
+    width: 12px;
+    height: 12px;
   }
 }
 </style>
