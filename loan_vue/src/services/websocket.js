@@ -61,8 +61,8 @@ class WebSocketService {
     try {
       const ticket = await this.getWebSocketTicket()
       console.log('获取到的WebSocket票据:', ticket)
-      // const wsUrl = 'ws://115.190.40.44:45444/ws'
-      const wsUrl = 'ws://localhost:8080/ws/'
+      const wsUrl = 'ws://115.190.40.44:45444/ws'
+      // const wsUrl = 'ws://localhost:8080/ws/'
 
       const fullUrl = `${wsUrl}?ticket=${encodeURIComponent(ticket)}`;
       

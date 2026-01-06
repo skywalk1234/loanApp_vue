@@ -43,7 +43,7 @@
         :key="record.id"
         class="record-item"
         :class="{ 'highlight-record': record.isHighlight && isHighlighting }"
-        @click="goToRepayment(record)"
+        @click="handleRecordClick(record)"
       >
         <div class="record-header">
           <div class="loan-amount">
@@ -142,6 +142,26 @@
         </div>
       </div>
     </div>
+    
+    <!-- 审核中弹窗 -->
+    <div v-if="showCheckingModal" class="modal-overlay" @click="showCheckingModal = false">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h3 class="modal-title">贷款记录审核中</h3>
+          <button class="modal-close" @click="showCheckingModal = false">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="checking-content">
+            <div class="checking-icon">⏳</div>
+            <p class="checking-text">您的贷款申请正在审核中，请耐心等待</p>
+            <p class="checking-subtext">审核完成后即可查看还款详情</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" @click="showCheckingModal = false">知道了</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -162,7 +182,8 @@ export default {
       productError: '',
       productInfo: {},
       highlightLoanId: null, // 需要高亮显示的借款编号
-      isHighlighting: false // 是否正在高亮显示
+      isHighlighting: false, // 是否正在高亮显示
+      showCheckingModal: false // 审核中弹窗显示状态
     }
   },
   computed: {
@@ -228,6 +249,7 @@ export default {
             paidPeriods: item.PaidPeriods,
             remainingAmount: parseFloat(item.Principal) - parseFloat(item.PaidAmount),
             status: this.mapStatus(item.Status),
+            _rawStatus: item.Status, // 保存原始状态值用于调试
             progress: item.TotalPeriods > 0 ? Math.round((item.PaidPeriods / item.TotalPeriods) * 100) : 0,
             productName: `产品${item.product_id}`,
             productId: item.product_id,
@@ -289,6 +311,21 @@ export default {
         'overdue': '已逾期'
       }
       return statusMap[status] || '还款中'
+    },
+    
+    handleRecordClick(record) {
+      // 调试：输出实际状态值
+      console.log('点击记录状态:', record.status, '原始数据状态:', record._rawStatus)
+      
+      // 如果状态是checking（审核中）或者原始状态是PENDING，显示审核中弹窗
+      if (record.status === 'checking' || record._rawStatus === 'PENDING') {
+        console.log('显示审核中弹窗')
+        this.showCheckingModal = true
+        return
+      }
+      
+      // 其他状态正常跳转到还款页面
+      this.goToRepayment(record)
     },
     
     goToRepayment(record) {
@@ -663,6 +700,46 @@ export default {
     border-color: #42a5f5;
     box-shadow: 0 0 10px rgba(30, 136, 229, 0.3);
   }
+}
+
+/* 审核中弹窗样式 */
+.checking-content {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.checking-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.checking-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.checking-subtext {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 0;
 }
 
 @media (max-width: 480px) {
