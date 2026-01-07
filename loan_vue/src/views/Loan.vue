@@ -86,7 +86,7 @@
               v-model.number="application.term"
               type="number" 
               class="form-input"
-              :placeholder="`请输入${selectedProduct.min_periods}-${selectedProduct.max_periods}之间的整数`"
+              :placeholder="`请输入0-${selectedProduct.max_periods}之间的整数`"
               :min="selectedProduct.min_periods"
               :max="selectedProduct.max_periods"
               required
