@@ -106,7 +106,7 @@
           <div class="form-group">
             <label class="form-label">宽限期</label>
             <input 
-              :value="selectedProduct.grace_term + '期'"
+              :value="0 + '期'"
               type="text" 
               class="form-input"
               disabled
