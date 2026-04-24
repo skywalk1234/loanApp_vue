@@ -251,8 +251,7 @@ export default {
         // 发送获取产品列表请求
         const response = await fetch("http://115.190.40.44:45444/loan/option", requestOptions)
         const result = await response.text()
-        
-        // console.log('获取产品列表响应:', result)
+        //先不解析，把响应作为字符串保存
         const jsonString = result;
         const fixedJsonString = jsonString.replace(
           /"id":\s*(\d{15,})/g,  // 匹配15位以上的数字id
