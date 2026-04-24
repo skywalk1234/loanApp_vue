@@ -10,7 +10,7 @@
         </div>
       </div>
       
-      <div class="credit-score-section" :class="getCreditScoreClass()">
+      <div class="credit-score-section">
         <div class="score-left">
           <div class="score-label">信用评分</div>
           <div class="score-circle">
@@ -137,7 +137,7 @@ export default {
         name: '',
         phone: '',
         creditLevel: '优秀',
-        creditScore: 600,
+        creditScore: 750,
         loanCount: 3,
         totalLoan: 15000,
         isRealNameAuth: false,
@@ -149,16 +149,6 @@ export default {
     this.loadUserInfo()
   },
   methods: {
-    getCreditScoreClass() {
-      if (this.userInfo.creditScore >= 700) {
-        return 'credit-excellent'
-      } else if (this.userInfo.creditScore >= 600) {
-        return 'credit-good'
-      } else {
-        return 'credit-poor'
-      }
-    },
-    
     async loadUserInfo() {
       try {
         // 预留接口：获取用户信息
@@ -624,121 +614,5 @@ export default {
     width: 12px;
     height: 12px;
   }
-}
-
-/* 信用评分颜色主题 */
-
-/* 优秀 (绿色主题) */
-.credit-excellent {
-  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-  border: 1px solid rgba(76, 175, 80, 0.2);
-  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.15);
-}
-
-.credit-excellent .score-circle {
-  background: linear-gradient(135deg, #ffffff 0%, #f1f8e9 100%);
-  border: 4px solid #4caf50;
-  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.25);
-}
-
-.credit-excellent .score-value {
-  color: #2e7d32;
-}
-
-.credit-excellent .score-label {
-  color: #2e7d32;
-}
-
-.credit-excellent .level-dot {
-  background: #4caf50;
-}
-
-.credit-excellent .level-item.active .level-dot {
-  background: #2e7d32;
-  box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.3);
-}
-
-.credit-excellent .level-text {
-  color: #388e3c;
-}
-
-.credit-excellent .level-item.active .level-text {
-  color: #2e7d32;
-}
-
-/* 良好 (黄色主题) */
-.credit-good {
-  background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
-  border: 1px solid rgba(255, 193, 7, 0.2);
-  box-shadow: 0 4px 15px rgba(255, 193, 7, 0.15);
-}
-
-.credit-good .score-circle {
-  background: linear-gradient(135deg, #ffffff 0%, #fffde7 100%);
-  border: 4px solid #ffc107;
-  box-shadow: 0 8px 25px rgba(255, 193, 7, 0.25);
-}
-
-.credit-good .score-value {
-  color: #f57c00;
-}
-
-.credit-good .score-label {
-  color: #f57c00;
-}
-
-.credit-good .level-dot {
-  background: #ffc107;
-}
-
-.credit-good .level-item.active .level-dot {
-  background: #f57c00;
-  box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.3);
-}
-
-.credit-good .level-text {
-  color: #f57c00;
-}
-
-.credit-good .level-item.active .level-text {
-  color: #f57c00;
-}
-
-/* 较差 (红色主题) */
-.credit-poor {
-  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
-  border: 1px solid rgba(244, 67, 54, 0.2);
-  box-shadow: 0 4px 15px rgba(244, 67, 54, 0.15);
-}
-
-.credit-poor .score-circle {
-  background: linear-gradient(135deg, #ffffff 0%, #ffebee 100%);
-  border: 4px solid #f44336;
-  box-shadow: 0 8px 25px rgba(244, 67, 54, 0.25);
-}
-
-.credit-poor .score-value {
-  color: #d32f2f;
-}
-
-.credit-poor .score-label {
-  color: #d32f2f;
-}
-
-.credit-poor .level-dot {
-  background: #f44336;
-}
-
-.credit-poor .level-item.active .level-dot {
-  background: #d32f2f;
-  box-shadow: 0 0 0 4px rgba(244, 67, 54, 0.3);
-}
-
-.credit-poor .level-text {
-  color: #d32f2f;
-}
-
-.credit-poor .level-item.active .level-text {
-  color: #d32f2f;
 }
 </style>

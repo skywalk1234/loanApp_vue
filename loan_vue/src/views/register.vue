@@ -130,38 +130,38 @@ export default {
         alert('两次输入的密码不一致')
         return
       }
-      
+
       // 验证手机号格式
       if (!/^1[3-9]\d{9}$/.test(this.form.phone)) {
         alert('请输入正确的手机号码')
         return
       }
-      
+
       // 验证邮箱格式
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.form.email)) {
         alert('请输入正确的邮箱地址')
         return
       }
-      
+
       // 验证是否已发送验证码
       if (!this.form.emailCode) {
         alert('请输入邮箱验证码')
         return
       }
-      
+
       // 获取保存的邮箱验证token
       const emailVerifyToken = localStorage.getItem('emailVerifyToken');
       if (!emailVerifyToken) {
         alert('请先发送邮箱验证码')
         return
       }
-      
+
       console.log('开始注册流程...')
-      
+
       // 创建请求头
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
-      
+
       // 准备注册数据 - 严格按照API文档格式
       var raw = JSON.stringify({
         "username": this.form.nickname,  // 对应表单中的nickname
@@ -171,9 +171,9 @@ export default {
         "code": this.form.emailCode,     // 对应emailCode
         "token": emailVerifyToken       // 从localStorage中的emailVerifyToken字段获取
       });
-      
+
       console.log('注册请求数据:', raw)
-      
+
       // 配置请求选项
       var requestOptions = {
         method: 'POST',
@@ -181,23 +181,23 @@ export default {
         body: raw,
         redirect: 'follow'
       };
-      
+
       // 发送注册请求 - 只使用POST请求体，URL不带参数
       fetch("http://115.190.40.44:45444/user/register", requestOptions)
         .then(response => response.text())
         .then(result => {
           console.log('注册响应:', result);
-          
+
           // 解析响应数据
           try {
             const responseData = JSON.parse(result);
-            
+
             if (responseData.success) {
               console.log('注册成功');
-              
+
               // 清除localStorage中的邮箱验证token
               localStorage.removeItem('emailVerifyToken');
-              
+
               alert('注册成功！请登录')
               this.$router.push('/login')
             } else {
@@ -213,29 +213,29 @@ export default {
           alert('注册失败: 网络错误或服务器不可用');
         });
     },
-    
+
     sendEmailCode() {
       if (!this.form.email) {
         alert('请输入邮箱地址')
         return
       }
-      
+
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.form.email)) {
         alert('请输入正确的邮箱地址')
         return
       }
-      
+
       console.log('开始发送验证码到:', this.form.email)
-      
+
       // 创建请求头
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
-      
+
       // 准备请求数据
       var raw = JSON.stringify({
         "email": this.form.email
       });
-      
+
       // 配置请求选项
       var requestOptions = {
         method: 'POST',
@@ -243,22 +243,22 @@ export default {
         body: raw,
         redirect: 'follow'
       };
-      
+
       // 发送验证码请求
       fetch("http://115.190.40.44:45444/user/registerVerifyCode", requestOptions)
         .then(response => response.text())
         .then(result => {
           console.log('验证码发送响应:', result);
-          
+
           // 解析响应数据
           try {
             const responseData = JSON.parse(result);
-            
+
             if (responseData.success) {
               // 保存token到localStorage
               localStorage.setItem('emailVerifyToken', responseData.token);
               console.log('验证码发送成功，token已保存:', responseData.token);
-              
+
               // 开始倒计时
               this.countdown = 60
               const timer = setInterval(() => {
@@ -267,7 +267,7 @@ export default {
                   clearInterval(timer)
                 }
               }, 1000)
-              
+
               alert('验证码已发送到您的邮箱，请查收')
             } else {
               alert('验证码发送失败: ' + (responseData.message || '未知错误'));

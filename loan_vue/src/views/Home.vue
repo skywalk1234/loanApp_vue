@@ -15,13 +15,13 @@
       </div>
       
       <div class="credit-info">
-        <div class="credit-score-card">
+        <div class="credit-score-card" :class="creditClass">
           <div class="score-header">
             <span class="score-icon">⭐</span>
             <span class="score-label">信用评分</span>
           </div>
           <div class="score-value">{{ creditScore }}</div>
-          <div class="score-desc">信用优秀</div>
+          <div class="score-desc">{{ creditLevel }}</div>
         </div>
         <div class="credit-limit-card">
           <div class="limit-header">
@@ -111,8 +111,8 @@ export default {
     return {
       userName: '',
       userPhone: '',
-      creditScore: 750,
-      creditLimit: 50000,
+      creditScore: 200,
+      creditLimit: 30000,
       announcements: [
         { id: 1, title: '关于调整借款利率的公告', date: '2024-01-15' },
         { id: 2, title: '春节期间服务时间安排', date: '2024-01-10' },
@@ -132,6 +132,24 @@ export default {
   computed: {
     isAuthenticated() {
       return localStorage.getItem('faced') === 'true'
+    },
+    creditLevel() {
+      if (this.creditScore >= 700) {
+        return '信用优秀'
+      } else if (this.creditScore >= 600) {
+        return '信用良好'
+      } else {
+        return '信用较差'
+      }
+    },
+    creditClass() {
+      if (this.creditScore >= 700) {
+        return 'credit-excellent'
+      } else if (this.creditScore >= 600) {
+        return 'credit-good'
+      } else {
+        return 'credit-poor'
+      }
     }
   },
   methods: {
@@ -342,13 +360,37 @@ export default {
 
 .credit-score-card {
   flex: 1;
-  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
   border-radius: 16px;
   padding: 20px;
-  color: #1976d2;
+  color: #2e7d32;
   text-align: center;
-  box-shadow: 0 4px 15px rgba(25, 118, 210, 0.15);
-  border: 1px solid rgba(25, 118, 210, 0.1);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.15);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+/* 优秀信用等级样式 */
+.credit-score-card.credit-excellent {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.15);
+  color: #2e7d32;
+}
+
+/* 良好信用等级样式 */
+.credit-score-card.credit-good {
+  background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+  border: 1px solid rgba(255, 193, 7, 0.2);
+  box-shadow: 0 4px 15px rgba(255, 193, 7, 0.15);
+  color: #f57c00;
+}
+
+/* 较差信用等级样式 */
+.credit-score-card.credit-poor {
+  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+  border: 1px solid rgba(244, 67, 54, 0.2);
+  box-shadow: 0 4px 15px rgba(244, 67, 54, 0.15);
+  color: #d32f2f;
 }
 
 .credit-limit-card {
