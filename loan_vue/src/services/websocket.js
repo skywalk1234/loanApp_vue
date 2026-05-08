@@ -31,8 +31,12 @@ class WebSocketService {
       const response = await fetch("http://115.190.40.44:45444/ws-ticket", requestOptions)
       const result = await response.json()
       
-      if (result.code === 200 && result.success) {
+      console.log('ws-ticket响应:', result)
+      
+      if (result.ticket) {
         return result.ticket
+      } else if (result.code === 200 && result.data && result.data.ticket) {
+        return result.data.ticket
       } else {
         throw new Error('Failed to get WebSocket ticket')
       }
@@ -60,12 +64,10 @@ class WebSocketService {
   async _doConnect() {
     try {
       const ticket = await this.getWebSocketTicket()
-      console.log('获取到的WebSocket票据:', ticket)
+      console.log('获取到的 WebSocket 票据:', ticket)
       const wsUrl = 'ws://115.190.40.44:45444/ws'
-      // const wsUrl = 'ws://localhost:8080/ws/'
 
-      const fullUrl = `${wsUrl}?ticket=${encodeURIComponent(ticket)}`;
-      
+      var fullUrl = `${wsUrl}?ticket=${encodeURIComponent(ticket)}`;
       this.ws = new WebSocket(fullUrl)
       
       return new Promise((resolve, reject) => {

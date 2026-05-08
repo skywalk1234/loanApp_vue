@@ -2,6 +2,7 @@
   <div class="message">
     <div class="page-header">
       <h1 class="page-title">消息中心</h1>
+      <button class="test-btn" @click="sendTestMessage">测试连接</button>
     </div>
     
     <!-- 消息分类标签 -->
@@ -137,7 +138,7 @@ export default {
   },
   created() {
     this.loadMessages()
-    this.initWebSocketListener()
+    this.initWebSocket()
     // 当用户打开消息页面时，标记所有消息为已读
     messageStore.markAllAsRead()
   },
@@ -252,10 +253,30 @@ export default {
       }
     },
 
-    // 初始化WebSocket监听器
-    initWebSocketListener() {
-      // WebSocket消息现在由全局服务自动处理，不需要在这里监听
-      console.log('消息页面WebSocket监听器已初始化')
+    // 初始化WebSocket连接
+    async initWebSocket() {
+      try {
+        const status = websocketService.getConnectionStatus()
+        if (status.isConnected && status.readyState === WebSocket.OPEN) {
+          console.log('WebSocket已连接，无需重复连接')
+          return
+        }
+        await websocketService.connect()
+        console.log('消息页面WebSocket连接成功')
+      } catch (error) {
+        console.log('消息页面WebSocket连接失败:', error.toString())
+      }
+    },
+
+    // 发送测试消息
+    sendTestMessage() {
+      const status = websocketService.getConnectionStatus()
+      if (!status.isConnected || status.readyState !== WebSocket.OPEN) {
+        alert('WebSocket未连接，请先等待连接成功')
+        return
+      }
+      websocketService.send('hello')
+      console.log('已发送测试消息: hello')
     }
   }
 }
@@ -281,6 +302,9 @@ export default {
   background: linear-gradient(135deg, #142744, #17736c 56%, #ff8857);
   box-shadow: 0 18px 42px rgba(28, 88, 103, 0.24);
   text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .page-title {
@@ -288,6 +312,28 @@ export default {
   font-size: 26px;
   font-weight: 900;
   color: #fff;
+}
+
+.test-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  color: #fff;
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 800;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  backdrop-filter: blur(6px);
+}
+
+.test-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.04);
+}
+
+.test-btn:active {
+  transform: scale(0.96);
 }
 
 .message-tabs {
