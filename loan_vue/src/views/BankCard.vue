@@ -172,24 +172,29 @@ export default {
 <style scoped>
 .bank-card {
   min-height: 100vh;
-  background: #f5f7fa;
+  background:
+    radial-gradient(circle at 18% 4%, rgba(50, 179, 151, 0.18), transparent 30%),
+    radial-gradient(circle at 86% 8%, rgba(255, 148, 94, 0.18), transparent 28%),
+    linear-gradient(180deg, #eef8f6 0%, #f8f3ec 42%, #f5f7fb 100%);
+  color: #18212c;
 }
 
 .page-header {
   display: flex;
   align-items: center;
-  padding: 16px;
-  background: #fff;
-  border-bottom: 1px solid #e8e8e8;
+  padding: 16px 14px;
+  background: rgba(255, 255, 255, 0.72);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.72);
   position: sticky;
   top: 0;
   z-index: 100;
+  backdrop-filter: blur(18px);
 }
 
 .back-btn {
   font-size: 24px;
-  color: #666;
-  background: none;
+  color: #17736c;
+  background: #fff;
   border: none;
   cursor: pointer;
   margin-right: 16px;
@@ -199,25 +204,29 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(32, 55, 76, 0.08);
 }
 
 .page-title {
   font-size: 18px;
-  font-weight: 500;
-  color: #333;
+  font-weight: 900;
+  color: #1b2734;
   margin: 0;
 }
 
 .content {
-  padding: 16px;
+  padding: 14px;
 }
 
 .form-section {
-  background: #fff;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 24px;
   padding: 20px;
   margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow: 0 16px 36px rgba(32, 55, 76, 0.1);
+  backdrop-filter: blur(18px);
 }
 
 .form-group {
@@ -231,25 +240,25 @@ export default {
 .form-label {
   display: block;
   font-size: 14px;
-  color: #666;
+  color: #26313d;
   margin-bottom: 8px;
-  font-weight: 500;
+  font-weight: 900;
 }
 
 .form-input {
   width: 100%;
   padding: 12px 16px;
-  border: 1px solid #e8e8e8;
-  border-radius: 8px;
+  border: 1px solid #e4ebf1;
+  border-radius: 16px;
   font-size: 16px;
   transition: all 0.3s ease;
-  background: #fff;
+  background: #f8fafb;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #1976d2;
-  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+  border-color: #2cb59c;
+  box-shadow: 0 0 0 3px rgba(44, 181, 156, 0.12);
 }
 
 .form-input:disabled {
@@ -260,33 +269,34 @@ export default {
 .form-select {
   width: 100%;
   padding: 12px 16px;
-  border: 1px solid #e8e8e8;
-  border-radius: 8px;
+  border: 1px solid #e4ebf1;
+  border-radius: 16px;
   font-size: 16px;
-  background: #fff;
+  background: #f8fafb;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .form-select:focus {
   outline: none;
-  border-color: #1976d2;
-  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+  border-color: #2cb59c;
+  box-shadow: 0 0 0 3px rgba(44, 181, 156, 0.12);
 }
 
 
 
 .tips-section {
-  background: #e3f2fd;
-  border-radius: 12px;
+  background: #fff4e8;
+  border-radius: 22px;
   padding: 16px;
   margin-bottom: 20px;
+  box-shadow: inset 0 0 0 1px rgba(255, 136, 87, 0.18);
 }
 
 .tips-title {
   font-size: 14px;
-  font-weight: 500;
-  color: #1976d2;
+  font-weight: 900;
+  color: #9a5b10;
   margin-bottom: 8px;
 }
 
@@ -298,7 +308,7 @@ export default {
 
 .tips-list li {
   font-size: 12px;
-  color: #666;
+  color: #687584;
   margin-bottom: 4px;
   padding-left: 16px;
   position: relative;
@@ -306,7 +316,7 @@ export default {
 
 .tips-list li:before {
   content: '•';
-  color: #1976d2;
+  color: #ff8857;
   position: absolute;
   left: 0;
 }
@@ -318,22 +328,22 @@ export default {
 .btn {
   padding: 14px 24px;
   border: none;
-  border-radius: 8px;
+  border-radius: 18px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 900;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  background: linear-gradient(135deg, #142744, #17736c 58%, #ff8857);
   color: #fff;
-  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+  box-shadow: 0 12px 24px rgba(23, 115, 108, 0.18);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
-  box-shadow: 0 6px 16px rgba(25, 118, 210, 0.4);
+  box-shadow: 0 16px 30px rgba(23, 115, 108, 0.22);
+  transform: translateY(-1px);
 }
 
 .btn-primary:disabled {

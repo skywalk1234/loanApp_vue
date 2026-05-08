@@ -486,25 +486,55 @@ export default {
 
 <style scoped>
 .loan {
-  padding: 16px;
-  padding-bottom: 96px;
+  min-height: 100vh;
+  padding: 16px 14px 98px;
+  background:
+    radial-gradient(circle at 18% 4%, rgba(50, 179, 151, 0.2), transparent 30%),
+    radial-gradient(circle at 86% 8%, rgba(255, 148, 94, 0.2), transparent 28%),
+    linear-gradient(180deg, #eef8f6 0%, #f8f3ec 42%, #f5f7fb 100%);
+  color: #18212c;
 }
 
 .page-header {
-  text-align: center;
-  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+  padding: 22px;
+  margin-bottom: 16px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, rgba(20, 39, 68, 0.96), rgba(23, 115, 108, 0.92) 56%, rgba(255, 136, 87, 0.9));
+  color: #fff;
+  box-shadow: 0 18px 42px rgba(28, 88, 103, 0.24);
+  text-align: left;
+}
+
+.page-header::after {
+  content: "";
+  position: absolute;
+  right: -34px;
+  top: -44px;
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
 }
 
 .page-title {
-  font-size: 24px;
-  font-weight: 600;
-  color: #212121;
-  margin-bottom: 8px;
+  position: relative;
+  z-index: 1;
+  margin: 0 0 8px;
+  color: #fff;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 0;
 }
 
 .page-subtitle {
+  position: relative;
+  z-index: 1;
+  margin: 0;
   font-size: 14px;
-  color: #757575;
+  color: rgba(255, 255, 255, 0.76);
+  font-weight: 700;
 }
 
 .loan-products {
@@ -514,16 +544,32 @@ export default {
 }
 
 .product-card {
-  background: white;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 24px;
+  padding: 18px;
+  box-shadow: 0 16px 36px rgba(32, 55, 76, 0.1);
+  backdrop-filter: blur(18px);
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.product-card::before {
+  content: "";
+  position: absolute;
+  width: 96px;
+  height: 96px;
+  right: -38px;
+  top: -38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(55, 136, 255, 0.18), rgba(255, 154, 53, 0.2));
 }
 
 .product-card:hover {
   transform: translateY(-2px);
+  box-shadow: 0 20px 44px rgba(32, 55, 76, 0.14);
 }
 
 .product-header {
@@ -534,15 +580,20 @@ export default {
 }
 
 .product-name {
+  position: relative;
+  z-index: 1;
   font-size: 18px;
-  font-weight: 600;
-  color: #212121;
-  margin-bottom: 4px;
+  font-weight: 900;
+  color: #1b2734;
+  margin: 0 0 6px;
 }
 
 .product-desc {
+  position: relative;
+  z-index: 1;
   font-size: 14px;
-  color: #757575;
+  color: #17766f;
+  font-weight: 800;
   margin: 0;
 }
 
@@ -557,29 +608,31 @@ export default {
 }
 
 .product-details {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
   margin-bottom: 16px;
-  padding: 12px;
-  background: #f5f5f5;
-  border-radius: 8px;
 }
 
 .detail-item {
-  text-align: center;
+  padding: 12px;
+  border-radius: 18px;
+  background: #f8fafb;
+  box-shadow: inset 0 0 0 1px rgba(231, 235, 241, 0.9);
 }
 
 .detail-label {
   display: block;
   font-size: 12px;
-  color: #757575;
-  margin-bottom: 4px;
+  color: #7b8794;
+  margin-bottom: 6px;
+  font-weight: 700;
 }
 
 .detail-value {
   font-size: 14px;
-  font-weight: 600;
-  color: #212121;
+  font-weight: 900;
+  color: #26313d;
 }
 
 .product-features {
@@ -599,6 +652,13 @@ export default {
 
 .apply-btn {
   margin-top: 8px;
+  height: 44px;
+  border: 0;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #142744, #17736c 56%, #ff8857);
+  color: #fff;
+  font-weight: 900;
+  box-shadow: 0 12px 24px rgba(23, 115, 108, 0.2);
 }
 
 /* 弹窗样式 */
@@ -608,7 +668,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(16, 29, 43, 0.58);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -617,12 +677,13 @@ export default {
 }
 
 .modal-content {
-  background: white;
-  border-radius: 16px;
+  background: #fff;
+  border-radius: 24px;
   width: 100%;
   max-width: 400px;
   max-height: 80vh;
   overflow-y: auto;
+  box-shadow: 0 24px 58px rgba(13, 31, 46, 0.28);
 }
 
 .modal-header {
@@ -630,20 +691,21 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #eef1f5;
 }
 
 .modal-header h3 {
   margin: 0;
   font-size: 18px;
-  color: #212121;
+  color: #1b2734;
+  font-weight: 900;
 }
 
 .close-btn {
   background: none;
   border: none;
   font-size: 24px;
-  color: #757575;
+  color: #7b8794;
   cursor: pointer;
   padding: 0;
   width: 32px;
@@ -665,28 +727,30 @@ export default {
   display: block;
   margin-bottom: 8px;
   font-size: 14px;
-  font-weight: 500;
-  color: #212121;
+  font-weight: 800;
+  color: #26313d;
 }
 
 .input-hint {
   font-size: 12px;
-  color: #757575;
+  color: #7b8794;
   margin-bottom: 6px;
   margin-top: -4px;
 }
 
 .loan-preview {
-  background: #f5f5f5;
-  border-radius: 8px;
+  background: linear-gradient(135deg, #eef8f6, #fff4e8);
+  border-radius: 20px;
   padding: 16px;
   margin-bottom: 20px;
+  box-shadow: inset 0 0 0 1px rgba(231, 235, 241, 0.9);
 }
 
 .loan-preview h4 {
   margin: 0 0 12px 0;
   font-size: 16px;
-  color: #212121;
+  color: #1b2734;
+  font-weight: 900;
 }
 
 .preview-item {
@@ -699,13 +763,12 @@ export default {
 .preview-item:last-child {
   margin-bottom: 0;
   font-weight: 600;
-  color: #1e88e5;
+  color: #17736c;
 }
 
 @media (max-width: 480px) {
   .loan {
-    padding: 12px;
-    padding-bottom: 92px;
+    padding: 14px 12px 92px;
   }
   
   .product-header {
@@ -714,8 +777,7 @@ export default {
   }
   
   .product-details {
-    flex-direction: column;
-    gap: 8px;
+    grid-template-columns: 1fr;
   }
   
   .detail-item {

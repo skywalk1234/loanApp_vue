@@ -263,56 +263,74 @@ export default {
 
 <style scoped>
 .message {
-  padding: 16px;
-  padding-bottom: 96px;
+  min-height: 100vh;
+  padding: 16px 14px 98px;
+  background:
+    radial-gradient(circle at 18% 4%, rgba(50, 179, 151, 0.18), transparent 30%),
+    radial-gradient(circle at 86% 8%, rgba(255, 148, 94, 0.18), transparent 28%),
+    linear-gradient(180deg, #eef8f6 0%, #f8f3ec 42%, #f5f7fb 100%);
+  color: #18212c;
 }
 
 .page-header {
-  text-align: center;
-  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+  padding: 22px;
+  margin-bottom: 14px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #142744, #17736c 56%, #ff8857);
+  box-shadow: 0 18px 42px rgba(28, 88, 103, 0.24);
+  text-align: left;
 }
 
 .page-title {
-  font-size: 24px;
-  font-weight: 600;
-  color: #212121;
-  margin-bottom: 8px;
+  margin: 0;
+  font-size: 26px;
+  font-weight: 900;
+  color: #fff;
 }
 
 .message-tabs {
   display: flex;
-  background: white;
-  border-radius: 12px;
-  padding: 4px;
-  margin-bottom: 20px;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.74);
+  border-radius: 22px;
+  padding: 8px;
+  margin-bottom: 14px;
   overflow-x: auto;
+  box-shadow: 0 16px 36px rgba(32, 55, 76, 0.08);
+  backdrop-filter: blur(18px);
 }
 
 .tab-btn {
-  flex: 1;
-  background: none;
+  flex: 1 0 auto;
+  background: #fff;
   border: none;
-  padding: 12px 8px;
+  padding: 10px 12px;
   font-size: 14px;
-  color: #757575;
+  color: #687584;
   cursor: pointer;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  border-radius: 16px;
+  transition: all 0.18s ease;
   white-space: nowrap;
   position: relative;
+  font-weight: 800;
+  box-shadow: inset 0 0 0 1px rgba(231, 235, 241, 0.8);
 }
 
 .tab-btn.active {
-  background: #1e88e5;
+  background: linear-gradient(135deg, #142744, #17736c 58%, #ff8857);
   color: white;
+  box-shadow: 0 10px 20px rgba(23, 115, 108, 0.18);
 }
 
 .badge {
-  background: #ff6b35;
-  color: white;
+  background: rgba(255, 255, 255, 0.78);
+  color: #17736c;
   font-size: 10px;
   padding: 2px 6px;
-  border-radius: 10px;
+  border-radius: 999px;
   margin-left: 4px;
   min-width: 16px;
   text-align: center;
@@ -325,29 +343,32 @@ export default {
 }
 
 .message-item {
-  background: white;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 22px;
   padding: 16px;
   display: flex;
   gap: 12px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: 0 16px 34px rgba(32, 55, 76, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px);
 }
 
 .message-item:hover {
-  background: #f5f5f5;
+  transform: translateY(-1px);
+  box-shadow: 0 20px 42px rgba(32, 55, 76, 0.12);
 }
 
 .message-item.unread {
-  background: #e3f2fd;
+  background: linear-gradient(135deg, rgba(234, 246, 255, 0.96), rgba(255, 244, 232, 0.96));
 }
 
 .message-icon {
-  width: 40px;
-  height: 40px;
-  background: #1e88e5;
-  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #3788ff, #20bdd2);
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -372,8 +393,8 @@ export default {
 
 .message-title {
   font-size: 16px;
-  font-weight: 600;
-  color: #212121;
+  font-weight: 900;
+  color: #1b2734;
   margin: 0;
   flex: 1;
   overflow: hidden;
@@ -383,14 +404,14 @@ export default {
 
 .message-time {
   font-size: 12px;
-  color: #757575;
+  color: #8a96a3;
   margin-left: 8px;
   white-space: nowrap;
 }
 
 .message-text {
   font-size: 14px;
-  color: #757575;
+  color: #687584;
   margin: 0 0 8px 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -407,22 +428,26 @@ export default {
 
 .message-type {
   font-size: 12px;
-  color: #1e88e5;
-  background: #e3f2fd;
-  padding: 2px 8px;
-  border-radius: 4px;
+  color: #17736c;
+  background: #e9f7f3;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-weight: 800;
 }
 
 .unread-dot {
   width: 8px;
   height: 8px;
-  background: #ff6b35;
+  background: #ff8857;
   border-radius: 50%;
 }
 
 .empty-state {
   text-align: center;
   padding: 60px 20px;
+  background: rgba(255, 255, 255, 0.78);
+  border-radius: 24px;
+  box-shadow: 0 16px 36px rgba(32, 55, 76, 0.08);
 }
 
 .empty-icon {
@@ -433,7 +458,8 @@ export default {
 
 .empty-text {
   font-size: 16px;
-  color: #757575;
+  color: #687584;
+  font-weight: 800;
 }
 
 /* 弹窗样式 */
@@ -443,7 +469,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(16, 29, 43, 0.58);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -453,11 +479,12 @@ export default {
 
 .modal-content {
   background: white;
-  border-radius: 16px;
+  border-radius: 24px;
   width: 100%;
   max-width: 400px;
   max-height: 80vh;
   overflow-y: auto;
+  box-shadow: 0 24px 58px rgba(13, 31, 46, 0.28);
 }
 
 .modal-header {
@@ -465,13 +492,14 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #eef1f5;
 }
 
 .modal-header h3 {
   margin: 0;
   font-size: 18px;
-  color: #212121;
+  color: #1b2734;
+  font-weight: 900;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -481,7 +509,7 @@ export default {
   background: none;
   border: none;
   font-size: 24px;
-  color: #757575;
+  color: #7b8794;
   cursor: pointer;
   padding: 0;
   width: 32px;
@@ -506,26 +534,27 @@ export default {
   align-items: center;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #eef1f5;
 }
 
 .detail-type {
   font-size: 12px;
-  color: #1e88e5;
-  background: #e3f2fd;
-  padding: 2px 8px;
-  border-radius: 4px;
+  color: #17736c;
+  background: #e9f7f3;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-weight: 800;
 }
 
 .detail-time {
   font-size: 12px;
-  color: #757575;
+  color: #8a96a3;
 }
 
 .detail-content {
   font-size: 14px;
   line-height: 1.6;
-  color: #212121;
+  color: #26313d;
 }
 
 .detail-content p {
@@ -533,8 +562,8 @@ export default {
 }
 
 .extra-info {
-  background: #f5f5f5;
-  border-radius: 8px;
+  background: #f8fafb;
+  border-radius: 18px;
   padding: 12px;
   margin-top: 16px;
 }
@@ -557,8 +586,7 @@ export default {
 
 @media (max-width: 480px) {
   .message {
-    padding: 12px;
-    padding-bottom: 92px;
+    padding: 14px 12px 92px;
   }
   
   .message-tabs {
