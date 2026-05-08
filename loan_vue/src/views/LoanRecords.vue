@@ -483,25 +483,31 @@ export default {
 <style scoped>
 .loan-records {
   min-height: 100vh;
-  background: #f5f5f5;
+  padding-bottom: 96px;
+  background:
+    radial-gradient(circle at 18% 4%, rgba(50, 179, 151, 0.18), transparent 30%),
+    radial-gradient(circle at 86% 8%, rgba(255, 148, 94, 0.18), transparent 28%),
+    linear-gradient(180deg, #eef8f6 0%, #f8f3ec 42%, #f5f7fb 100%);
+  color: #18212c;
 }
 
 .page-header {
   display: flex;
   align-items: center;
-  padding: 16px;
-  background: white;
-  border-bottom: 1px solid #e0e0e0;
+  padding: 16px 14px;
+  background: rgba(255, 255, 255, 0.72);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.72);
   position: sticky;
   top: 0;
   z-index: 100;
+  backdrop-filter: blur(18px);
 }
 
 .btn-back {
   font-size: 24px;
-  background: none;
+  background: #fff;
   border: none;
-  color: #666;
+  color: #17736c;
   cursor: pointer;
   margin-right: 16px;
   padding: 0;
@@ -510,49 +516,56 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(32, 55, 76, 0.08);
 }
 
 .page-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #212121;
+  font-size: 20px;
+  font-weight: 900;
+  color: #1b2734;
   margin: 0;
 }
 
 .filter-tabs {
   display: flex;
-  background: white;
-  padding: 16px;
-  gap: 16px;
-  border-bottom: 1px solid #e0e0e0;
+  margin: 14px;
+  padding: 8px;
+  gap: 8px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.74);
+  box-shadow: 0 16px 36px rgba(32, 55, 76, 0.08);
+  backdrop-filter: blur(18px);
 }
 
 .tab-item {
   flex: 1;
   text-align: center;
-  padding: 12px;
-  border-radius: 8px;
+  padding: 10px;
+  border-radius: 16px;
   font-size: 14px;
-  color: #666;
+  color: #687584;
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid #e0e0e0;
+  transition: all 0.18s ease;
+  border: 0;
+  font-weight: 900;
 }
 
 .tab-item.active {
-  background: #1e88e5;
+  background: linear-gradient(135deg, #142744, #17736c 58%, #ff8857);
   color: white;
-  border-color: #1e88e5;
+  box-shadow: 0 10px 20px rgba(23, 115, 108, 0.18);
 }
 
 .records-list {
-  padding: 16px;
+  padding: 0 14px 14px;
 }
 
 .loading {
   text-align: center;
   padding: 40px;
-  color: #666;
+  color: #687584;
   font-size: 14px;
 }
 
@@ -573,17 +586,20 @@ export default {
 }
 
 .record-item {
-  background: white;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 24px;
   padding: 16px;
   margin-bottom: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 16px 36px rgba(32, 55, 76, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .record-item:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 20px 44px rgba(32, 55, 76, 0.14);
 }
 
 .record-header {
@@ -600,36 +616,36 @@ export default {
 
 .amount-label {
   font-size: 12px;
-  color: #999;
+  color: #8a96a3;
   margin-bottom: 2px;
 }
 
 .amount-value {
   font-size: 18px;
-  font-weight: bold;
-  color: #212121;
+  font-weight: 900;
+  color: #1b2734;
 }
 
 .status {
   padding: 4px 8px;
-  border-radius: 12px;
+  border-radius: 999px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 900;
 }
 
 .status-repaying {
-  background: #e3f2fd;
-  color: #1976d2;
+  background: #eaf6ff;
+  color: #1467a8;
 }
 
 .status-completed {
-  background: #e8f5e8;
-  color: #388e3c;
+  background: #e9f7f3;
+  color: #17736c;
 }
 
 .status-overdue {
-  background: #ffebee;
-  color: #d32f2f;
+  background: #fff0e6;
+  color: #b5521b;
 }
 
 .record-info {
@@ -637,7 +653,10 @@ export default {
   justify-content: space-between;
   margin-bottom: 12px;
   padding: 8px 0;
-  border-bottom: 1px solid #f5f5f5;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 18px;
+  background: #f8fafb;
 }
 
 .info-item {
@@ -648,14 +667,14 @@ export default {
 
 .info-label {
   font-size: 12px;
-  color: #999;
+  color: #8a96a3;
   margin-bottom: 2px;
 }
 
 .info-value {
   font-size: 14px;
-  color: #212121;
-  font-weight: 500;
+  color: #25303d;
+  font-weight: 900;
 }
 
 .record-progress {
@@ -667,38 +686,38 @@ export default {
 .progress-bar {
   flex: 1;
   height: 4px;
-  background: #e0e0e0;
+  background: #e8edf2;
   border-radius: 2px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #1e88e5, #42a5f5);
+  background: linear-gradient(90deg, #17736c, #ff8857);
   transition: width 0.3s ease;
 }
 
 .progress-text {
   font-size: 12px;
-  color: #666;
-  font-weight: 500;
+  color: #687584;
+  font-weight: 900;
 }
 
 /* 高亮记录样式 - 简洁闪烁效果 */
 .highlight-record {
-  border: 2px solid #1e88e5 !important;
+  border: 2px solid #ff8857 !important;
   animation: borderFlash 1.5s ease-in-out 3;
-  background-color: #f8f9ff;
+  background: #fff4e8;
 }
 
 @keyframes borderFlash {
   0%, 100% {
-    border-color: #1e88e5;
-    box-shadow: 0 0 0 rgba(30, 136, 229, 0);
+    border-color: #ff8857;
+    box-shadow: 0 0 0 rgba(255, 136, 87, 0);
   }
   50% {
-    border-color: #42a5f5;
-    box-shadow: 0 0 10px rgba(30, 136, 229, 0.3);
+    border-color: #17736c;
+    box-shadow: 0 0 16px rgba(23, 115, 108, 0.24);
   }
 }
 
@@ -752,8 +771,9 @@ export default {
   }
   
   .filter-tabs {
-    padding: 12px;
-    gap: 12px;
+    margin: 12px;
+    padding: 8px;
+    gap: 8px;
   }
   
   .tab-item {
@@ -762,7 +782,7 @@ export default {
   }
   
   .records-list {
-    padding: 12px;
+    padding: 0 12px 12px;
   }
   
   .record-item {
@@ -789,18 +809,18 @@ export default {
 }
 
 .btn-product {
-  background: #1e88e5;
+  background: linear-gradient(135deg, #142744, #17736c 58%, #ff8857);
   color: white;
   border: none;
-  padding: 6px 12px;
-  border-radius: 16px;
+  padding: 7px 12px;
+  border-radius: 999px;
   font-size: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  font-weight: 900;
+  transition: all 0.18s ease;
 }
 
 .btn-product:hover {
-  background: #1976d2;
   transform: translateY(-1px);
 }
 
@@ -811,7 +831,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(16, 29, 43, 0.58);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -820,12 +840,12 @@ export default {
 
 .modal-content {
   background: white;
-  border-radius: 12px;
+  border-radius: 24px;
   width: 90%;
   max-width: 500px;
   max-height: 80vh;
   overflow-y: auto;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 24px 58px rgba(13, 31, 46, 0.28);
 }
 
 .modal-header {
@@ -833,13 +853,14 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #eef1f5;
 }
 
 .modal-title {
   font-size: 18px;
   font-weight: 600;
-  color: #212121;
+  color: #1b2734;
+  font-weight: 900;
   margin: 0;
 }
 
@@ -847,7 +868,7 @@ export default {
   background: none;
   border: none;
   font-size: 24px;
-  color: #666;
+  color: #7b8794;
   cursor: pointer;
   padding: 0;
   width: 32px;
@@ -875,8 +896,8 @@ export default {
   text-align: center;
   padding: 20px;
   color: #d32f2f;
-  background: #ffebee;
-  border-radius: 8px;
+  background: #fff0e6;
+  border-radius: 18px;
 }
 
 .product-details {
@@ -890,7 +911,7 @@ export default {
   justify-content: space-between;
   align-items: flex-start;
   padding: 12px 0;
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid #eef1f5;
 }
 
 .detail-item.full-width {
@@ -900,15 +921,15 @@ export default {
 
 .detail-label {
   font-size: 14px;
-  color: #666;
-  font-weight: 500;
+  color: #7b8794;
+  font-weight: 800;
   min-width: 80px;
 }
 
 .detail-value {
   font-size: 14px;
-  color: #212121;
-  font-weight: 600;
+  color: #25303d;
+  font-weight: 900;
   text-align: right;
   flex: 1;
 }
@@ -921,7 +942,7 @@ export default {
 
 .modal-footer {
   padding: 20px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid #eef1f5;
   display: flex;
   justify-content: flex-end;
 }
@@ -929,18 +950,19 @@ export default {
 .btn {
   padding: 10px 20px;
   border: none;
-  border-radius: 8px;
+  border-radius: 16px;
   font-size: 14px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .btn-primary {
-  background: #1e88e5;
+  background: linear-gradient(135deg, #142744, #17736c 58%, #ff8857);
   color: white;
+  font-weight: 900;
 }
 
 .btn-primary:hover {
-  background: #1976d2;
+  transform: translateY(-1px);
 }
 </style>

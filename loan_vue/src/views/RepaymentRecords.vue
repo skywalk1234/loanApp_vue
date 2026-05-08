@@ -221,25 +221,31 @@ export default {
 <style scoped>
 .repayment-records {
   min-height: 100vh;
-  background: #f5f5f5;
+  padding-bottom: 96px;
+  background:
+    radial-gradient(circle at 18% 4%, rgba(50, 179, 151, 0.18), transparent 30%),
+    radial-gradient(circle at 86% 8%, rgba(255, 148, 94, 0.18), transparent 28%),
+    linear-gradient(180deg, #eef8f6 0%, #f8f3ec 42%, #f5f7fb 100%);
+  color: #18212c;
 }
 
 .page-header {
   display: flex;
   align-items: center;
-  padding: 16px;
-  background: white;
-  border-bottom: 1px solid #e0e0e0;
+  padding: 16px 14px;
+  background: rgba(255, 255, 255, 0.72);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.72);
   position: sticky;
   top: 0;
   z-index: 100;
+  backdrop-filter: blur(18px);
 }
 
 .btn-back {
   font-size: 24px;
-  background: none;
+  background: #fff;
   border: none;
-  color: #666;
+  color: #17736c;
   cursor: pointer;
   margin-right: 16px;
   padding: 0;
@@ -248,22 +254,25 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(32, 55, 76, 0.08);
 }
 
 .page-title {
   font-size: 18px;
-  font-weight: 600;
-  color: #212121;
+  font-weight: 900;
+  color: #1b2734;
   margin: 0;
 }
 
 .stats-card {
   display: flex;
-  background: white;
-  padding: 20px;
-  margin: 16px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #142744, #17736c 56%, #ff8857);
+  color: #fff;
+  padding: 22px 18px;
+  margin: 14px;
+  border-radius: 28px;
+  box-shadow: 0 18px 42px rgba(28, 88, 103, 0.24);
 }
 
 .stat-item {
@@ -272,24 +281,25 @@ export default {
 }
 
 .stat-item:first-child {
-  border-right: 1px solid #e0e0e0;
+  border-right: 1px solid rgba(255, 255, 255, 0.22);
 }
 
 .stat-label {
   font-size: 12px;
-  color: #999;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 800;
   margin-bottom: 8px;
   display: block;
 }
 
 .stat-value {
   font-size: 20px;
-  font-weight: bold;
-  color: #1e88e5;
+  font-weight: 900;
+  color: #fff;
 }
 
 .records-list {
-  padding: 16px;
+  padding: 0 14px 14px;
 }
 
 .loading {
@@ -316,17 +326,20 @@ export default {
 }
 
 .record-item {
-  background: white;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 24px;
   padding: 16px;
   margin-bottom: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 16px 36px rgba(32, 55, 76, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .record-item:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 20px 44px rgba(32, 55, 76, 0.14);
 }
 
 .record-header {
@@ -343,44 +356,46 @@ export default {
 
 .amount-label {
   font-size: 12px;
-  color: #999;
+  color: #8a96a3;
   margin-bottom: 2px;
 }
 
 .amount-value {
   font-size: 18px;
-  font-weight: bold;
-  color: #212121;
+  font-weight: 900;
+  color: #1b2734;
 }
 
 .status {
   padding: 4px 8px;
-  border-radius: 12px;
+  border-radius: 999px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 900;
 }
 
 .status-success {
-  background: #e8f5e8;
-  color: #388e3c;
+  background: #e9f7f3;
+  color: #17736c;
 }
 
 .status-processing {
-  background: #fff3e0;
-  color: #f57c00;
+  background: #fff2d9;
+  color: #9a5b10;
 }
 
 .status-failed {
-  background: #ffebee;
-  color: #d32f2f;
+  background: #fff0e6;
+  color: #b5521b;
 }
 
 .record-info {
   display: flex;
   justify-content: space-between;
   margin-bottom: 12px;
-  padding: 8px 0;
-  border-bottom: 1px solid #f5f5f5;
+  padding: 10px;
+  gap: 8px;
+  border-radius: 18px;
+  background: #f8fafb;
 }
 
 .info-item {
@@ -391,14 +406,14 @@ export default {
 
 .info-label {
   font-size: 12px;
-  color: #999;
+  color: #8a96a3;
   margin-bottom: 2px;
 }
 
 .info-value {
   font-size: 14px;
-  color: #212121;
-  font-weight: 500;
+  color: #25303d;
+  font-weight: 900;
 }
 
 .refund-amount {
@@ -411,10 +426,10 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 8px 12px;
-  background: #fff1f0;
-  border-radius: 6px;
+  background: #fff4e8;
+  border-radius: 16px;
   margin-top: 8px;
-  border-left: 3px solid #ff4d4f;
+  border-left: 3px solid #ff8857;
 }
 
 .refund-label {
@@ -433,25 +448,24 @@ export default {
   justify-content: flex-end;
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px solid #f5f5f5;
+  border-top: 1px solid #eef1f5;
 }
 
 .btn-view-details {
-  background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
+  background: linear-gradient(135deg, #142744, #17736c 58%, #ff8857);
   color: white;
   border: none;
   padding: 8px 16px;
-  border-radius: 20px;
+  border-radius: 999px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 900;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 6px rgba(30, 136, 229, 0.3);
+  box-shadow: 0 10px 20px rgba(23, 115, 108, 0.16);
 }
 
 .btn-view-details:hover {
-  background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
-  box-shadow: 0 4px 12px rgba(30, 136, 229, 0.4);
+  box-shadow: 0 14px 26px rgba(23, 115, 108, 0.2);
   transform: translateY(-1px);
 }
 
@@ -499,7 +513,7 @@ export default {
   
   .stats-card {
     margin: 12px;
-    padding: 16px;
+    padding: 18px 14px;
   }
   
   .stat-value {
@@ -507,7 +521,7 @@ export default {
   }
   
   .records-list {
-    padding: 12px;
+    padding: 0 12px 12px;
   }
   
   .record-item {

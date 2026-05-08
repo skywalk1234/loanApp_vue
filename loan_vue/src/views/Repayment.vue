@@ -515,26 +515,31 @@ export default {
 <style scoped>
 .repayment {
   min-height: 100vh;
-  background: #f5f5f5;
-  padding-bottom: 20px;
+  background:
+    radial-gradient(circle at 18% 4%, rgba(50, 179, 151, 0.18), transparent 30%),
+    radial-gradient(circle at 86% 8%, rgba(255, 148, 94, 0.18), transparent 28%),
+    linear-gradient(180deg, #eef8f6 0%, #f8f3ec 42%, #f5f7fb 100%);
+  padding-bottom: 96px;
+  color: #18212c;
 }
 
 .page-header {
   display: flex;
   align-items: center;
-  padding: 16px;
-  background: white;
-  border-bottom: 1px solid #e0e0e0;
+  padding: 16px 14px;
+  background: rgba(255, 255, 255, 0.72);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.72);
   position: sticky;
   top: 0;
   z-index: 100;
+  backdrop-filter: blur(18px);
 }
 
 .btn-back {
   font-size: 24px;
-  background: none;
+  background: #fff;
   border: none;
-  color: #666;
+  color: #17736c;
   cursor: pointer;
   margin-right: 16px;
   padding: 0;
@@ -543,29 +548,33 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(32, 55, 76, 0.08);
 }
 
 .page-title {
   font-size: 18px;
-  font-weight: 600;
-  color: #212121;
+  font-weight: 900;
+  color: #1b2734;
   margin: 0;
 }
 
 .loan-info-card,
 .repayment-plan-card,
 .early-repayment-card {
-  background: white;
-  margin: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  margin: 14px;
   padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow: 0 16px 36px rgba(32, 55, 76, 0.1);
+  backdrop-filter: blur(18px);
 }
 
 .card-title {
   font-size: 16px;
-  font-weight: 600;
-  color: #212121;
+  font-weight: 900;
+  color: #1b2734;
   margin-bottom: 16px;
 }
 
@@ -602,9 +611,9 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: #fafafa;
+  background: linear-gradient(135deg, #eef8f6, #fff4e8);
   padding: 12px;
-  border-radius: 8px;
+  border-radius: 20px;
 }
 
 .info-row {
@@ -612,7 +621,7 @@ export default {
   justify-content: space-between;
   gap: 40px;
   padding: 8px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.7);
 }
 
 .info-row:last-child {
@@ -634,34 +643,35 @@ export default {
 
 .info-label {
   font-size: 14px;
-  color: #666;
+  color: #687584;
+  font-weight: 800;
   white-space: nowrap;
 }
 
 .info-value {
   font-size: 16px;
-  color: #212121;
-  font-weight: 500;
+  color: #25303d;
+  font-weight: 900;
 }
 
 .remaining-amount {
-  color: #f44336;
-  font-weight: bold;
+  color: #b5521b;
+  font-weight: 900;
   font-size: 18px;
 }
 
 .loan-status {
-  color: #1976d2;
-  font-weight: bold;
+  color: #17736c;
+  font-weight: 900;
   font-size: 16px;
 }
 
 .status-repaying {
-  color: #1976d2;
+  color: #17736c;
 }
 
 .status-completed {
-  color: #388e3c;
+  color: #17736c;
 }
 
 .status-overdue {
@@ -675,21 +685,22 @@ export default {
 }
 
 .plan-item {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  border: 1px solid #eef1f5;
+  border-radius: 20px;
   padding: 12px;
-  transition: all 0.3s ease;
+  background: #fff;
+  transition: all 0.18s ease;
 }
 
 .plan-item.completed {
-  background: #f1f8e9;
-  border-color: #a5d6a7;
+  background: #e9f7f3;
+  border-color: #bfe4d8;
 }
 
 .plan-item.current {
-  background: #e3f2fd;
-  border-color: #90caf9;
-  box-shadow: 0 2px 8px rgba(30, 136, 229, 0.2);
+  background: #fff4e8;
+  border-color: #ffd1ad;
+  box-shadow: 0 12px 24px rgba(255, 136, 87, 0.12);
 }
 
 .plan-header {
@@ -706,14 +717,14 @@ export default {
 
 .period-label {
   font-size: 16px;
-  font-weight: 600;
-  color: #212121;
+  font-weight: 900;
+  color: #1b2734;
   margin-bottom: 2px;
 }
 
 .period-date {
   font-size: 13px;
-  color: #999;
+  color: #8a96a3;
 }
 
 .plan-amount {
@@ -724,14 +735,14 @@ export default {
 
 .amount-label {
   font-size: 13px;
-  color: #999;
+  color: #8a96a3;
   margin-bottom: 2px;
 }
 
 .amount-value {
   font-size: 18px;
-  font-weight: bold;
-  color: #212121;
+  font-weight: 900;
+  color: #1b2734;
 }
 
 .plan-details {
@@ -753,22 +764,22 @@ export default {
   flex: 1;
   text-align: center;
   padding: 8px;
-  background: rgb(229 228 228 / 66%);
-  border-radius: 6px;
+  background: #f8fafb;
+  border-radius: 16px;
 }
 
 .principal-amount,
 .interest-amount {
   font-size: 18px;
-  font-weight: bold;
-  color: #212121;
+  font-weight: 900;
+  color: #25303d;
   margin-bottom: 4px;
 }
 
 .principal-label,
 .interest-label {
   font-size: 12px;
-  color: #666;
+  color: #687584;
 }
 
 .plan-status {
@@ -777,17 +788,17 @@ export default {
   align-items: center;
   padding-top: 8px;
   margin-top: 8px;
-  border-top: 1px solid #f5f5f5;
+  border-top: 1px solid #eef1f5;
 }
 
 .status-label {
   font-size: 11px;
-  color: #999;
+  color: #8a96a3;
 }
 
 .status-value {
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 900;
 }
 
 .detail-item {
@@ -809,16 +820,16 @@ export default {
 }
 
 .status-completed {
-  color: #388e3c;
+  color: #17736c;
 }
 
 .status-current {
-  color: #1976d2;
-  font-weight: bold;
+  color: #b5521b;
+  font-weight: 900;
 }
 
 .status-pending {
-  color: #999;
+  color: #8a96a3;
 }
 
 .early-repayment-form {
@@ -834,22 +845,22 @@ export default {
 
 .form-label {
   font-size: 14px;
-  color: #212121;
+  color: #26313d;
   margin-bottom: 8px;
-  font-weight: 500;
+  font-weight: 900;
 }
 
 .form-input {
   padding: 12px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  border: 1px solid #e4ebf1;
+  border-radius: 16px;
   font-size: 14px;
   transition: border-color 0.3s ease;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #1e88e5;
+  border-color: #2cb59c;
 }
 
 /* 还款方式按钮样式 */
@@ -861,26 +872,26 @@ export default {
 .type-btn {
   flex: 1;
   padding: 12px 14px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
+  border: 1px solid #e4ebf1;
+  border-radius: 16px;
   background: white;
   font-size: 14px;
-  font-weight: 500;
-  color: #666;
+  font-weight: 900;
+  color: #687584;
   cursor: pointer;
   transition: all 0.3s ease;
   white-space: nowrap;
 }
 
 .type-btn:hover {
-  border-color: #1e88e5;
-  color: #1e88e5;
+  border-color: #2cb59c;
+  color: #17736c;
 }
 
 .type-btn.active {
-  border-color: #1e88e5da;
-  background: #1e88e500;
-  color: rgb(25, 24, 24);
+  border-color: transparent;
+  background: linear-gradient(135deg, #142744, #17736c 58%, #ff8857);
+  color: #fff;
 }
 
 /* 筛选按钮样式 */
@@ -899,23 +910,24 @@ export default {
 
 .filter-btn {
   padding: 5px 10px;
-  border: 1px solid #e0e0e0;
-  border-radius: 14px;
+  border: 1px solid #e4ebf1;
+  border-radius: 999px;
   background: white;
   font-size: 12px;
-  color: #666;
+  color: #687584;
+  font-weight: 900;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .filter-btn:hover {
-  border-color: #1e88e5;
-  color: #1e88e5;
+  border-color: #2cb59c;
+  color: #17736c;
 }
 
 .filter-btn.active {
-  border-color: #1e88e5;
-  background: #1e88e5;
+  border-color: transparent;
+  background: linear-gradient(135deg, #142744, #17736c 58%, #ff8857);
   color: white;
 }
 
@@ -923,6 +935,21 @@ export default {
 
 .btn-block {
   width: 100%;
+}
+
+.btn-primary {
+  height: 46px;
+  border: 0;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #142744, #17736c 58%, #ff8857);
+  color: #fff;
+  font-weight: 900;
+  box-shadow: 0 12px 24px rgba(23, 115, 108, 0.18);
+}
+
+.btn-primary:disabled {
+  background: #cbd3dc;
+  box-shadow: none;
 }
 
 @media (max-width: 480px) {

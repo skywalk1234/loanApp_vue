@@ -230,62 +230,84 @@ export default {
 
 <style scoped>
 .profile {
-  padding: 16px;
-  padding-bottom: 96px;
+  min-height: 100vh;
+  padding: 16px 14px 98px;
+  background:
+    radial-gradient(circle at 18% 4%, rgba(50, 179, 151, 0.2), transparent 30%),
+    radial-gradient(circle at 86% 8%, rgba(255, 148, 94, 0.2), transparent 28%),
+    linear-gradient(180deg, #eef8f6 0%, #f8f3ec 42%, #f5f7fb 100%);
+  color: #18212c;
 }
 
 .user-card {
-  background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
-  border-radius: 20px;
-  padding: 24px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(30, 136, 229, 0.1);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #142744, #17736c 56%, #ff8857);
+  border-radius: 28px;
+  padding: 22px;
+  margin-bottom: 14px;
+  box-shadow: 0 18px 42px rgba(28, 88, 103, 0.24);
+  color: #fff;
+}
+
+.user-card::after {
+  content: "";
+  position: absolute;
+  right: -34px;
+  top: -44px;
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
 }
 
 .user-header {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 18px;
 }
 
 .user-avatar {
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-  border-radius: 50%;
+  width: 54px;
+  height: 54px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 24px;
-  margin-right: 16px;
-  color: #1976d2;
-  border: 2px solid rgba(25, 118, 210, 0.2);
+  margin-right: 14px;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .user-name {
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: 900;
   margin-bottom: 4px;
-  color: #1a1a1a;
+  color: #fff;
 }
 
 .user-phone {
   font-size: 14px;
-  color: #666;
+  color: rgba(255, 255, 255, 0.72);
   margin-bottom: 4px;
 }
 
 .credit-score-section {
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-top: 20px;
-  padding: 24px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-  border: 1px solid rgba(76, 175, 80, 0.2);
-  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.15);
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  backdrop-filter: blur(12px);
 }
 
 .score-left {
@@ -296,29 +318,28 @@ export default {
 }
 
 .score-circle {
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #ffffff 0%, #f1f8e9 100%);
+  width: 100px;
+  height: 100px;
+  border-radius: 28px;
+  background: #ffffff;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.25);
-  border: 4px solid #4caf50;
+  box-shadow: 0 14px 28px rgba(8, 31, 50, 0.18);
 }
 
 .score-value {
   font-size: 32px;
-  font-weight: bold;
-  color: #2e7d32;
+  font-weight: 900;
+  color: #17736c;
   margin-bottom: 4px;
 }
 
 .score-label {
   font-size: 18px;
-  color: #2e7d32;
-  font-weight: 700;
+  color: rgba(255, 255, 255, 0.82);
+  font-weight: 900;
   margin-bottom: 8px;
   text-align: center;
 }
@@ -351,27 +372,27 @@ export default {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #4caf50;
+  background: rgba(255, 255, 255, 0.5);
   transition: all 0.3s ease;
 }
 
 .level-item.active .level-dot {
   width: 16px;
   height: 16px;
-  background: #2e7d32;
-  box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.3);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.22);
 }
 
 .level-text {
   font-size: 16px;
   font-weight: 500;
-  color: #388e3c;
+  color: rgba(255, 255, 255, 0.62);
   transition: all 0.3s ease;
 }
 
 .level-item.active .level-text {
-  font-weight: 600;
-  color: #2e7d32;
+  font-weight: 900;
+  color: #fff;
   font-size: 18px;
 }
 
@@ -433,46 +454,59 @@ export default {
 }
 
 .menu-section {
-  margin-bottom: 20px;
+  margin-bottom: 14px;
+  padding: 18px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.74);
+  box-shadow: 0 16px 36px rgba(32, 55, 76, 0.1);
+  backdrop-filter: blur(18px);
 }
 
 .section-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #212121;
-  margin-bottom: 12px;
-  padding-left: 4px;
+  font-size: 18px;
+  font-weight: 900;
+  color: #1a2430;
+  margin: 0 0 14px;
+  padding-left: 0;
 }
 
 .menu-list {
-  background: white;
-  border-radius: 12px;
+  background: transparent;
+  border-radius: 0;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  padding: 16px;
+  padding: 14px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  border-bottom: 1px solid #f5f5f5;
-}
-
-.menu-item:last-child {
-  border-bottom: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(231, 235, 241, 0.9);
 }
 
 .menu-item:hover {
-  background: #f5f5f5;
+  transform: translateY(-1px);
+  box-shadow: inset 0 0 0 1px rgba(50, 179, 151, 0.25), 0 12px 24px rgba(32, 55, 76, 0.08);
 }
 
 .menu-icon {
-  font-size: 24px;
-  margin-right: 16px;
-  width: 24px;
-  text-align: center;
+  width: 42px;
+  height: 42px;
+  margin-right: 12px;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #eaf6ff, #fff2e6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
 }
 
 .menu-content {
@@ -482,48 +516,52 @@ export default {
 .menu-title {
   display: block;
   font-size: 16px;
-  font-weight: 500;
-  color: #212121;
+  font-weight: 900;
+  color: #25303d;
   margin-bottom: 2px;
 }
 
 .menu-desc {
   font-size: 12px;
-  color: #757575;
+  color: #7b8794;
+  font-weight: 700;
 }
 
 .menu-desc.completed {
-  color: #4caf50;
+  color: #17736c;
 }
 
 .menu-arrow {
   font-size: 20px;
-  color: #bdbdbd;
+  color: #b7c0cb;
   margin-left: 8px;
 }
 
 .logout-section {
-  padding: 20px 0;
+  padding: 8px 0 20px;
 }
 
 .logout-btn {
-  background: #ffebee;
-  color: #f44336;
-  border: 1px solid #ffcdd2;
+  height: 46px;
+  border: 0;
+  border-radius: 18px;
+  background: #fff0e6;
+  color: #b5521b;
+  font-weight: 900;
+  box-shadow: 0 12px 24px rgba(181, 82, 27, 0.12);
 }
 
 .logout-btn:hover {
-  background: #ffcdd2;
+  background: #ffe5d2;
 }
 
 @media (max-width: 480px) {
   .profile {
-    padding: 12px;
-    padding-bottom: 92px;
+    padding: 14px 12px 92px;
   }
   
   .user-card {
-    padding: 20px;
+    padding: 18px;
   }
   
   .credit-score-section {

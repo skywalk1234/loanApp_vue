@@ -318,31 +318,37 @@ export default {
 <style scoped>
 .real-name-auth {
   min-height: 100vh;
-  background: #f5f7fa;
-  padding: 20px;
+  background:
+    radial-gradient(circle at 18% 4%, rgba(50, 179, 151, 0.18), transparent 30%),
+    radial-gradient(circle at 86% 8%, rgba(255, 148, 94, 0.18), transparent 28%),
+    linear-gradient(180deg, #eef8f6 0%, #f8f3ec 42%, #f5f7fb 100%);
+  padding: 16px 14px 32px;
+  color: #18212c;
 }
 
 .auth-header {
   display: flex;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   position: relative;
 }
 
 .back-button {
-  background: none;
+  background: #fff;
   border: none;
   font-size: 24px;
   cursor: pointer;
   padding: 8px;
   margin-right: 16px;
-  color: #666;
+  color: #17736c;
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(32, 55, 76, 0.08);
 }
 
 .auth-title {
   font-size: 20px;
-  font-weight: 600;
-  color: #212121;
+  font-weight: 900;
+  color: #1b2734;
   flex: 1;
   text-align: center;
   margin-right: 40px;
@@ -352,8 +358,12 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 32px;
-  padding: 0 20px;
+  margin-bottom: 16px;
+  padding: 16px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 16px 36px rgba(32, 55, 76, 0.08);
+  backdrop-filter: blur(18px);
 }
 
 .step {
@@ -367,8 +377,8 @@ export default {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #e0e0e0;
-  color: #999;
+  background: #eef2f6;
+  color: #8a96a3;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -378,32 +388,33 @@ export default {
 }
 
 .step.active .step-number {
-  background: #1e88e5;
+  background: linear-gradient(135deg, #142744, #17736c 58%, #ff8857);
   color: white;
 }
 
 .step.completed .step-number {
-  background: #4caf50;
+  background: #17736c;
   color: white;
 }
 
 .step-text {
   font-size: 12px;
-  color: #999;
+  color: #8a96a3;
+  font-weight: 800;
   text-align: center;
 }
 
 .step.active .step-text {
-  color: #1e88e5;
+  color: #17736c;
 }
 
 .step.completed .step-text {
-  color: #4caf50;
+  color: #17736c;
 }
 
 .step-line {
   height: 2px;
-  background: #e0e0e0;
+  background: #e8edf2;
   flex: 1;
   margin: 0 8px;
   position: relative;
@@ -415,11 +426,13 @@ export default {
 }
 
 .step-content {
-  background: white;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 24px;
   padding: 24px;
   margin-bottom: 24px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow: 0 16px 36px rgba(32, 55, 76, 0.1);
+  backdrop-filter: blur(18px);
 }
 
 .upload-section, .face-section {
@@ -428,14 +441,14 @@ export default {
 
 .upload-title, .face-title {
   font-size: 18px;
-  font-weight: 600;
-  color: #212121;
+  font-weight: 900;
+  color: #1b2734;
   margin-bottom: 8px;
 }
 
 .upload-desc, .face-desc {
   font-size: 14px;
-  color: #666;
+  color: #687584;
   margin-bottom: 24px;
 }
 
@@ -448,8 +461,8 @@ export default {
 .upload-card {
   flex: 1;
   height: 160px;
-  border: 2px dashed #ddd;
-  border-radius: 8px;
+  border: 2px dashed #bfd7d2;
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -460,8 +473,8 @@ export default {
 }
 
 .upload-card:hover {
-  border-color: #1e88e5;
-  background: #f8f9ff;
+  border-color: #2cb59c;
+  background: #f0faf5;
 }
 
 .upload-placeholder {
@@ -471,12 +484,12 @@ export default {
 .upload-icon {
   font-size: 32px;
   margin-bottom: 8px;
-  color: #999;
+  color: #8a96a3;
 }
 
 .upload-text {
   font-size: 14px;
-  color: #666;
+  color: #687584;
 }
 
 .upload-preview {
@@ -512,7 +525,7 @@ export default {
 .reupload-btn {
   background: white;
   border: none;
-  border-radius: 20px;
+  border-radius: 999px;
   padding: 8px 16px;
   font-size: 14px;
   cursor: pointer;
@@ -522,7 +535,7 @@ export default {
 .face-camera {
   width: 280px;
   height: 280px;
-  border: 3px dashed #ddd;
+  border: 3px dashed #bfd7d2;
   border-radius: 50%;
   margin: 0 auto 24px;
   display: flex;
@@ -530,7 +543,7 @@ export default {
   justify-content: center;
   position: relative;
   overflow: hidden;
-  background: #f8f9fa;
+  background: #f8fafb;
 }
 
 .camera-placeholder {
@@ -590,23 +603,23 @@ export default {
 }
 
 .next-button, .camera-button, .confirm-button, .finish-button {
-  background: linear-gradient(135deg, #1e88e5 0%, #42a5f5 100%);
+  background: linear-gradient(135deg, #142744, #17736c 58%, #ff8857);
   color: white;
   border: none;
-  border-radius: 25px;
+  border-radius: 999px;
   padding: 12px 32px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 900;
   cursor: pointer;
   transition: all 0.3s ease;
   display: block;
   margin: 0 auto;
-  box-shadow: 0 4px 15px rgba(30, 136, 229, 0.3);
+  box-shadow: 0 12px 24px rgba(23, 115, 108, 0.18);
 }
 
 .next-button:hover, .camera-button:hover, .confirm-button:hover, .finish-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(30, 136, 229, 0.4);
+  box-shadow: 0 16px 30px rgba(23, 115, 108, 0.22);
 }
 
 .next-button:disabled {
@@ -632,13 +645,14 @@ export default {
 .success-title {
   font-size: 24px;
   font-weight: 600;
-  color: #212121;
+  color: #1b2734;
+  font-weight: 900;
   margin-bottom: 8px;
 }
 
 .success-desc {
   font-size: 16px;
-  color: #666;
+  color: #687584;
   margin-bottom: 32px;
 }
 
@@ -648,7 +662,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(16, 29, 43, 0.58);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -657,7 +671,7 @@ export default {
 
 .modal-content {
   background: white;
-  border-radius: 12px;
+  border-radius: 24px;
   padding: 32px;
   text-align: center;
   max-width: 300px;
@@ -673,13 +687,14 @@ export default {
 .processing-title {
   font-size: 20px;
   font-weight: 600;
-  color: #212121;
+  color: #1b2734;
+  font-weight: 900;
   margin-bottom: 8px;
 }
 
 .processing-text {
   font-size: 14px;
-  color: #666;
+  color: #687584;
 }
 
 @keyframes spin {
