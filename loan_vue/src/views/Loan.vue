@@ -23,11 +23,11 @@
         <div class="product-details">
           <div class="detail-item">
             <span class="detail-label">借款额度</span>
-            <span class="detail-value">{{ product.min_principle }} - {{ product.max_principle }}元</span>
+            <span class="detail-value">{{ getAmountRangeText(product) }}</span>
           </div>
           <div class="detail-item">
             <span class="detail-label">借款期限</span>
-            <span class="detail-value">0 - {{ product.max_periods }}{{ product.period_type === 'DAY' ? '天' : product.period_type === 'MONTH' ? '个月' : '年' }}</span>
+            <span class="detail-value">{{ getTermRangeText(product) }}</span>
           </div>
         </div>
         
@@ -72,9 +72,9 @@
               v-model="application.amount"
               type="number" 
               class="form-input"
-              :placeholder="`请输入${selectedProduct.min_principle}-${selectedProduct.max_principle}元之间的金额`"
-              :min="selectedProduct.min_principle"
-              :max="selectedProduct.max_principle"
+              :placeholder="getAmountPlaceholder()"
+              :min="selectedProduct.min_principle || undefined"
+              :max="selectedProduct.max_principle || undefined"
               required
             >
           </div>
@@ -253,34 +253,25 @@ export default {
         const result = await response.text()
         //先不解析，把响应作为字符串保存
         const jsonString = result;
-        const fixedJsonString = jsonString.replace(
-          /"id":\s*(\d{15,})/g,  // 匹配15位以上的数字id
-          '"id":"$1"'  // 添加双引号使其变为字符串
-        )
+        const fixedJsonString = jsonString
+          .replace(
+            /"id":\s*(\d{15,})/g,  // 匹配15位以上的数字id
+            '"id":"$1"'  // 添加双引号使其变为字符串
+          )
+          .replace(
+            /"strategyCode":\s*(\d{15,})/g,
+            '"strategyCode":"$1"'
+          )
         console.log('获取产品列表响应:', fixedJsonString)
         // 解析响应数据
         const responseData = JSON.parse(fixedJsonString)
         
-        if (responseData.success && responseData.products) {
-          console.log('获取产品列表成功，共', responseData.products.length, '个产品')
+        const products = responseData.products || responseData.option || []
+        if (responseData.success && products.length > 0) {
+          console.log('获取产品列表成功，共', products.length, '个产品')
           
           // 将后端数据转换为前端需要的格式
-          this.loanProducts = responseData.products.map(product => ({
-            id: product.id,
-            name: product.name,
-            interest: product.interest,
-            min_principle: product.min_principle,
-            max_principle: product.max_principle,
-            min_periods: product.min_periods,
-            max_periods: product.max_periods,
-            period_type: product.period_type,
-            repay_type: product.repay_type,
-            grace_term: product.grace_term,
-            grace_day: product.grace_day,
-            penalty: product.penalty,
-            default_rate: product.default_rate,
-            info: product.info
-          }))
+          this.loanProducts = products.map(product => this.normalizeLoanProduct(product))
 
           
         } else {
@@ -303,6 +294,55 @@ export default {
         purpose: '',
         repaymentMethod: ''
       }
+    },
+
+    normalizeLoanProduct(product) {
+      const periodType = product.period_type || (product.calcType === 'ONE_TIME' ? 'DAY' : 'MONTH')
+      const maxPeriods = product.max_periods || product.termNumber || 1
+
+      return {
+        id: String(product.id || product.strategyCode || ''),
+        name: product.name || product.strategyName || '贷款产品',
+        interest: product.interest || product.annualRate || '0',
+        min_principle: product.min_principle || null,
+        max_principle: product.max_principle || null,
+        min_periods: product.min_periods || 1,
+        max_periods: maxPeriods,
+        period_type: periodType,
+        repay_type: product.repay_type || product.calcType || '',
+        grace_term: product.grace_term || 0,
+        grace_day: product.grace_day || product.graceDays || 0,
+        penalty: product.penalty || product.overdueDailyRate || '0',
+        default_rate: product.default_rate || product.overdueDailyRate || '0',
+        info: product.info || this.buildStrategyInfo(product),
+        rawProduct: product
+      }
+    },
+
+    buildStrategyInfo(product) {
+      const tags = product.extInfo && Array.isArray(product.extInfo.tags) && product.extInfo.tags.length
+        ? ` 标签：${product.extInfo.tags.join('、')}`
+        : ''
+      return `${product.strategyName || '该产品'}，还款方式${this.getRepayTypeText(product.calcType)}，宽限期${product.graceDays || 0}天。${tags}`
+    },
+
+    getAmountRangeText(product) {
+      if (product.min_principle && product.max_principle) {
+        return `${product.min_principle} - ${product.max_principle}元`
+      }
+      return '以审批结果为准'
+    },
+
+    getAmountPlaceholder() {
+      if (this.selectedProduct.min_principle && this.selectedProduct.max_principle) {
+        return `请输入${this.selectedProduct.min_principle}-${this.selectedProduct.max_principle}元之间的金额`
+      }
+      return '请输入借款金额'
+    },
+
+    getTermRangeText(product) {
+      const unit = product.period_type === 'DAY' ? '天' : product.period_type === 'MONTH' ? '个月' : '年'
+      return `${product.min_periods || 1} - ${product.max_periods}${unit}`
     },
     
     // 获取期数选项
@@ -349,8 +389,13 @@ export default {
       const minAmount = parseFloat(this.selectedProduct.min_principle)
       const maxAmount = parseFloat(this.selectedProduct.max_principle)
       
-      if (amount < minAmount || amount > maxAmount) {
-        alert(`借款金额必须在${minAmount}-${maxAmount}元之间`)
+      if (!Number.isNaN(minAmount) && amount < minAmount) {
+        alert(`借款金额不能小于${minAmount}元`)
+        return
+      }
+
+      if (!Number.isNaN(maxAmount) && amount > maxAmount) {
+        alert(`借款金额不能大于${maxAmount}元`)
         return
       }
       
