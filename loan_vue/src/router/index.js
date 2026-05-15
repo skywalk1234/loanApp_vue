@@ -13,6 +13,7 @@ const LoanRecords = () => import('@/views/LoanRecords.vue')
 const RepaymentRecords = () => import('@/views/RepaymentRecords.vue')
 const RealNameAuth = () => import('@/views/RealNameAuth.vue')
 const BankCard = () => import('@/views/BankCard.vue')
+const PersonalInfo = () => import('@/views/PersonalInfo.vue')
 
 const routes = [
   {
@@ -53,6 +54,12 @@ const routes = [
     path: '/bank-card',
     name: 'BankCard',
     component: BankCard,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/personal-info',
+    name: 'PersonalInfo',
+    component: PersonalInfo,
     meta: { requiresAuth: true }
   },
   {
