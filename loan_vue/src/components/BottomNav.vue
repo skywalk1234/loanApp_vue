@@ -57,72 +57,101 @@ export default {
   bottom: 0;
   left: 0;
   right: 0;
-  background: white;
-  border-top: 1px solid #e0e0e0;
   display: flex;
   justify-content: space-around;
   padding: 6px 0;
+  padding-bottom: max(6px, env(safe-area-inset-bottom));
   z-index: 1000;
-  height: 56px;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border-top: 1px solid rgba(231, 235, 241, 0.8);
+  box-shadow: 0 -8px 32px rgba(32, 55, 76, 0.08);
 }
 
 .nav-item {
   flex: 1;
   text-align: center;
-  padding: 4px;
-  color: #757575;
+  padding: 2px 6px;
+  color: #8a96a3;
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: all 0.25s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 1px;
+  position: relative;
 }
 
-.nav-item.active {
-  color: #1e88e5;
-}
-
-.nav-icon {
+.nav-item .nav-icon {
   display: block;
-  font-size: 20px;
-  margin-bottom: 2px;
+  font-size: 22px;
+  line-height: 1.3;
+  transition: transform 0.25s ease;
+  filter: grayscale(0.6);
+  opacity: 0.7;
 }
 
 .nav-item span {
-  font-size: 11px;
+  font-size: 10px;
+  font-weight: 800;
   display: block;
+  letter-spacing: 0.3px;
+  color: inherit;
+  transition: color 0.25s ease;
+}
+
+.nav-item.active {
+  color: #17736c;
+}
+
+.nav-item.active .nav-icon {
+  transform: translateY(-1px) scale(1.08);
+  filter: grayscale(0);
+  opacity: 1;
+}
+
+.nav-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #17736c, #20b883);
+  box-shadow: 0 2px 8px rgba(23, 115, 108, 0.35);
+}
+
+.nav-item:hover .nav-icon {
+  transform: translateY(-1px);
 }
 
 .nav-icon-wrapper {
   position: relative;
   display: inline-block;
+  line-height: 1.3;
 }
 
 .notification-dot {
   position: absolute;
-  top: -2px;
-  right: -4px;
-  width: 8px;
-  height: 8px;
-  background-color: #ff4444;
+  top: 0;
+  right: -5px;
+  width: 7px;
+  height: 7px;
+  background: linear-gradient(135deg, #ff6b6b, #ee4444);
   border-radius: 50%;
-  border: 1px solid white;
+  border: 1.5px solid rgba(255, 255, 255, 0.9);
   animation: pulse 2s infinite;
+  box-shadow: 0 1px 4px rgba(238, 68, 68, 0.35);
 }
 
 @keyframes pulse {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 0.7;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.25); opacity: 0.75; }
+  100% { transform: scale(1); opacity: 1; }
 }
 </style>

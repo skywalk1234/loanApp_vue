@@ -231,14 +231,12 @@ export default {
       try {
         console.log('调用API获取贷款产品列表')
         
-        // 从localStorage获取accessToken
         const accessToken = localStorage.getItem('accessToken')
         if (!accessToken) {
           console.error('没有找到accessToken')
           return
         }
         
-        // 创建请求头
         var myHeaders = new Headers()
         myHeaders.append("Authorization", accessToken)
         
@@ -248,32 +246,16 @@ export default {
           redirect: 'follow'
         }
         
-        // 发送获取产品列表请求
         const response = await fetch("http://115.190.40.44:45444/loan/option", requestOptions)
         const result = await response.text()
-        //先不解析，把响应作为字符串保存
-        const jsonString = result;
-        const fixedJsonString = jsonString
-          .replace(
-            /"id":\s*(\d{15,})/g,  // 匹配15位以上的数字id
-            '"id":"$1"'  // 添加双引号使其变为字符串
-          )
-          .replace(
-            /"strategyCode":\s*(\d{15,})/g,
-            '"strategyCode":"$1"'
-          )
-        console.log('获取产品列表响应:', fixedJsonString)
-        // 解析响应数据
-        const responseData = JSON.parse(fixedJsonString)
+        console.log('获取产品列表响应:', result)
         
-        const products = responseData.products || responseData.option || []
+        const responseData = JSON.parse(result)
+        
+        const products = responseData.option || []
         if (responseData.success && products.length > 0) {
           console.log('获取产品列表成功，共', products.length, '个产品')
-          
-          // 将后端数据转换为前端需要的格式
           this.loanProducts = products.map(product => this.normalizeLoanProduct(product))
-
-          
         } else {
           console.error('获取产品列表失败:', responseData.message || '未知错误')
         }
@@ -371,9 +353,15 @@ export default {
     // 获取还款方式文本
     getRepayTypeText(repayType) {
       switch (repayType) {
-        case 'EQUAL_PRINCIPAL': return '等额本金'
-        case 'EQUAL_INSTALLMENT': return '等额本息'
-        case 'INTEREST_ONLY': return '先息后本'
+        case 'EQUAL_PRINCIPAL':
+        case 'equal_principal':
+          return '等额本金'
+        case 'EQUAL_INSTALLMENT':
+        case 'equal_principal_interest':
+          return '等额本息'
+        case 'INTEREST_ONLY':
+        case 'bullet':
+          return '先息后本'
         default: return repayType
       }
     },
