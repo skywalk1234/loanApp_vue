@@ -94,6 +94,15 @@
           </div>
           
           <div class="form-group">
+            <label class="form-label">借款目的</label>
+            <select v-model.number="application.purpose" class="form-input form-select">
+              <option v-for="opt in purposeOptions" :key="opt.value" :value="opt.value">
+                {{ opt.label }}
+              </option>
+            </select>
+          </div>
+          
+          <div class="form-group">
             <label class="form-label">还款方式</label>
             <input 
               :value="getRepayTypeText(selectedProduct.repay_type)"
@@ -201,9 +210,22 @@ export default {
       application: {
         amount: '',
         term: '',
-        purpose: '',
+        purpose: 0,
         repaymentMethod: ''
-      }
+      },
+      purposeOptions: [
+        { value: 0, label: '其他用途' },
+        { value: 1, label: '购买新车' },
+        { value: 2, label: '购买二手车' },
+        { value: 3, label: '家具/设备' },
+        { value: 4, label: '家电/电子产品' },
+        { value: 5, label: '家庭电器' },
+        { value: 6, label: '维修' },
+        { value: 7, label: '教育' },
+        { value: 8, label: '旅游/度假' },
+        { value: 9, label: '再培训' },
+        { value: 10, label: '经营/商业用途' }
+      ]
     }
   },
   computed: {
@@ -273,7 +295,7 @@ export default {
       this.application = {
         amount: '',
         term: '',
-        purpose: '',
+        purpose: 0,
         repaymentMethod: ''
       }
     },
@@ -416,19 +438,13 @@ export default {
         myHeaders.append("Authorization", accessToken)
         myHeaders.append("Content-Type", "application/json")
 
-        // console.log("loan_id:",this.selectedProduct.id)
-        //手动构造json格式
-        var raw = `{"productId":${this.selectedProduct.id},` +
-          `"amount":${this.application.amount},` +
-          `"termCount":${this.application.term}}`;
-        console.log("raw:",raw)
-
-        // 准备请求数据
-        // var raw = JSON.stringify({
-        //   "productId": this.selectedProduct.id,
-        //   "amount": parseFloat(this.application.amount),
-        //   "termCount": parseInt(this.application.term)
-        // })
+        var raw = JSON.stringify({
+          productId: Number(this.selectedProduct.id),
+          amount: Number(this.application.amount),
+          termCount: Number(this.application.term),
+          purpose: this.application.purpose
+        })
+        console.log("raw:", raw)
         
         // 配置请求选项
         var requestOptions = {
@@ -724,6 +740,17 @@ export default {
   color: #7b8794;
   margin-bottom: 6px;
   margin-top: -4px;
+}
+
+.form-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%237b8794' d='M1.41.59L6 5.17 10.59.59 12 2l-6 6-6-6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+  cursor: pointer;
+  background-color: #fff;
 }
 
 .loan-preview {

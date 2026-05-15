@@ -65,7 +65,9 @@ class WebSocketService {
     try {
       const ticket = await this.getWebSocketTicket()
       console.log('获取到的 WebSocket 票据:', ticket)
-      const wsUrl = 'ws://115.190.40.44:45444/ws'
+      // const wsUrl = 'ws://115.190.40.44:45444/ws'
+      //这里先关掉了websocket，等后面再打开，用了一个错的地址作为替代
+      const wsUrl = 'ws://localhost:45/ws'
 
       var fullUrl = `${wsUrl}?ticket=${encodeURIComponent(ticket)}`;
       this.ws = new WebSocket(fullUrl)
