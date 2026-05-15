@@ -230,32 +230,30 @@ export default {
 
         const response = await fetch('http://115.190.40.44:45444/loan/orderList', requestOptions)
         const result = await response.text()
-        const jsonString = result;
-        const fixedJsonString = jsonString.replace(
-          /"product_id":\s*(\d{15,})/g,  // 匹配15位以上的数字id
-          '"product_id":"$1"'  // 添加双引号使其变为字符串
+        const fixedJsonString = result.replace(
+          /"product_id":\s*(\d{15,})/g,
+          '"product_id":"$1"'
         ).replace(
-          /"loan_id":\s*(\d{15,})/g,  // 匹配15位以上的数字id
-          '"loan_id":"$1"'  // 添加双引号使其变为字符串
+          /"loan_id":\s*(\d{15,})/g,
+          '"loan_id":"$1"'
         )
         const data = JSON.parse(fixedJsonString)
         
         if (data.errCode === 200 && data.success) {
-          // 将后端数据格式转换为前端需要的格式
           let records = data.list.map(item => ({
             id: item.loan_id,
-            amount: parseFloat(item.Principal),
-            totalPeriods: item.TotalPeriods,
-            paidPeriods: item.PaidPeriods,
-            remainingAmount: parseFloat(item.Principal) - parseFloat(item.PaidAmount),
-            status: this.mapStatus(item.Status),
-            _rawStatus: item.Status, // 保存原始状态值用于调试
-            progress: item.TotalPeriods > 0 ? Math.round((item.PaidPeriods / item.TotalPeriods) * 100) : 0,
+            amount: parseFloat(item.principal),
+            totalPeriods: item.total_periods,
+            paidPeriods: item.paid_periods,
+            remainingAmount: parseFloat(item.principal) - parseFloat(item.paid_amount),
+            status: this.mapStatus(item.status),
+            _rawStatus: item.status,
+            progress: item.total_periods > 0 ? Math.round((item.paid_periods / item.total_periods) * 100) : 0,
             productName: `产品${item.product_id}`,
             productId: item.product_id,
-            term: item.TotalPeriods,
+            term: item.total_periods,
             interestRate: 0.05,
-            isHighlight: item.loan_id === this.highlightLoanId // 标记是否需要高亮
+            isHighlight: item.loan_id === this.highlightLoanId
           }))
           
           // 如果需要高亮显示特定记录，将其置顶
