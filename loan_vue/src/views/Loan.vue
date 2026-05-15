@@ -192,6 +192,21 @@
         </form>
       </div>
     </div>
+
+    <!-- 完善个人信息提示弹窗 -->
+    <div class="modal" v-if="showRiskProfileModal">
+      <div class="modal-content risk-profile-modal">
+        <div class="modal-body">
+          <div class="risk-icon">!</div>
+          <p class="risk-message">您还没有完善个人信息</p>
+          <p class="risk-desc">完善后可获得借款额度评估</p>
+        </div>
+        <div class="risk-actions">
+          <button class="risk-btn secondary" @click="showRiskProfileModal = false">暂不</button>
+          <button class="risk-btn primary" @click="goToPersonalInfo">去完善个人信息</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -207,6 +222,7 @@ export default {
       loanProducts: [],
       selectedProduct: {},
       showApplyModal: false,
+      showRiskProfileModal: false,
       application: {
         amount: '',
         term: '',
@@ -387,7 +403,12 @@ export default {
         default: return repayType
       }
     },
-    
+
+    goToPersonalInfo() {
+      this.showRiskProfileModal = false
+      this.$router.push('/personal-info')
+    },
+
     async submitApplication() {
       if (!this.application.amount || !this.application.term) {
         alert('请填写借款金额和期数')
@@ -470,6 +491,10 @@ export default {
           
           // 跳转到申请记录页面
           this.$router.push('/loan-records')
+        } else if (responseData.needRiskProfile) {
+          // 需要完善个人信息
+          this.showApplyModal = false
+          this.showRiskProfileModal = true
         } else {
           // 申请失败
           console.error('申请失败:', responseData.message || '未知错误')
@@ -779,6 +804,76 @@ export default {
   margin-bottom: 0;
   font-weight: 600;
   color: #17736c;
+}
+
+.risk-profile-modal {
+  max-width: 320px;
+  text-align: center;
+  padding: 28px 24px 20px;
+}
+
+.risk-profile-modal .modal-body {
+  margin-bottom: 20px;
+}
+
+.risk-icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff9a35, #ef4056);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.risk-message {
+  font-size: 16px;
+  font-weight: 900;
+  color: #25303d;
+  margin: 0 0 6px;
+}
+
+.risk-desc {
+  font-size: 13px;
+  color: #7b8794;
+  margin: 0;
+  font-weight: 500;
+}
+
+.risk-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.risk-btn {
+  flex: 1;
+  height: 44px;
+  border: 0;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.18s ease;
+}
+
+.risk-btn.primary {
+  background: linear-gradient(135deg, #142744, #17736c 56%, #ff8857);
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(23, 115, 108, 0.22);
+}
+
+.risk-btn.secondary {
+  background: #f5f7fa;
+  color: #667280;
+  box-shadow: inset 0 0 0 1px rgba(231, 235, 241, 0.9);
+}
+
+.risk-btn:hover {
+  transform: translateY(-1px);
 }
 
 @media (max-width: 480px) {

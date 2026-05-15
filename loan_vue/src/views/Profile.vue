@@ -69,6 +69,15 @@
           <div class="menu-arrow">›</div>
         </div>
         
+        <div class="menu-item" @click="goToPersonalInfo">
+          <div class="menu-icon">📝</div>
+          <div class="menu-content">
+            <span class="menu-title">个人资料</span>
+            <span class="menu-desc">完善个人信息</span>
+          </div>
+          <div class="menu-arrow">›</div>
+        </div>
+
         <div class="menu-item" @click="goToBankCard">
           <div class="menu-icon">🏦</div>
           <div class="menu-content">
@@ -188,6 +197,10 @@ export default {
       this.$router.push('/real-name-auth')
     },
     
+    goToPersonalInfo() {
+      this.$router.push('/personal-info')
+    },
+
     goToBankCard() {
       // 检查是否已经完成实名认证
       if (localStorage.getItem('faced') !== 'true') {
