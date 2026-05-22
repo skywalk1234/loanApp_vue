@@ -168,6 +168,7 @@
 <script>
 import { tokenService } from '@/services/api'
 import tokenRefreshMixin from '@/mixins/tokenRefresh'
+import { API_BASE_URL } from '@/config'
 
 export default {
   name: 'LoanRecords',
@@ -228,7 +229,7 @@ export default {
           redirect: 'follow'
         }
 
-        const response = await fetch('http://115.190.40.44:45444/loan/orderList', requestOptions)
+        const response = await fetch(`${API_BASE_URL}/loan/orderList`, requestOptions)
         const result = await response.text()
         const fixedJsonString = result.replace(
           /"product_id":\s*(\d{15,})/g,
@@ -356,7 +357,7 @@ export default {
             redirect: 'follow'
           }
 
-          const response = await fetch('http://115.190.40.44:45444/loan/getProduct', requestOptions)
+          const response = await fetch(`${API_BASE_URL}/loan/getProduct`, requestOptions)
           const result = await response.text()
           const data = JSON.parse(result)
 
@@ -405,7 +406,7 @@ export default {
             redirect: 'follow'
           }
 
-          const response = await fetch('http://115.190.40.44:45444/loan/getProduct', requestOptions)
+          const response = await fetch(`${API_BASE_URL}/loan/getProduct`, requestOptions)
           const result = await response.text()
           const data = JSON.parse(result)
           

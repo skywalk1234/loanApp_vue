@@ -107,6 +107,7 @@
 </template>
 
 <script>
+import { API_BASE_URL } from '@/config'
 export default {
   name: 'Register',
   data() {
@@ -183,7 +184,7 @@ export default {
       };
 
       // 发送注册请求 - 只使用POST请求体，URL不带参数
-      fetch("http://115.190.40.44:45444/user/register", requestOptions)
+      fetch(`${API_BASE_URL}/user/register`, requestOptions)
         .then(response => response.text())
         .then(result => {
           console.log('注册响应:', result);
@@ -245,7 +246,7 @@ export default {
       };
 
       // 发送验证码请求
-      fetch("http://115.190.40.44:45444/user/registerVerifyCode", requestOptions)
+      fetch(`${API_BASE_URL}/user/registerVerifyCode`, requestOptions)
         .then(response => response.text())
         .then(result => {
           console.log('验证码发送响应:', result);

@@ -1,9 +1,10 @@
 import axios from 'axios'
 import tokenService from './token'
+import { API_BASE_URL } from '../config'
 
 // 创建axios实例
 const api = axios.create({
-  baseURL: 'http://115.190.40.44:45444',
+  baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json'

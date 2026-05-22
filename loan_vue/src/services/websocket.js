@@ -1,4 +1,5 @@
 import messageStore from '@/stores/messageStore'
+import { API_BASE_URL, WS_URL } from '@/config'
 
 class WebSocketService {
   constructor() {
@@ -34,7 +35,7 @@ class WebSocketService {
         redirect: 'follow'
       }
 
-      const response = await fetch("http://115.190.40.44:45444/ws-ticket", requestOptions)
+      const response = await fetch(`${API_BASE_URL}/ws-ticket`, requestOptions)
       const result = await response.json()
       
       console.log('ws-ticket响应:', result)
@@ -78,10 +79,7 @@ class WebSocketService {
     try {
       const ticket = await this.getWebSocketTicket()
       console.log('获取到的 WebSocket 票据:', ticket)
-      const wsUrl = 'ws://115.190.40.44:45444/ws'
-      //这里先关掉了websocket，等后面再打开，用了一个错的地址作为替代
-      // const wsUrl = 'ws://localhost:45/ws'
-      var fullUrl = `${wsUrl}?ticket=${encodeURIComponent(ticket)}`;
+      var fullUrl = `${WS_URL}?ticket=${encodeURIComponent(ticket)}`;
       this.ws = new WebSocket(fullUrl)
       
       return new Promise((resolve, reject) => {

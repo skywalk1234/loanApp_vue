@@ -99,6 +99,7 @@
 </template>
 
 <script>
+import { API_BASE_URL } from '@/config'
 export default {
   name: 'Login',
   data() {
@@ -235,7 +236,7 @@ export default {
       };
       
       // 发送登录请求
-      fetch("http://115.190.40.44:45444/user/login", requestOptions)
+      fetch(`${API_BASE_URL}/user/login`, requestOptions)
         .then(response => {
           console.log('响应状态:', response.status);
           return response.text();

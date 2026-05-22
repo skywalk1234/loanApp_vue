@@ -148,6 +148,7 @@
 </template>
 
 <script>
+import { API_BASE_URL } from '@/config'
 export default {
   name: 'Repayment',
   data() {
@@ -240,7 +241,7 @@ export default {
         }
         
         // 调用API获取还款计划
-        const response = await fetch('http://115.190.40.44:45444/loan/getSchedules', requestOptions)
+        const response = await fetch(`${API_BASE_URL}/loan/getSchedules`, requestOptions)
         const result = await response.text()
         const data = JSON.parse(result)
         
@@ -473,7 +474,7 @@ export default {
           }
           
           // 调用API进行提前还款
-          const response = await fetch('http://115.190.40.44:45444/loan/repay', requestOptions)
+          const response = await fetch(`${API_BASE_URL}/loan/repay`, requestOptions)
           const result = await response.text()
           const data = JSON.parse(result)
           

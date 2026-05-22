@@ -2,8 +2,7 @@
  * Token服务模块
  * 用于处理accessToken的刷新和管理
  */
-
-const API_BASE_URL = 'http://115.190.40.44:45444'
+import { API_BASE_URL } from '../config'
 
 class TokenService {
   /**

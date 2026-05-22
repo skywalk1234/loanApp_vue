@@ -123,6 +123,7 @@
 </template>
 
 <script>
+import { API_BASE_URL } from '@/config'
 export default {
   name: 'PersonalInfo',
   data() {
@@ -243,7 +244,7 @@ export default {
           redirect: 'follow'
         }
 
-        const response = await fetch('http://115.190.40.44:45444/user/riskProfile', requestOptions)
+        const response = await fetch(`${API_BASE_URL}/user/riskProfile`, requestOptions)
         const result = await response.text()
         console.log('提交个人信息响应:', result)
 

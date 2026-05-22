@@ -71,6 +71,7 @@
 </template>
 
 <script>
+import { API_BASE_URL } from '@/config'
 export default {
   name: 'RepaymentRecords',
   data() {
@@ -106,7 +107,7 @@ export default {
         }
         
         // 调用API获取还款记录
-        const response = await fetch('http://115.190.40.44:45444/loan/getRepayment', requestOptions)
+        const response = await fetch(`${API_BASE_URL}/loan/getRepayment`, requestOptions)
         const result = await response.text()
         
         const jsonString = result;

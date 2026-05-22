@@ -213,6 +213,7 @@
 <script>
 import { tokenService } from '@/services/api'
 import tokenRefreshMixin from '@/mixins/tokenRefresh'
+import { API_BASE_URL } from '@/config'
 
 export default {
   name: 'Loan',
@@ -284,7 +285,7 @@ export default {
           redirect: 'follow'
         }
         
-        const response = await fetch("http://115.190.40.44:45444/loan/option", requestOptions)
+        const response = await fetch(`${API_BASE_URL}/loan/option`, requestOptions)
         const result = await response.text()
         console.log('获取产品列表响应:', result)
         
@@ -476,7 +477,7 @@ export default {
         }
         
         // 发送申请请求
-        const response = await fetch("http://115.190.40.44:45444/loan/loan", requestOptions)
+        const response = await fetch(`${API_BASE_URL}/loan/loan`, requestOptions)
         const result = await response.text()
         
         console.log('申请响应:', result)
