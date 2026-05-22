@@ -3,8 +3,27 @@
 </template>
 
 <script>
+import websocketService from '@/services/websocket'
+
 export default {
-  name: 'App'
+  name: 'App',
+  created() {
+    this.initWebSocket()
+  },
+  methods: {
+    async initWebSocket() {
+      const accessToken = localStorage.getItem('accessToken')
+      if (!accessToken) {
+        return
+      }
+      try {
+        await websocketService.connect()
+        console.log('App: WebSocket连接成功')
+      } catch (error) {
+        console.log('App: WebSocket连接失败:', error.toString())
+      }
+    }
+  }
 }
 </script>
 

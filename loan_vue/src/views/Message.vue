@@ -138,8 +138,6 @@ export default {
   },
   created() {
     this.loadMessages()
-    this.initWebSocket()
-    // 当用户打开消息页面时，标记所有消息为已读
     messageStore.markAllAsRead()
   },
   methods: {
@@ -253,30 +251,15 @@ export default {
       }
     },
 
-    // 初始化WebSocket连接
-    async initWebSocket() {
-      try {
-        const status = websocketService.getConnectionStatus()
-        if (status.isConnected && status.readyState === WebSocket.OPEN) {
-          console.log('WebSocket已连接，无需重复连接')
-          return
-        }
-        await websocketService.connect()
-        console.log('消息页面WebSocket连接成功')
-      } catch (error) {
-        console.log('消息页面WebSocket连接失败:', error.toString())
-      }
-    },
-
-    // 发送测试消息
+    // 发送测试消息到后端
     sendTestMessage() {
       const status = websocketService.getConnectionStatus()
       if (!status.isConnected || status.readyState !== WebSocket.OPEN) {
-        alert('WebSocket未连接，请先等待连接成功')
+        alert('WebSocket 未连接，请稍后重试')
         return
       }
-      websocketService.send('hello')
-      console.log('已发送测试消息: hello')
+      websocketService.send({ type: 99, msg: '这是一条来自消息中心的测试消息' })
+      alert('已发送测试消息')
     }
   }
 }

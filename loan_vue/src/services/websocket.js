@@ -9,10 +9,16 @@ class WebSocketService {
     this.reconnectDelay = 3000
     this.messageHandlers = new Map()
     this.connectionPromise = null
+    this.cachedTicket = null
+    this.reconnectExhausted = false
   }
 
-  // 获取WebSocket票据
+  // 获取WebSocket票据（带缓存，避免重复请求）
   async getWebSocketTicket() {
+    if (this.cachedTicket) {
+      return this.cachedTicket
+    }
+
     try {
       const accessToken = localStorage.getItem('accessToken')
       if (!accessToken) {
@@ -34,9 +40,11 @@ class WebSocketService {
       console.log('ws-ticket响应:', result)
       
       if (result.ticket) {
-        return result.ticket
+        this.cachedTicket = result.ticket
+        return this.cachedTicket
       } else if (result.code === 200 && result.data && result.data.ticket) {
-        return result.data.ticket
+        this.cachedTicket = result.data.ticket
+        return this.cachedTicket
       } else {
         throw new Error('Failed to get WebSocket ticket')
       }
@@ -48,6 +56,11 @@ class WebSocketService {
 
   // 建立WebSocket连接
   async connect() {
+    if (this.reconnectExhausted) {
+      console.warn('WebSocket重连已耗尽，跳过连接')
+      return Promise.reject(new Error('WebSocket重连已耗尽'))
+    }
+
     if (this.isConnected && this.ws && this.ws.readyState === WebSocket.OPEN) {
       console.log('WebSocket已连接，无需重复连接')
       return Promise.resolve()
@@ -65,9 +78,9 @@ class WebSocketService {
     try {
       const ticket = await this.getWebSocketTicket()
       console.log('获取到的 WebSocket 票据:', ticket)
-      // const wsUrl = 'ws://115.190.40.44:45444/ws'
+      const wsUrl = 'ws://115.190.40.44:45444/ws'
       //这里先关掉了websocket，等后面再打开，用了一个错的地址作为替代
-      const wsUrl = 'ws://localhost:45/ws'
+      // const wsUrl = 'ws://localhost:45/ws'
       var fullUrl = `${wsUrl}?ticket=${encodeURIComponent(ticket)}`;
       this.ws = new WebSocket(fullUrl)
       
@@ -228,6 +241,8 @@ class WebSocketService {
       }, this.reconnectDelay)
     } else {
       console.error('WebSocket重连次数已达上限')
+      this.reconnectExhausted = true
+      this.connectionPromise = null
     }
   }
 
@@ -237,6 +252,14 @@ class WebSocketService {
       isConnected: this.isConnected,
       readyState: this.ws ? this.ws.readyState : WebSocket.CLOSED
     }
+  }
+
+  // 重置连接状态（例如用户重新登录后调用）
+  reset() {
+    this.reconnectExhausted = false
+    this.reconnectAttempts = 0
+    this.cachedTicket = null
+    this.connectionPromise = null
   }
   
   // 获取消息类型文本

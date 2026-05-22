@@ -157,17 +157,16 @@ export default {
         { id: 1, title: '关于调整借款利率的公告', date: '2024-01-15' },
         { id: 2, title: '春节期间服务时间安排', date: '2024-01-10' },
         { id: 3, title: '新用户专享优惠活动', date: '2024-01-05' }
-      ],
-      websocketConnected: false
+      ]
     }
   },
   created() {
     this.loadUserInfo()
-    this.initWebSocket()
+    this.initWebSocketHandlers()
   },
   beforeDestroy() {
-    // 页面销毁时移除WebSocket消息监听器
     window.removeEventListener('websocket-message', this.handleWebSocketMessage)
+    websocketService.offMessage('all', this.handleWebSocketNotification)
   },
   computed: {
     isAuthenticated() {
@@ -214,22 +213,10 @@ export default {
       }
     },
 
-    // 初始化WebSocket连接
-    async initWebSocket() {
-      try {
-        await websocketService.connect()
-        this.websocketConnected = true
-        console.log('WebSocket连接成功')
-        
-        // 监听WebSocket消息
-        window.addEventListener('websocket-message', this.handleWebSocketMessage)
-        
-        // 注册消息处理器 - 现在由全局服务处理，这里只需要显示通知
-        websocketService.onMessage('all', this.handleWebSocketNotification)
-      } catch (error) {
-        console.error('WebSocket连接失败:', error)
-        this.websocketConnected = false
-      }
+    // 注册WebSocket消息处理器（连接已在App.vue中统一初始化）
+    initWebSocketHandlers() {
+      window.addEventListener('websocket-message', this.handleWebSocketMessage)
+      websocketService.onMessage('all', this.handleWebSocketNotification)
     },
 
     // 处理WebSocket消息
