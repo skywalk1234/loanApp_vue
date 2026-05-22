@@ -186,7 +186,7 @@
             </div>
           </div>
           
-          <button type="submit" class="btn btn-primary btn-block">
+          <button type="submit" class="btn btn-primary btn-block" :disabled="submitting">
             确认申请
           </button>
         </form>
@@ -242,7 +242,8 @@ export default {
         { value: 8, label: '旅游/度假' },
         { value: 9, label: '再培训' },
         { value: 10, label: '经营/商业用途' }
-      ]
+      ],
+      submitting: false
     }
   },
   computed: {
@@ -411,8 +412,12 @@ export default {
     },
 
     async submitApplication() {
+      if (this.submitting) return
+      this.submitting = true
+
       if (!this.application.amount || !this.application.term) {
         alert('请填写借款金额和期数')
+        this.submitting = false
         return
       }
       
@@ -423,11 +428,13 @@ export default {
       
       if (!Number.isNaN(minAmount) && amount < minAmount) {
         alert(`借款金额不能小于${minAmount}元`)
+        this.submitting = false
         return
       }
 
       if (!Number.isNaN(maxAmount) && amount > maxAmount) {
         alert(`借款金额不能大于${maxAmount}元`)
+        this.submitting = false
         return
       }
       
@@ -438,6 +445,7 @@ export default {
       
       if (term < minTerm || term > maxTerm) {
         alert(`借款期数必须在${minTerm}-${maxTerm}之间`)
+        this.submitting = false
         return
       }
       
@@ -446,6 +454,7 @@ export default {
         const accessToken = localStorage.getItem('accessToken')
         if (!accessToken) {
           alert('请先登录')
+          this.submitting = false
           return
         }
         
@@ -486,20 +495,18 @@ export default {
         const responseData = JSON.parse(result)
         
         if (responseData.success) {
-          // 申请成功，显示成功弹窗
           alert('申请成功，等待管理员审核，可到借款记录中查看')
           this.showApplyModal = false
-          
-          // 跳转到申请记录页面
+          this.submitting = false
           this.$router.push('/loan-records')
         } else if (responseData.needRiskProfile) {
-          // 需要完善个人信息
           this.showApplyModal = false
           this.showRiskProfileModal = true
+          this.submitting = false
         } else {
-          // 申请失败
           console.error('申请失败:', responseData.message || '未知错误')
           alert('申请失败: ' + (responseData.message || '请重试'))
+          this.submitting = false
         }
       } catch (error) {
         console.error('提交申请失败:', error)
@@ -508,6 +515,7 @@ export default {
         } else {
           alert('申请提交失败，请重试')
         }
+        this.submitting = false
       }
     }
   }
