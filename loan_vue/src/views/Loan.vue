@@ -94,6 +94,15 @@
           </div>
           
           <div class="form-group">
+            <label class="form-label">借款目的</label>
+            <select v-model.number="application.purpose" class="form-input form-select">
+              <option v-for="opt in purposeOptions" :key="opt.value" :value="opt.value">
+                {{ opt.label }}
+              </option>
+            </select>
+          </div>
+          
+          <div class="form-group">
             <label class="form-label">还款方式</label>
             <input 
               :value="getRepayTypeText(selectedProduct.repay_type)"
@@ -183,6 +192,21 @@
         </form>
       </div>
     </div>
+
+    <!-- 完善个人信息提示弹窗 -->
+    <div class="modal" v-if="showRiskProfileModal">
+      <div class="modal-content risk-profile-modal">
+        <div class="modal-body">
+          <div class="risk-icon">!</div>
+          <p class="risk-message">您还没有完善个人信息</p>
+          <p class="risk-desc">完善后可获得借款额度评估</p>
+        </div>
+        <div class="risk-actions">
+          <button class="risk-btn secondary" @click="showRiskProfileModal = false">暂不</button>
+          <button class="risk-btn primary" @click="goToPersonalInfo">去完善个人信息</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -198,12 +222,26 @@ export default {
       loanProducts: [],
       selectedProduct: {},
       showApplyModal: false,
+      showRiskProfileModal: false,
       application: {
         amount: '',
         term: '',
-        purpose: '',
+        purpose: 0,
         repaymentMethod: ''
-      }
+      },
+      purposeOptions: [
+        { value: 0, label: '其他用途' },
+        { value: 1, label: '购买新车' },
+        { value: 2, label: '购买二手车' },
+        { value: 3, label: '家具/设备' },
+        { value: 4, label: '家电/电子产品' },
+        { value: 5, label: '家庭电器' },
+        { value: 6, label: '维修' },
+        { value: 7, label: '教育' },
+        { value: 8, label: '旅游/度假' },
+        { value: 9, label: '再培训' },
+        { value: 10, label: '经营/商业用途' }
+      ]
     }
   },
   computed: {
@@ -273,7 +311,7 @@ export default {
       this.application = {
         amount: '',
         term: '',
-        purpose: '',
+        purpose: 0,
         repaymentMethod: ''
       }
     },
@@ -365,7 +403,12 @@ export default {
         default: return repayType
       }
     },
-    
+
+    goToPersonalInfo() {
+      this.showRiskProfileModal = false
+      this.$router.push('/personal-info')
+    },
+
     async submitApplication() {
       if (!this.application.amount || !this.application.term) {
         alert('请填写借款金额和期数')
@@ -416,19 +459,13 @@ export default {
         myHeaders.append("Authorization", accessToken)
         myHeaders.append("Content-Type", "application/json")
 
-        // console.log("loan_id:",this.selectedProduct.id)
-        //手动构造json格式
-        var raw = `{"productId":${this.selectedProduct.id},` +
-          `"amount":${this.application.amount},` +
-          `"termCount":${this.application.term}}`;
-        console.log("raw:",raw)
-
-        // 准备请求数据
-        // var raw = JSON.stringify({
-        //   "productId": this.selectedProduct.id,
-        //   "amount": parseFloat(this.application.amount),
-        //   "termCount": parseInt(this.application.term)
-        // })
+        var raw = JSON.stringify({
+          productId: Number(this.selectedProduct.id),
+          amount: Number(this.application.amount),
+          termCount: Number(this.application.term),
+          purpose: this.application.purpose
+        })
+        console.log("raw:", raw)
         
         // 配置请求选项
         var requestOptions = {
@@ -454,6 +491,10 @@ export default {
           
           // 跳转到申请记录页面
           this.$router.push('/loan-records')
+        } else if (responseData.needRiskProfile) {
+          // 需要完善个人信息
+          this.showApplyModal = false
+          this.showRiskProfileModal = true
         } else {
           // 申请失败
           console.error('申请失败:', responseData.message || '未知错误')
@@ -726,6 +767,17 @@ export default {
   margin-top: -4px;
 }
 
+.form-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%237b8794' d='M1.41.59L6 5.17 10.59.59 12 2l-6 6-6-6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+  cursor: pointer;
+  background-color: #fff;
+}
+
 .loan-preview {
   background: linear-gradient(135deg, #eef8f6, #fff4e8);
   border-radius: 20px;
@@ -752,6 +804,76 @@ export default {
   margin-bottom: 0;
   font-weight: 600;
   color: #17736c;
+}
+
+.risk-profile-modal {
+  max-width: 320px;
+  text-align: center;
+  padding: 28px 24px 20px;
+}
+
+.risk-profile-modal .modal-body {
+  margin-bottom: 20px;
+}
+
+.risk-icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff9a35, #ef4056);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.risk-message {
+  font-size: 16px;
+  font-weight: 900;
+  color: #25303d;
+  margin: 0 0 6px;
+}
+
+.risk-desc {
+  font-size: 13px;
+  color: #7b8794;
+  margin: 0;
+  font-weight: 500;
+}
+
+.risk-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.risk-btn {
+  flex: 1;
+  height: 44px;
+  border: 0;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.18s ease;
+}
+
+.risk-btn.primary {
+  background: linear-gradient(135deg, #142744, #17736c 56%, #ff8857);
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(23, 115, 108, 0.22);
+}
+
+.risk-btn.secondary {
+  background: #f5f7fa;
+  color: #667280;
+  box-shadow: inset 0 0 0 1px rgba(231, 235, 241, 0.9);
+}
+
+.risk-btn:hover {
+  transform: translateY(-1px);
 }
 
 @media (max-width: 480px) {

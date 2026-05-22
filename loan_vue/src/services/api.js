@@ -130,6 +130,11 @@ const apiService = {
     // 绑定银行卡
     bindBankCard(cardData) {
       return api.post('/user/bind-bank-card', cardData)
+    },
+
+    // 提交风险画像/个人信息
+    submitRiskProfile(data) {
+      return api.post('/user/riskProfile', data)
     }
   },
   
