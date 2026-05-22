@@ -117,7 +117,7 @@
             </div>
             <div class="detail-item">
               <span class="detail-label">期限范围</span>
-              <span class="detail-value">{{ productInfo.min_periods }} - {{ productInfo.max_periods }} 天</span>
+              <span class="detail-value">{{ productInfo.min_periods }} - {{ productInfo.max_periods }} {{ getPeriodTypeText() }}</span>
             </div>
             <div class="detail-item">
               <span class="detail-label">还款方式</span>
@@ -129,7 +129,7 @@
             </div>
             <div class="detail-item">
               <span class="detail-label">宽限期</span>
-              <span class="detail-value">{{ productInfo.grace_term }} 天</span>
+              <span class="detail-value">{{ productInfo.grace_term }} {{ getPeriodTypeText() }}</span>
             </div>
             <div class="detail-item full-width">
               <span class="detail-label">产品说明</span>
@@ -177,13 +177,14 @@ export default {
       activeTab: 'all',
       loading: false,
       records: [],
+      allProducts: [],
       showProductModal: false,
       productLoading: false,
       productError: '',
       productInfo: {},
-      highlightLoanId: null, // 需要高亮显示的借款编号
-      isHighlighting: false, // 是否正在高亮显示
-      showCheckingModal: false // 审核中弹窗显示状态
+      highlightLoanId: null,
+      isHighlighting: false,
+      showCheckingModal: false
     }
   },
   computed: {
@@ -266,8 +267,10 @@ export default {
           
           this.records = records
           console.log(this.records)
-           // 👇 新增：为每条记录获取真实产品名
-          await this.loadProductNames()
+          // 通过option接口获取所有产品，缓存后用于产品名和详情弹窗
+          await this.loadAllProducts()
+          // 用缓存的产品数据批量更新产品名
+          this.updateProductNames()
           
           // 如果正在高亮显示，滚动到顶部并添加动画效果
           if (this.isHighlighting && this.highlightLoanId) {
@@ -337,43 +340,71 @@ export default {
         }
       })
     },
-    //只是获取产品名字
-    async loadProductNames() {
-      const promises = this.records.map(async (record) => {
-        try {
-          const myHeaders = new Headers()
-          const token = localStorage.getItem('accessToken')
-          if (token) {
-            myHeaders.append('Authorization', `Bearer ${token}`)
-          }
-          myHeaders.append('Content-Type', 'application/json')
+    // 获取option接口的全部产品，缓存到allProducts
+    async loadAllProducts() {
+      try {
+        const myHeaders = new Headers()
+        const token = localStorage.getItem('accessToken')
+        if (token) {
+          myHeaders.append('Authorization', `Bearer ${token}`)
+        }
 
-          const raw = `{"id":${record.productId}}`
-          const requestOptions = {
-            method: 'POST',
-            headers: myHeaders,
-            body: raw,
-            redirect: 'follow'
-          }
+        const requestOptions = {
+          method: 'GET',
+          headers: myHeaders,
+          redirect: 'follow'
+        }
 
-          const response = await fetch('http://115.190.40.44:45444/loan/getProduct', requestOptions)
-          const result = await response.text()
-          const data = JSON.parse(result)
+        const response = await fetch('http://115.190.40.44:45444/loan/option', requestOptions)
+        const result = await response.text()
+        const jsonString = result
+        const fixedJsonString = jsonString
+          .replace(/"id":\s*(\d{15,})/g, '"id":"$1"')
+          .replace(/"strategyCode":\s*(\d{15,})/g, '"strategyCode":"$1"')
+        const data = JSON.parse(fixedJsonString)
 
-          if (data.errCode === 200 && data.success) {
-            // 找到对应的 record，更新 productName
-            const index = this.records.findIndex(r => r.id === record.id)
-            if (index !== -1) {
-              this.records[index].productName = data.product.name || `产品${record.productId}`;
-            }
-          }
-        } catch (error) {
-          console.warn('获取产品名失败，productId:', record.productId, error)
-          // 失败就保留临时名字，不报错
+        const products = data.products || data.option || []
+        if (data.success && products.length > 0) {
+          this.allProducts = products.map(product => this.normalizeProduct(product))
+          console.log('加载全部产品成功，共', this.allProducts.length, '个产品')
+        }
+      } catch (error) {
+        console.warn('通过option接口获取全部产品失败:', error)
+        this.allProducts = []
+      }
+    },
+
+    // 用缓存的allProducts批量更新每条记录的产品名
+    updateProductNames() {
+      this.records.forEach(record => {
+        const product = this.allProducts.find(p => p.id === String(record.productId))
+        if (product) {
+          record.productName = product.name
         }
       })
-      // 等所有请求完成（即使有失败也不中断）
-      await Promise.allSettled(promises)
+    },
+
+    // 将option接口返回的产品数据标准化
+    normalizeProduct(product) {
+      const periodType = product.period_type || (product.calcType === 'ONE_TIME' ? 'DAY' : 'MONTH')
+      const maxPeriods = product.max_periods || product.termNumber || 1
+
+      return {
+        id: String(product.id || product.strategyCode || ''),
+        name: product.name || product.strategyName || '贷款产品',
+        interest: product.interest || product.annualRate || '0',
+        min_principle: product.min_principle || null,
+        max_principle: product.max_principle || null,
+        min_periods: product.min_periods || 1,
+        max_periods: maxPeriods,
+        period_type: periodType,
+        repay_type: product.repay_type || product.calcType || '',
+        grace_term: product.grace_term || 0,
+        grace_day: product.grace_day || product.graceDays || 0,
+        penalty: product.penalty || product.overdueDailyRate || '0',
+        default_rate: product.default_rate || product.overdueDailyRate || '0',
+        info: product.info || (product.strategyName || '')
+      }
     },
     
     // 产品详情相关方法
@@ -381,43 +412,39 @@ export default {
       this.showProductModal = true
       this.productLoading = true
       this.productError = ''
-      
+
+      const matched = this.allProducts.find(p => p.id === String(productId))
+      if (matched) {
+        this.productInfo = matched
+        this.productLoading = false
+        return
+      }
+
       try {
-        // 直接调用后端接口获取产品详情
-        try {
-          const myHeaders = new Headers()
-          const token = localStorage.getItem('accessToken')
-          if (token) {
-            myHeaders.append('Authorization', `Bearer ${token}`)
-          }
-          myHeaders.append('Content-Type', 'application/json')
+        const myHeaders = new Headers()
+        const token = localStorage.getItem('accessToken')
+        if (token) {
+          myHeaders.append('Authorization', `Bearer ${token}`)
+        }
+        myHeaders.append('Content-Type', 'application/json')
 
-          // const raw = JSON.stringify({
-          //   id: productId
-          // })
-          var raw = `{"id":${productId}}`
+        var raw = `{"id":${productId}}`
+        const requestOptions = {
+          method: 'POST',
+          headers: myHeaders,
+          body: raw,
+          redirect: 'follow'
+        }
 
-          console.log("请求产品详情：", raw)
-          const requestOptions = {
-            method: 'POST',
-            headers: myHeaders,
-            body: raw,
-            redirect: 'follow'
-          }
+        const response = await fetch('http://115.190.40.44:45444/loan/getProduct', requestOptions)
+        const result = await response.text()
+        const data = JSON.parse(result)
 
-          const response = await fetch('http://115.190.40.44:45444/loan/getProduct', requestOptions)
-          const result = await response.text()
-          const data = JSON.parse(result)
-          
-          if (data.errCode === 200 && data.success) {
-            this.productInfo = data.product
-          } else {
-            this.productError = '获取产品信息失败'
-            console.error('获取产品信息失败:', data)
-          }
-        } catch (error) {
+        if (data.errCode === 200 && data.success) {
+          this.productInfo = this.normalizeProduct(data.product)
+        } else {
           this.productError = '获取产品信息失败'
-          console.error('获取产品信息失败:', error)
+          console.error('获取产品信息失败:', data)
         }
       } catch (error) {
         this.productError = '获取产品信息失败'
@@ -441,6 +468,16 @@ export default {
         'BULLET': '一次性还本付息'
       }
       return typeMap[repayType] || repayType
+    },
+
+    getPeriodTypeText() {
+      if (!this.productInfo || !this.productInfo.period_type) return '期'
+      switch (this.productInfo.period_type) {
+        case 'DAY': return '天'
+        case 'MONTH': return '个月'
+        case 'YEAR': return '年'
+        default: return '期'
+      }
     },
     
     
