@@ -108,14 +108,7 @@ export default {
         
         // 调用API获取还款记录
         const response = await fetch(`${API_BASE_URL}/loan/getRepayment`, requestOptions)
-        const result = await response.text()
-        
-        const jsonString = result;
-        const fixedJsonString = jsonString.replace(
-          /"loan_id":\s*(\d{15,})/g,  // 匹配15位以上的数字id
-          '"loan_id":"$1"'  // 添加双引号使其变为字符串
-        )
-        const data = JSON.parse(fixedJsonString)
+        const data = await response.json()
 
         if (data.errCode === 200 && data.success) {
           // 处理还款记录数据
@@ -142,13 +135,13 @@ export default {
       
       // 转换API数据格式到组件格式
       this.records = repayments.map(repayment => ({
-        id: repayment.id,
-        amount: Number(repayment.total_amount).toFixed(2),
-        repaymentDate: repayment.repay_at,
-        loanId: String(repayment.loan_id),
-        status: repayment.status,
-        refundAmount: Number(repayment.refund_amount || 0).toFixed(2),
-        extra: repayment.extra
+        id: repayment.ID,
+        amount: Number(repayment.TotalAmount).toFixed(2),
+        repaymentDate: repayment.RepayAt,
+        loanId: String(repayment.LoanID),
+        status: repayment.Status,
+        refundAmount: Number(repayment.RefundAmount || 0).toFixed(2),
+        extra: repayment.Extra
       }))
       
       // 计算统计信息
@@ -160,20 +153,20 @@ export default {
       // 模拟数据作为后备
       this.records = [
         {
-          id: 1,
-          amount: '1250.00',
-          repaymentDate: '2024-01-20T10:30:00Z',
-          loanId: '786915251432996852',
-          status: 'SUCCESS',
-          refundAmount: '0.00'
+          ID: 1,
+          TotalAmount: '1250.00',
+          RepayAt: '2024-01-20T10:30:00Z',
+          LoanID: '786915251432996852',
+          Status: 'SUCCESS',
+          RefundAmount: '0.00'
         },
         {
-          id: 2,
-          amount: '1250.00',
-          repaymentDate: '2024-01-15T14:20:00Z',
-          loanId: '786915251432996852',
-          status: 'PROCESSING',
-          refundAmount: '0.00'
+          ID: 2,
+          TotalAmount: '1250.00',
+          RepayAt: '2024-01-15T14:20:00Z',
+          LoanID: '786915251432996852',
+          Status: 'PROCESSING',
+          RefundAmount: '0.00'
         }
       ]
       

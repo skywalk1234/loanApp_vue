@@ -6,14 +6,11 @@ class WebSocketService {
     this.ws = null
     this.isConnected = false
     this.reconnectAttempts = 0
-    this.maxReconnectAttempts = 5
+    this.maxReconnectAttempts = 1
     this.reconnectDelay = 3000
     this.messageHandlers = new Map()
     this.connectionPromise = null
     this.cachedTicket = null
-    this.reconnectExhausted = false
-    this.lastExhaustTime = 0
-    this.reconnectCooldown = 60000
     this.connectedAt = 0
   }
 
@@ -60,16 +57,6 @@ class WebSocketService {
 
   // 建立WebSocket连接
   async connect() {
-    if (this.reconnectExhausted) {
-      const elapsed = Date.now() - this.lastExhaustTime
-      if (elapsed < this.reconnectCooldown) {
-        console.warn(`WebSocket重连已耗尽，冷却中(${Math.ceil((this.reconnectCooldown - elapsed) / 1000)}s)`)
-        return Promise.reject(new Error('WebSocket重连冷却中'))
-      }
-      this.reconnectExhausted = false
-      this.reconnectAttempts = 0
-    }
-
     if (this.isConnected && this.ws && this.ws.readyState === WebSocket.OPEN) {
       console.log('WebSocket已连接，无需重复连接')
       return Promise.resolve()
@@ -238,7 +225,7 @@ class WebSocketService {
     this.reconnectAttempts = 0
   }
 
-  // 尝试重连
+  // 尝试重连（只重试一次）
   attemptReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++
@@ -250,9 +237,7 @@ class WebSocketService {
         })
       }, this.reconnectDelay)
     } else {
-      console.error('WebSocket重连次数已达上限')
-      this.reconnectExhausted = true
-      this.lastExhaustTime = Date.now()
+      console.error('WebSocket重连失败，停止重连')
       this.connectionPromise = null
     }
   }
@@ -267,7 +252,6 @@ class WebSocketService {
 
   // 重置连接状态（例如用户重新登录后调用）
   reset() {
-    this.reconnectExhausted = false
     this.reconnectAttempts = 0
     this.cachedTicket = null
     this.connectionPromise = null
