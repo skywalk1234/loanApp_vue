@@ -12,6 +12,9 @@ class WebSocketService {
     this.connectionPromise = null
     this.cachedTicket = null
     this.reconnectExhausted = false
+    this.lastExhaustTime = 0
+    this.reconnectCooldown = 60000
+    this.connectedAt = 0
   }
 
   // 获取WebSocket票据（带缓存，避免重复请求）
@@ -58,8 +61,13 @@ class WebSocketService {
   // 建立WebSocket连接
   async connect() {
     if (this.reconnectExhausted) {
-      console.warn('WebSocket重连已耗尽，跳过连接')
-      return Promise.reject(new Error('WebSocket重连已耗尽'))
+      const elapsed = Date.now() - this.lastExhaustTime
+      if (elapsed < this.reconnectCooldown) {
+        console.warn(`WebSocket重连已耗尽，冷却中(${Math.ceil((this.reconnectCooldown - elapsed) / 1000)}s)`)
+        return Promise.reject(new Error('WebSocket重连冷却中'))
+      }
+      this.reconnectExhausted = false
+      this.reconnectAttempts = 0
     }
 
     if (this.isConnected && this.ws && this.ws.readyState === WebSocket.OPEN) {
@@ -86,7 +94,7 @@ class WebSocketService {
         this.ws.onopen = () => {
           console.log('WebSocket连接成功')
           this.isConnected = true
-          this.reconnectAttempts = 0
+          this.connectedAt = Date.now()
           this.connectionPromise = null
           resolve()
         }
@@ -99,6 +107,10 @@ class WebSocketService {
           console.log('WebSocket连接关闭')
           this.isConnected = false
           this.connectionPromise = null
+          // 如果连接持续超过30秒，视为稳定连接，重置重连计数器
+          if (this.connectedAt > 0 && Date.now() - this.connectedAt > 30000) {
+            this.reconnectAttempts = 0
+          }
           this.attemptReconnect()
         }
 
@@ -240,6 +252,7 @@ class WebSocketService {
     } else {
       console.error('WebSocket重连次数已达上限')
       this.reconnectExhausted = true
+      this.lastExhaustTime = Date.now()
       this.connectionPromise = null
     }
   }
