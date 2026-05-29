@@ -247,7 +247,7 @@ export default {
             amount: parseFloat(item.principal),
             totalPeriods: item.total_periods,
             paidPeriods: item.paid_periods,
-            remainingAmount: parseFloat(item.principal) - parseFloat(item.paid_amount),
+            remainingAmount: (parseFloat(item.principal) - parseFloat(item.paid_amount)).toFixed(2),
             status: this.mapStatus(item.status),
             _rawStatus: item.status,
             progress: item.total_periods > 0 ? Math.round((item.paid_periods / item.total_periods) * 100) : 0,
